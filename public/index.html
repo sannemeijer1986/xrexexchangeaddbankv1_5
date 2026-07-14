@@ -3657,10 +3657,49 @@
                 </button>
                 <div class="bank-accounts-panel__title">Bank accounts</div>
                 <button class="bank-accounts-panel__icon-btn" type="button" aria-label="Support">
-                    <img src="assets/icon_contactsupport.svg" alt="" />
+                    <img src="assets/icon_intercom.svg" alt="" />
                 </button>
             </div>
-            <div class="bank-accounts-panel__body"></div>
+            <div class="bank-accounts-panel__divider" aria-hidden="true"></div>
+            <div class="bank-accounts-panel__body">
+                <div class="bank-accounts-panel__section">
+                    <h3 class="bank-accounts-panel__section-title">TWD</h3>
+                    <div class="bank-accounts-panel__card">
+                        <div class="bank-accounts-panel__card-top">
+                            <div class="bank-accounts-panel__illu" aria-hidden="true">
+                                <img class="bank-accounts-panel__illu-bank" src="assets/illu_bank_building.svg" alt="" />
+                                <img class="bank-accounts-panel__illu-badge" src="assets/icon_bank_twd_badge.svg" alt="" />
+                            </div>
+                            <div class="bank-accounts-panel__card-copy">
+                                <div class="bank-accounts-panel__card-title">Deposit and withdraw TWD</div>
+                                <div class="bank-accounts-panel__card-desc">Link a bank account you already have: Any bank in Taiwan.</div>
+                            </div>
+                        </div>
+                        <button class="bank-accounts-panel__btn bank-accounts-panel__btn--primary" type="button" data-bank-accounts-link="twd">
+                            Link TWD account
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bank-accounts-panel__section">
+                    <h3 class="bank-accounts-panel__section-title">USD</h3>
+                    <div class="bank-accounts-panel__card">
+                        <div class="bank-accounts-panel__card-top">
+                            <div class="bank-accounts-panel__illu" aria-hidden="true">
+                                <img class="bank-accounts-panel__illu-bank" src="assets/illu_bank_building.svg" alt="" />
+                                <img class="bank-accounts-panel__illu-badge" src="assets/icon_bank_usd_badge.svg" alt="" />
+                            </div>
+                            <div class="bank-accounts-panel__card-copy">
+                                <div class="bank-accounts-panel__card-title">Deposit and withdraw USD</div>
+                                <div class="bank-accounts-panel__card-desc">Link a foreign-currency bank account you already have.</div>
+                            </div>
+                        </div>
+                        <button class="bank-accounts-panel__btn bank-accounts-panel__btn--secondary" type="button" data-bank-accounts-link="usd">
+                            Link USD account
+                        </button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="settings-page" data-settings-page hidden aria-label="Settings">

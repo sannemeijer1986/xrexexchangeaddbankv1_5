@@ -6919,6 +6919,29 @@
     if (!panel) return;
     const openButtons = document.querySelectorAll("[data-bank-accounts-open]");
     const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
+    const linkButtons = panel.querySelectorAll("[data-bank-accounts-link]");
+    let snackbarTimeout = null;
+
+    const showSnackbar = (message) => {
+      const snackbar = container?.querySelector("[data-snackbar]");
+      if (!snackbar) return;
+      const text = snackbar.querySelector("[data-snackbar-text]");
+      if (text) text.textContent = message;
+      if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+        snackbarTimeout = null;
+      }
+      snackbar.hidden = false;
+      snackbar.classList.remove("is-visible");
+      void snackbar.offsetWidth;
+      requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+      snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove("is-visible");
+        snackbarTimeout = setTimeout(() => {
+          if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+        }, 320);
+      }, 2200);
+    };
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
@@ -6975,6 +6998,9 @@
     });
     closeButtons.forEach((button) => {
       button.addEventListener("click", () => setOpen(false));
+    });
+    linkButtons.forEach((button) => {
+      button.addEventListener("click", () => showSnackbar("Not in prototype"));
     });
   };
 
