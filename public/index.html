@@ -116,7 +116,7 @@
                                 <span class="side-menu__item-text">Account checklist</span>
                                 <span class="side-menu__item-meta" data-setup-status>Completed</span>
                             </div>
-                            <div class="side-menu__item">
+                            <div class="side-menu__item" data-bank-accounts-open>
                                 <img class="side-menu__item-icon" src="assets/icon_bankaccounts.svg" alt="" />
                                 <span class="side-menu__item-text">Bank accounts</span>
                             </div>
@@ -3648,6 +3648,19 @@
                     <button class="limits-panel__cta-btn" type="button">Go Premium</button>
                 </div>
             </div>
+        </section>
+
+        <section class="bank-accounts-panel" data-bank-accounts-panel hidden aria-label="Bank accounts">
+            <div class="bank-accounts-panel__header">
+                <button class="bank-accounts-panel__icon-btn" type="button" data-bank-accounts-close aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="bank-accounts-panel__title">Bank accounts</div>
+                <button class="bank-accounts-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_contactsupport.svg" alt="" />
+                </button>
+            </div>
+            <div class="bank-accounts-panel__body"></div>
         </section>
 
         <section class="settings-page" data-settings-page hidden aria-label="Settings">

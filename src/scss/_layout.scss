@@ -32,6 +32,12 @@
   visibility: hidden;
 }
 
+.phone-container.is-bank-accounts-open .app-header,
+.phone-container.is-bank-accounts-open .content,
+.phone-container.is-bank-accounts-open .tabbar {
+  visibility: hidden;
+}
+
 .phone-container.is-settings-open .app-header,
 .phone-container.is-settings-open .content,
 .phone-container.is-settings-open .tabbar {
@@ -89,6 +95,12 @@
 .phone-container.is-limits-fading .app-header,
 .phone-container.is-limits-fading .content,
 .phone-container.is-limits-fading .tabbar {
+  opacity: 0;
+}
+
+.phone-container.is-bank-accounts-fading .app-header,
+.phone-container.is-bank-accounts-fading .content,
+.phone-container.is-bank-accounts-fading .tabbar {
   opacity: 0;
 }
 
@@ -1769,7 +1781,8 @@ html[data-active-tab="wallet"] {
 }
 
 // Figma 13281:8891 — Limits (side menu, visitor mode)
-.limits-panel {
+.limits-panel,
+.bank-accounts-panel {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1783,11 +1796,13 @@ html[data-active-tab="wallet"] {
   transition: transform 0.35s ease;
 }
 
-.limits-panel.is-open {
+.limits-panel.is-open,
+.bank-accounts-panel.is-open {
   transform: translateX(0);
 }
 
-.limits-panel__header {
+.limits-panel__header,
+.bank-accounts-panel__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1795,7 +1810,8 @@ html[data-active-tab="wallet"] {
   gap: 12px;
 }
 
-.limits-panel__title {
+.limits-panel__title,
+.bank-accounts-panel__title {
   font-size: 18px;
   font-weight: 700;
   color: #ffffff;
@@ -1803,7 +1819,8 @@ html[data-active-tab="wallet"] {
   text-align: left;
 }
 
-.limits-panel__icon-btn {
+.limits-panel__icon-btn,
+.bank-accounts-panel__icon-btn {
   width: 32px;
   height: 32px;
   border-radius: 999px;
@@ -1815,12 +1832,14 @@ html[data-active-tab="wallet"] {
   padding: 0;
 }
 
-.limits-panel__icon-btn img {
+.limits-panel__icon-btn img,
+.bank-accounts-panel__icon-btn img {
   width: 24px;
   height: 24px;
 }
 
-.limits-panel__body {
+.limits-panel__body,
+.bank-accounts-panel__body {
   flex: 1;
   overflow-y: auto;
   padding: 0 16px 24px;
@@ -16337,6 +16356,7 @@ div.currency-sheet__item-icon {
 
 .side-menu__item[data-setup-open],
 .side-menu__item[data-limits-open],
+.side-menu__item[data-bank-accounts-open],
 .side-menu__item[data-settings-open],
 .side-menu__item[data-support-guide-open],
 .side-menu__item[data-community-open],

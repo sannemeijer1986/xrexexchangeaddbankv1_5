@@ -6913,6 +6913,71 @@
     });
   };
 
+  const initBankAccountsPanel = () => {
+    const panel = document.querySelector("[data-bank-accounts-panel]");
+    const container = document.querySelector(".phone-container");
+    if (!panel) return;
+    const openButtons = document.querySelectorAll("[data-bank-accounts-open]");
+    const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        panel.hidden = false;
+        if (container) {
+          container.classList.remove("is-bank-accounts-open");
+          container.classList.remove("is-bank-accounts-fading");
+        }
+        const scrollBody = panel.querySelector(".bank-accounts-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => {
+          panel.classList.add("is-open");
+        });
+        setTimeout(() => {
+          if (container && panel.classList.contains("is-open")) {
+            container.classList.add("is-bank-accounts-fading");
+          }
+        }, 80);
+        setTimeout(() => {
+          if (container && panel.classList.contains("is-open")) {
+            container.classList.add("is-bank-accounts-open");
+          }
+        }, 350);
+      } else {
+        panel.classList.remove("is-open");
+        scrollEntryContentToTop();
+        if (container) {
+          container.classList.add("is-bank-accounts-fading");
+          container.classList.remove("is-bank-accounts-open");
+          requestAnimationFrame(() => {
+            container.classList.remove("is-bank-accounts-fading");
+          });
+        }
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) {
+            panel.hidden = true;
+          }
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    openButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (container && container.classList.contains("is-menu-open")) {
+          container.classList.remove("is-menu-open");
+          setTimeout(() => setOpen(true), 220);
+        } else {
+          setOpen(true);
+        }
+      });
+    });
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", () => setOpen(false));
+    });
+  };
+
   const initSettingsPage = () => {
     const page = document.querySelector("[data-settings-page]");
     const container = document.querySelector(".phone-container");
@@ -14027,6 +14092,7 @@
 
   initChecklistPanel();
   initLimitsPanel();
+  initBankAccountsPanel();
   initSettingsPage();
   initSupportGuidePage();
   initCommunityPage();
