@@ -2459,7 +2459,10 @@ html[data-active-tab=wallet] .app-header__top {
 
 .twd-bank-details-panel__loader.plan-submit-loader {
   z-index: 10;
-  background: #0d0e0f;
+  background: transparent;
+}
+.twd-bank-details-panel__loader.plan-submit-loader .plan-submit-loader__backdrop {
+  background: rgba(13, 14, 15, 0.75);
 }
 .twd-bank-details-panel__loader.plan-submit-loader .plan-submit-loader__card {
   width: 168px;

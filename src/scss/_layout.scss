@@ -2473,7 +2473,11 @@ html[data-active-tab="wallet"] {
 
 .twd-bank-details-panel__loader.plan-submit-loader {
   z-index: 10;
-  background: #0d0e0f;
+  background: transparent;
+
+  .plan-submit-loader__backdrop {
+    background: rgba(13, 14, 15, 0.75);
+  }
 
   .plan-submit-loader__card {
     width: 168px;
