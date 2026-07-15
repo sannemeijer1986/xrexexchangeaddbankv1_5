@@ -2472,7 +2472,7 @@ html[data-active-tab=wallet] .app-header__top {
   font-size: 12px;
   font-weight: 600;
   line-height: normal;
-  color: #8fb8ff;
+  color: #9B9C9C;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -26224,3 +26224,5 @@ html[data-prototype-flow="2"] .phone-container .my-plans-detail-panel__activity-
   color: #58595a;
   opacity: 1;
 }
+
+/*# sourceMappingURL=main.css.map */

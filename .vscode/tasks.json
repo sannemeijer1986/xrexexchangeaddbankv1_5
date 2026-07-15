@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Watch SCSS",
+      "type": "npm",
+      "script": "watch:css:poll",
+      "problemMatcher": {
+        "owner": "sass",
+        "pattern": {
+          "regexp": "^Error:",
+          "file": 1,
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Sass is watching for changes",
+          "endsPattern": "Sass is watching for changes"
+        }
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "watchers"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "Watch SCSS (native)",
+      "type": "npm",
+      "script": "watch:css",
+      "problemMatcher": {
+        "owner": "sass",
+        "pattern": {
+          "regexp": "^Error:",
+          "file": 1,
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Sass is watching for changes",
+          "endsPattern": "Sass is watching for changes"
+        }
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "watchers"
+      }
+    },
+    {
+      "label": "Build CSS",
+      "type": "npm",
+      "script": "build:css",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
