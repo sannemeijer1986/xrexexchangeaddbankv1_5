@@ -7018,7 +7018,46 @@
     };
   };
 
-  const initTwdBankDetailsPanel = ({ showSnackbar }) => {
+  const initTwdBankSuccessPanel = ({ onDismiss }) => {
+    const panel = document.querySelector("[data-twd-bank-success-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const closeButtons = panel.querySelectorAll(
+      "[data-twd-bank-success-close], [data-twd-bank-success-done]",
+    );
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        panel.hidden = false;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    const dismiss = () => {
+      setOpen(false);
+      onDismiss?.();
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", dismiss);
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+      dismiss,
+    };
+  };
+
+  const initTwdBankDetailsPanel = ({ showSnackbar, onSubmitComplete }) => {
     const panel = document.querySelector("[data-twd-bank-details-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
 
@@ -7039,6 +7078,7 @@
       "[data-twd-bank-details-english-name]",
     );
     const submitBtn = panel.querySelector("[data-twd-bank-details-submit]");
+    const loaderEl = panel.querySelector("[data-twd-bank-details-loader]");
     const editIdBtn = panel.querySelector("[data-twd-bank-details-edit-id]");
     const consentButtons = Array.from(
       panel.querySelectorAll("[data-twd-bank-details-consent]"),
@@ -7066,6 +7106,8 @@
         lawful: false,
       },
     };
+    let submitGeneration = 0;
+    const SUBMIT_LOADER_MS = 1600;
 
     const syncSubmit = () => {
       const isValid =
@@ -7114,14 +7156,59 @@
       syncSubmit();
     };
 
-    const setOpen = (nextOpen) => {
+    const fillAll = () => {
+      state.bankSelected = true;
+      state.branchSelected = true;
+
+      if (bankValueEl) {
+        bankValueEl.textContent = "809 KGI Bank";
+        bankValueEl.classList.remove("is-placeholder");
+      }
+      if (branchValueEl) {
+        branchValueEl.textContent = "0436 Taipei Xinyi";
+        branchValueEl.classList.remove("is-placeholder");
+      }
+      if (branchBtn) {
+        branchBtn.disabled = false;
+        branchBtn.classList.remove("is-disabled");
+      }
+
+      textInputs.forEach((input) => {
+        if (input) input.value = autofillValues.get(input) || "";
+      });
+
+      consentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-twd-bank-details-consent");
+        if (key) state.consents[key] = true;
+        btn.setAttribute("aria-pressed", "true");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_on.svg";
+      });
+
+      syncSubmit();
+    };
+
+    document
+      .querySelector("[data-prototype-fill-twd-bank]")
+      ?.addEventListener("click", fillAll);
+
+    const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
+        submitGeneration += 1;
+        if (loaderEl) loaderEl.hidden = true;
         resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         requestAnimationFrame(() => panel.classList.add("is-open"));
       } else {
+        submitGeneration += 1;
+        if (loaderEl) loaderEl.hidden = true;
+        if (opts.instant) {
+          panel.classList.remove("is-open");
+          panel.hidden = true;
+          return;
+        }
         panel.classList.remove("is-open");
         const onEnd = () => {
           if (!panel.classList.contains("is-open")) panel.hidden = true;
@@ -7189,12 +7276,18 @@
     );
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
-      showSnackbar("Not in prototype");
+      const gen = (submitGeneration += 1);
+      if (loaderEl) loaderEl.hidden = false;
+      window.setTimeout(() => {
+        if (gen !== submitGeneration) return;
+        if (loaderEl) loaderEl.hidden = true;
+        onSubmitComplete?.();
+      }, SUBMIT_LOADER_MS);
     });
 
     return {
       open: () => setOpen(true),
-      close: () => setOpen(false),
+      close: (opts) => setOpen(false, opts),
     };
   };
 
@@ -7234,7 +7327,17 @@
       button.addEventListener("click", () => setOpen(false));
     });
 
-    const twdBankDetailsApi = initTwdBankDetailsPanel({ showSnackbar });
+    let twdBankDetailsApi;
+    const twdBankSuccessApi = initTwdBankSuccessPanel({
+      onDismiss: () => {
+        twdBankDetailsApi?.close({ instant: true });
+        setOpen(false);
+      },
+    });
+    twdBankDetailsApi = initTwdBankDetailsPanel({
+      showSnackbar,
+      onSubmitComplete: () => twdBankSuccessApi.open(),
+    });
     chooseBankBtn?.addEventListener("click", () => twdBankDetailsApi.open());
 
     const custodianPanelApi = initCustodianPanel({

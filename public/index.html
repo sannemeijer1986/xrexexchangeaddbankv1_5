@@ -3831,6 +3831,30 @@
                     <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-twd-bank-details-submit disabled>Submit</button>
                 </div>
             </div>
+            <div class="twd-bank-details-panel__loader plan-submit-loader" data-twd-bank-details-loader hidden>
+                <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">
+                    <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
+                </div>
+            </div>
+        </section>
+
+        <section class="twd-bank-success-panel" data-twd-bank-success-panel hidden aria-label="Application submitted">
+            <header class="twd-bank-success-panel__header">
+                <button class="twd-bank-success-panel__icon-btn" type="button" data-twd-bank-success-close aria-label="Close">
+                    <img src="assets/icon_close.svg" alt="" />
+                </button>
+                <div class="twd-bank-success-panel__header-spacer" aria-hidden="true"></div>
+            </header>
+            <div class="twd-bank-success-panel__body">
+                <div class="twd-bank-success-panel__hero">
+                    <img class="twd-bank-success-panel__icon" src="assets/icon_success_screen.svg" alt="" width="60" height="60" aria-hidden="true" />
+                    <h2 class="twd-bank-success-panel__title">Application submitted</h2>
+                    <p class="twd-bank-success-panel__sub">Bank account verification requires 1-3 business days</p>
+                </div>
+            </div>
+            <footer class="twd-bank-success-panel__footer">
+                <button class="twd-bank-success-panel__done" type="button" data-twd-bank-success-done>Done</button>
+            </footer>
         </section>
 
         <section class="custodian-panel" data-custodian-panel hidden aria-label="TWD custodians">
@@ -7275,6 +7299,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
 
         <div class="build-badge__body" id="prototypeStatesBody">
             <button class="build-badge__reset" type="button" data-prototype-reset>Reset states</button>
+            <button class="build-badge__reset" type="button" data-prototype-fill-twd-bank>Fill TWD bank details</button>
             <div class="build-badge__checkbox-stack" role="group" aria-label="Prototype display toggles">
                 <div class="build-badge__section-row">
                     <label class="build-badge__checkbox">
