@@ -3757,6 +3757,49 @@
             </div>
         </section>
 
+        <div class="currency-sheet custodian-sheet" data-custodian-sheet hidden aria-modal="true" role="dialog" aria-label="Choose TWD custodian">
+            <button class="currency-sheet__backdrop" type="button" data-custodian-sheet-close aria-label="Close"></button>
+            <div class="currency-sheet__panel custodian-sheet__panel">
+                <div class="custodian-sheet__header">
+                    <h2 class="custodian-sheet__title">Your TWD custodian (choose one)</h2>
+                </div>
+                <div class="custodian-sheet__body">
+                    <p class="custodian-sheet__intro">Your TWD is held in trust at the custodian you pick. You don&rsquo;t need an account there to use XREX.</p>
+                    <div class="custodian-sheet__faq">
+                        <button class="custodian-sheet__faq-link" type="button" data-custodian-faq="what">What is a custodian?</button>
+                        <button class="custodian-sheet__faq-link" type="button" data-custodian-faq="why">Why do I need one?</button>
+                        <button class="custodian-sheet__faq-link" type="button" data-custodian-faq="account">Do I need a custodian account?</button>
+                    </div>
+                    <div class="custodian-sheet__list" role="radiogroup" aria-label="TWD custodian options">
+                        <button class="custodian-sheet__card is-selected" type="button" data-custodian-option="kgi" aria-pressed="true">
+                            <div class="custodian-sheet__card-copy">
+                                <span class="custodian-sheet__card-name">KGI</span>
+                                <span class="custodian-sheet__card-desc">Your Taiwan dollar will be held at KGI Bank, licensed in Taiwan. No account at KGI is needed.</span>
+                            </div>
+                            <img class="custodian-sheet__radio" src="assets/icon_radio_on.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                        <button class="custodian-sheet__card" type="button" data-custodian-option="cathay" aria-pressed="false">
+                            <div class="custodian-sheet__card-copy">
+                                <span class="custodian-sheet__card-name">Cathay United</span>
+                                <span class="custodian-sheet__card-desc">Your Taiwan dollar will be held at Cathay United Bank, licensed in Taiwan. No account at Cathay is needed.</span>
+                            </div>
+                            <img class="custodian-sheet__radio" src="assets/icon_radio_off.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                        <button class="custodian-sheet__card" type="button" data-custodian-option="ctbc" aria-pressed="false">
+                            <div class="custodian-sheet__card-copy">
+                                <span class="custodian-sheet__card-name">CTBC Bank</span>
+                                <span class="custodian-sheet__card-desc">Your Taiwan dollar will be held at CTBC Bank, licensed in Taiwan. No account at CTBC is needed.</span>
+                            </div>
+                            <img class="custodian-sheet__radio" src="assets/icon_radio_off.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+                <div class="custodian-sheet__footer">
+                    <button class="custodian-sheet__cancel" type="button" data-custodian-sheet-close>Cancel</button>
+                </div>
+            </div>
+        </div>
+
         <section class="settings-page" data-settings-page hidden aria-label="Settings">
             <header class="settings-page__header">
                 <div class="settings-page__header-left">
