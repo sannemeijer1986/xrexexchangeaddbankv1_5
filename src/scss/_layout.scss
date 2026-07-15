@@ -2035,7 +2035,7 @@ html[data-active-tab="wallet"] {
 
 .link-twd-panel__step {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 16px;
 }
@@ -2045,9 +2045,9 @@ html[data-active-tab="wallet"] {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #081b68;
-  color: #8fb8ff;
-  font-size: 12px;
+  background: #275cfd;
+  color: #ffffff;
+  font-size: 14px;
   font-weight: 600;
   line-height: normal;
   display: inline-flex;
