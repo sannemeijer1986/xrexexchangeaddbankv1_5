@@ -7018,6 +7018,186 @@
     };
   };
 
+  const initTwdBankDetailsPanel = ({ showSnackbar }) => {
+    const panel = document.querySelector("[data-twd-bank-details-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const bankBtn = panel.querySelector("[data-twd-bank-details-bank]");
+    const branchBtn = panel.querySelector("[data-twd-bank-details-branch]");
+    const bankValueEl = panel.querySelector("[data-twd-bank-details-bank-value]");
+    const branchValueEl = panel.querySelector("[data-twd-bank-details-branch-value]");
+    const accountNumberInput = panel.querySelector(
+      "[data-twd-bank-details-account-number]",
+    );
+    const accountNicknameInput = panel.querySelector(
+      "[data-twd-bank-details-account-nickname]",
+    );
+    const chineseNameInput = panel.querySelector(
+      "[data-twd-bank-details-chinese-name]",
+    );
+    const englishNameInput = panel.querySelector(
+      "[data-twd-bank-details-english-name]",
+    );
+    const submitBtn = panel.querySelector("[data-twd-bank-details-submit]");
+    const editIdBtn = panel.querySelector("[data-twd-bank-details-edit-id]");
+    const consentButtons = Array.from(
+      panel.querySelectorAll("[data-twd-bank-details-consent]"),
+    );
+    const backButtons = panel.querySelectorAll("[data-twd-bank-details-back]");
+    const textInputs = [
+      accountNumberInput,
+      accountNicknameInput,
+      chineseNameInput,
+      englishNameInput,
+    ];
+    // Demo convenience: auto-fill each field on focus.
+    const autofillValues = new Map([
+      [accountNumberInput, "12345678901234"],
+      [accountNicknameInput, "My KGI Bank"],
+      [chineseNameInput, "王小明"],
+      [englishNameInput, "XIAO MING WANG"],
+    ]);
+
+    const state = {
+      bankSelected: false,
+      branchSelected: false,
+      consents: {
+        "id-match": false,
+        lawful: false,
+      },
+    };
+
+    const syncSubmit = () => {
+      const isValid =
+        state.bankSelected &&
+        state.branchSelected &&
+        accountNumberInput?.value.trim() &&
+        accountNicknameInput?.value.trim() &&
+        chineseNameInput?.value.trim() &&
+        englishNameInput?.value.trim() &&
+        state.consents["id-match"] &&
+        state.consents.lawful;
+      if (submitBtn) submitBtn.disabled = !isValid;
+    };
+
+    const resetForm = () => {
+      state.bankSelected = false;
+      state.branchSelected = false;
+      state.consents["id-match"] = false;
+      state.consents.lawful = false;
+
+      if (bankValueEl) {
+        bankValueEl.textContent = "Select bank";
+        bankValueEl.classList.add("is-placeholder");
+      }
+      if (branchValueEl) {
+        branchValueEl.textContent = "Select branch";
+        branchValueEl.classList.add("is-placeholder");
+      }
+      if (branchBtn) {
+        branchBtn.disabled = true;
+        branchBtn.classList.add("is-disabled");
+      }
+
+      textInputs.forEach((input) => {
+        if (input) input.value = "";
+      });
+
+      consentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-twd-bank-details-consent");
+        if (key) state.consents[key] = false;
+        btn.setAttribute("aria-pressed", "false");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_off.svg";
+      });
+
+      syncSubmit();
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        resetForm();
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    bankBtn?.addEventListener("click", () => {
+      state.bankSelected = true;
+      if (bankValueEl) {
+        bankValueEl.textContent = "809 KGI Bank";
+        bankValueEl.classList.remove("is-placeholder");
+      }
+      if (branchBtn) {
+        branchBtn.disabled = false;
+        branchBtn.classList.remove("is-disabled");
+      }
+      syncSubmit();
+    });
+
+    branchBtn?.addEventListener("click", () => {
+      if (!state.bankSelected) return;
+      state.branchSelected = true;
+      if (branchValueEl) {
+        branchValueEl.textContent = "0436 Taipei Xinyi";
+        branchValueEl.classList.remove("is-placeholder");
+      }
+      syncSubmit();
+    });
+
+    textInputs.forEach((input) => {
+      input?.addEventListener("input", syncSubmit);
+      input?.addEventListener("focus", () => {
+        if (input.value.trim()) return;
+        input.value = autofillValues.get(input) || "";
+        syncSubmit();
+      });
+    });
+
+    consentButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-twd-bank-details-consent");
+        if (!key) return;
+        const nextChecked = !state.consents[key];
+        state.consents[key] = nextChecked;
+        btn.setAttribute("aria-pressed", nextChecked ? "true" : "false");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) {
+          icon.src = nextChecked
+            ? "assets/icon_checkbox_on.svg"
+            : "assets/icon_checkbox_off.svg";
+        }
+        syncSubmit();
+      });
+    });
+
+    backButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    editIdBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
+    submitBtn?.addEventListener("click", () => {
+      if (submitBtn.disabled) return;
+      showSnackbar("Not in prototype");
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
+  };
+
   const initLinkTwdPanel = (bankAccountsApi) => {
     const panel = document.querySelector("[data-link-twd-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
@@ -7053,9 +7233,9 @@
     closeButtons.forEach((button) => {
       button.addEventListener("click", () => setOpen(false));
     });
-    chooseBankBtn?.addEventListener("click", () =>
-      showSnackbar("Not in prototype"),
-    );
+
+    const twdBankDetailsApi = initTwdBankDetailsPanel({ showSnackbar });
+    chooseBankBtn?.addEventListener("click", () => twdBankDetailsApi.open());
 
     const custodianPanelApi = initCustodianPanel({
       showSnackbar,

@@ -3757,6 +3757,82 @@
             </div>
         </section>
 
+        <section class="twd-bank-details-panel" data-twd-bank-details-panel hidden aria-label="TWD bank account details">
+            <div class="twd-bank-details-panel__header">
+                <button class="twd-bank-details-panel__icon-btn" type="button" data-twd-bank-details-back aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="twd-bank-details-panel__title">TWD bank account details</div>
+                <button class="twd-bank-details-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </div>
+            <div class="twd-bank-details-panel__divider" aria-hidden="true"></div>
+            <div class="twd-bank-details-panel__body">
+                <div class="twd-bank-details-panel__section">
+                    <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                    <button class="twd-bank-details-panel__selector" type="button" data-twd-bank-details-bank aria-label="Select bank">
+                        <span class="twd-bank-details-panel__selector-value is-placeholder" data-twd-bank-details-bank-value>Select bank</span>
+                        <img class="twd-bank-details-panel__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
+                    </button>
+                    <button class="twd-bank-details-panel__selector is-disabled" type="button" data-twd-bank-details-branch aria-label="Select branch" disabled>
+                        <span class="twd-bank-details-panel__selector-value is-placeholder" data-twd-bank-details-branch-value>Select branch</span>
+                        <img class="twd-bank-details-panel__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
+                    </button>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Account number</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-twd-bank-details-account-number placeholder="ex: 12345678901234" />
+                        </span>
+                    </label>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Account nickname</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" data-twd-bank-details-account-nickname placeholder="ex: My KGI Bank" />
+                        </span>
+                    </label>
+                </div>
+                <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
+                <div class="twd-bank-details-panel__section">
+                    <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Holder&rsquo;s Chinese name</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" data-twd-bank-details-chinese-name placeholder="ex: 王小明" />
+                        </span>
+                    </label>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Holder&rsquo;s English name</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" data-twd-bank-details-english-name placeholder="ex: XIAO MING WANG" />
+                        </span>
+                    </label>
+                    <div class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">ID number</span>
+                        <span class="twd-bank-details-panel__input-wrap twd-bank-details-panel__input-wrap--readonly">
+                            <span class="twd-bank-details-panel__readonly-value">A1234567890</span>
+                        </span>
+                        <button class="twd-bank-details-panel__edit-link" type="button" data-twd-bank-details-edit-id>Edit ID number</button>
+                    </div>
+                </div>
+                <div class="twd-bank-details-panel__consent-block">
+                    <button class="twd-bank-details-panel__consent" type="button" data-twd-bank-details-consent="id-match" aria-pressed="false">
+                        <img class="twd-bank-details-panel__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                        <span class="twd-bank-details-panel__consent-copy">This ID number matches my bank account information</span>
+                    </button>
+                    <div class="twd-bank-details-panel__consent-divider" aria-hidden="true"></div>
+                    <button class="twd-bank-details-panel__consent" type="button" data-twd-bank-details-consent="lawful" aria-pressed="false">
+                        <img class="twd-bank-details-panel__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                        <span class="twd-bank-details-panel__consent-copy">The bank account I have provided and linked is lawfully owned by me. All funds involved in deposits and withdrawals originate from legitimate sources and are not associated with money laundering, fraud, or any other illegal activities.</span>
+                    </button>
+                </div>
+                <div class="twd-bank-details-panel__actions">
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-twd-bank-details-back>Back</button>
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-twd-bank-details-submit disabled>Submit</button>
+                </div>
+            </div>
+        </section>
+
         <section class="custodian-panel" data-custodian-panel hidden aria-label="TWD custodians">
             <div class="custodian-panel__header">
                 <button class="custodian-panel__icon-btn" type="button" data-custodian-panel-close aria-label="Close">
