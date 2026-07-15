@@ -2411,6 +2411,110 @@ html[data-active-tab="wallet"] {
   cursor: pointer;
 }
 
+.custodian-panel__keep--primary {
+  background: #275cfd;
+}
+
+// Figma 7652:7694 — Select TWD custodian bottom sheet (over custodian panel)
+.currency-sheet.custodian-select-sheet {
+  z-index: 2400;
+}
+
+.custodian-select-sheet__panel {
+  padding-bottom: 0;
+}
+
+.custodian-select-sheet__body {
+  gap: 24px;
+  align-items: stretch;
+  padding: 16px 16px 24px;
+}
+
+.custodian-select-sheet__title {
+  margin: 0;
+}
+
+.custodian-select-sheet__list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #2d2f2f;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.custodian-select-sheet__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.custodian-select-sheet__item-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+  border-radius: 999px;
+}
+
+.custodian-select-sheet__item-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.custodian-select-sheet__item-name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custodian-select-sheet__item-current {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custodian-select-sheet__item-current[hidden] {
+  display: none;
+}
+
+.custodian-select-sheet__item-radio {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+  margin-left: auto;
+}
+
+.custodian-select-sheet__divider {
+  height: 1px;
+  width: 100%;
+  background: #3c4248;
+  flex-shrink: 0;
+}
+
+.custodian-select-sheet__cancel {
+  background: #2d2f2f;
+}
+
 .limits-panel__section-label {
   font-size: 12px;
   font-weight: 600;

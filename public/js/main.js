@@ -7072,6 +7072,121 @@
     };
   };
 
+  const CUSTODIANS = {
+    kgi: {
+      key: "kgi",
+      selectorName: "KGI bank",
+      listName: "KGI Bank",
+      icon: "assets/icon_custodian_kgi.svg",
+      summary:
+        "Your TWD will be held in trust at KGI Bank, our custodian partner. You don\u2019t need a KGI account.",
+      details: {
+        bankName: "KGI Bank",
+        bankCountry: "Taiwan",
+        accountName: "凱基受託鏈科信託財產專戶",
+        depositSingle: "1,500,000 TWD",
+        depositDaily: "2,000,000 TWD",
+        depositAnnually: "3,000,000 TWD",
+        depositFee: "Free",
+        withdrawSingle: "1,000,000 TWD",
+        withdrawDaily: "2,000,000 TWD",
+        withdrawMonthly: "10,000,000 TWD",
+        withdrawAnnually: "60,000,000 TWD",
+        withdrawFee: "15 TWD",
+      },
+    },
+    fareastern: {
+      key: "fareastern",
+      selectorName: "Far Eastern Bank",
+      listName: "Far Eastern Bank",
+      icon: "assets/icon_custodian_fareastern.svg",
+      summary:
+        "Your TWD will be held in trust at Far Eastern Bank, our custodian partner. You don\u2019t need a Far Eastern account.",
+      details: {
+        bankName: "Far Eastern Bank",
+        bankCountry: "Taiwan",
+        accountName: "遠東受託鏈科信託財產專戶",
+        depositSingle: "1,500,000 TWD",
+        depositDaily: "2,000,000 TWD",
+        depositAnnually: "3,000,000 TWD",
+        depositFee: "Free",
+        withdrawSingle: "1,000,000 TWD",
+        withdrawDaily: "2,000,000 TWD",
+        withdrawMonthly: "10,000,000 TWD",
+        withdrawAnnually: "60,000,000 TWD",
+        withdrawFee: "15 TWD",
+      },
+    },
+  };
+
+  const initCustodianSelectPanel = ({ getState, setPreviewKey, applyPreview }) => {
+    const sheet = document.querySelector("[data-custodian-select-panel]");
+    if (!sheet) return { open: () => {}, close: () => {} };
+
+    const optionButtons = Array.from(
+      sheet.querySelectorAll("[data-custodian-select-option]"),
+    );
+    const currentLabels = sheet.querySelectorAll(
+      "[data-custodian-select-current]",
+    );
+
+    const syncList = () => {
+      const { previewKey, persistedKey } = getState();
+      optionButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-custodian-select-option");
+        const isSelected = key === previewKey;
+        btn.classList.toggle("is-selected", isSelected);
+        btn.setAttribute("aria-pressed", isSelected ? "true" : "false");
+        const radio = btn.querySelector(".custodian-select-sheet__item-radio");
+        if (radio) {
+          radio.src = isSelected
+            ? "assets/icon_radio_on.svg"
+            : "assets/icon_radio_off.svg";
+        }
+      });
+      currentLabels.forEach((label) => {
+        const key = label.getAttribute("data-custodian-select-current");
+        label.hidden = key !== persistedKey;
+      });
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        syncList();
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+      } else {
+        const sheetPanel = sheet.querySelector(".currency-sheet__panel");
+        sheet.classList.remove("is-open");
+        const onEnd = () => {
+          if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+          sheetPanel?.removeEventListener("transitionend", onEnd);
+        };
+        sheetPanel?.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 300);
+      }
+    };
+
+    sheet.querySelectorAll("[data-custodian-select-close]").forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    optionButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-custodian-select-option");
+        if (!CUSTODIANS[key]) return;
+        setPreviewKey(key);
+        applyPreview();
+        setOpen(false);
+      });
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+      syncList,
+    };
+  };
+
   const initCustodianPanel = ({ showSnackbar, onKeep }) => {
     const panel = document.querySelector("[data-custodian-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
@@ -7079,21 +7194,66 @@
     const keepBtn = panel.querySelector("[data-custodian-keep]");
     const selectorBtn = panel.querySelector("[data-custodian-selector]");
     const learnMoreBtn = panel.querySelector("[data-custodian-learn-more]");
-
-    const selected = {
-      key: "kgi",
-      shortName: "KGI bank",
-      summary:
-        "Your TWD will be held in trust at KGI Bank, our custodian partner. You don\u2019t need a KGI account.",
+    const selectorIconEl = panel.querySelector("[data-custodian-selector-icon]");
+    const selectorNameEl = panel.querySelector("[data-custodian-selector-name]");
+    const detailEls = {
+      bankName: panel.querySelector("[data-custodian-bank-name]"),
+      bankCountry: panel.querySelector("[data-custodian-bank-country]"),
+      accountName: panel.querySelector("[data-custodian-account-name]"),
+      depositSingle: panel.querySelector("[data-custodian-deposit-single]"),
+      depositDaily: panel.querySelector("[data-custodian-deposit-daily]"),
+      depositAnnually: panel.querySelector("[data-custodian-deposit-annually]"),
+      depositFee: panel.querySelector("[data-custodian-deposit-fee]"),
+      withdrawSingle: panel.querySelector("[data-custodian-withdraw-single]"),
+      withdrawDaily: panel.querySelector("[data-custodian-withdraw-daily]"),
+      withdrawMonthly: panel.querySelector("[data-custodian-withdraw-monthly]"),
+      withdrawAnnually: panel.querySelector("[data-custodian-withdraw-annually]"),
+      withdrawFee: panel.querySelector("[data-custodian-withdraw-fee]"),
     };
+
+    const state = {
+      persistedKey: "kgi",
+      previewKey: "kgi",
+    };
+
+    const getState = () => state;
+    const setPreviewKey = (key) => {
+      if (CUSTODIANS[key]) state.previewKey = key;
+    };
+
+    const applyPreview = () => {
+      const custodian = CUSTODIANS[state.previewKey] || CUSTODIANS.kgi;
+      if (selectorIconEl) selectorIconEl.src = custodian.icon;
+      if (selectorNameEl) selectorNameEl.textContent = custodian.selectorName;
+      Object.entries(custodian.details).forEach(([field, value]) => {
+        if (detailEls[field]) detailEls[field].textContent = value;
+      });
+      if (keepBtn) {
+        const hasChanged = state.previewKey !== state.persistedKey;
+        keepBtn.textContent = hasChanged
+          ? `Use ${custodian.selectorName} as custodian`
+          : `Keep ${custodian.selectorName} as custodian`;
+        keepBtn.classList.toggle("custodian-panel__keep--primary", hasChanged);
+      }
+      selectPanelApi.syncList?.();
+    };
+
+    const selectPanelApi = initCustodianSelectPanel({
+      getState,
+      setPreviewKey,
+      applyPreview,
+    });
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
+        state.previewKey = state.persistedKey;
+        applyPreview();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".custodian-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         requestAnimationFrame(() => panel.classList.add("is-open"));
       } else {
+        selectPanelApi.close();
         panel.classList.remove("is-open");
         const onEnd = () => {
           if (!panel.classList.contains("is-open")) panel.hidden = true;
@@ -7108,16 +7268,21 @@
       btn.addEventListener("click", () => setOpen(false));
     });
     keepBtn?.addEventListener("click", () => {
-      onKeep?.(selected);
+      const custodian = CUSTODIANS[state.previewKey] || CUSTODIANS.kgi;
+      state.persistedKey = state.previewKey;
+      applyPreview();
+      onKeep?.({
+        shortName: custodian.selectorName,
+        summary: custodian.summary,
+      });
       setOpen(false);
     });
-    // Custodian selector bottom sheet to be built later.
-    selectorBtn?.addEventListener("click", () =>
-      showSnackbar("Not in prototype"),
-    );
+    selectorBtn?.addEventListener("click", () => selectPanelApi.open());
     learnMoreBtn?.addEventListener("click", () =>
       showSnackbar("Not in prototype"),
     );
+
+    applyPreview();
 
     return {
       open: () => setOpen(true),

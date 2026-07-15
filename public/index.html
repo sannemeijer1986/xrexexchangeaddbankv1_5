@@ -3854,6 +3854,47 @@
             </div>
         </section>
 
+        <div
+            class="currency-sheet custodian-select-sheet"
+            data-custodian-select-panel
+            hidden
+            aria-modal="true"
+            role="dialog"
+            aria-label="Select TWD custodian"
+        >
+            <button class="currency-sheet__backdrop" type="button" data-custodian-select-close aria-label="Close"></button>
+            <div class="currency-sheet__panel custodian-select-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body custodian-select-sheet__body">
+                    <h2 class="currency-sheet__title custodian-select-sheet__title">Select TWD custodian</h2>
+                    <div class="custodian-select-sheet__list">
+                        <button class="custodian-select-sheet__item is-selected" type="button" data-custodian-select-option="kgi" aria-pressed="true">
+                            <img class="custodian-select-sheet__item-icon" src="assets/icon_custodian_kgi.svg" alt="" width="32" height="32" />
+                            <span class="custodian-select-sheet__item-copy">
+                                <span class="custodian-select-sheet__item-name">KGI Bank</span>
+                                <span class="custodian-select-sheet__item-current" data-custodian-select-current="kgi">Currently active</span>
+                            </span>
+                            <img class="custodian-select-sheet__item-radio" src="assets/icon_radio_on.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                        <div class="custodian-select-sheet__divider" aria-hidden="true"></div>
+                        <button class="custodian-select-sheet__item" type="button" data-custodian-select-option="fareastern" aria-pressed="false">
+                            <img class="custodian-select-sheet__item-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="32" height="32" />
+                            <span class="custodian-select-sheet__item-copy">
+                                <span class="custodian-select-sheet__item-name">Far Eastern Bank</span>
+                                <span class="custodian-select-sheet__item-current" data-custodian-select-current="fareastern" hidden>Currently active</span>
+                            </span>
+                            <img class="custodian-select-sheet__item-radio" src="assets/icon_radio_off.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+                <div class="currency-sheet__footer">
+                    <button class="currency-sheet__cancel custodian-select-sheet__cancel" type="button" data-custodian-select-close>Cancel</button>
+                </div>
+            </div>
+        </div>
+
         <section class="settings-page" data-settings-page hidden aria-label="Settings">
             <header class="settings-page__header">
                 <div class="settings-page__header-left">
