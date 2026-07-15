@@ -6916,11 +6916,12 @@
   const initBankAccountsPanel = () => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
     const container = document.querySelector(".phone-container");
-    if (!panel) return;
+    if (!panel) return { showSnackbar: () => {}, setOnLinkTwd: () => {} };
     const openButtons = document.querySelectorAll("[data-bank-accounts-open]");
     const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
     const linkButtons = panel.querySelectorAll("[data-bank-accounts-link]");
     let snackbarTimeout = null;
+    let onLinkTwd = () => {};
 
     const showSnackbar = (message) => {
       const snackbar = container?.querySelector("[data-snackbar]");
@@ -7000,9 +7001,72 @@
       button.addEventListener("click", () => setOpen(false));
     });
     linkButtons.forEach((button) => {
-      button.addEventListener("click", () => showSnackbar("Not in prototype"));
+      button.addEventListener("click", () => {
+        if (button.dataset.bankAccountsLink === "twd") {
+          onLinkTwd();
+        } else {
+          showSnackbar("Not in prototype");
+        }
+      });
     });
+
+    return {
+      showSnackbar,
+      setOnLinkTwd: (fn) => {
+        onLinkTwd = typeof fn === "function" ? fn : () => {};
+      },
+    };
   };
+
+  const initLinkTwdPanel = (bankAccountsApi) => {
+    const panel = document.querySelector("[data-link-twd-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const closeButtons = panel.querySelectorAll("[data-link-twd-close]");
+    const compareBtn = panel.querySelector("[data-link-twd-compare]");
+    const chooseBankBtn = panel.querySelector("[data-link-twd-choose-bank]");
+    const showSnackbar =
+      bankAccountsApi?.showSnackbar ||
+      (() => {
+        /* noop */
+      });
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".link-twd-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", () => setOpen(false));
+    });
+    compareBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
+    chooseBankBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
+  };
+
+  const bankAccountsApi = initBankAccountsPanel();
+  const linkTwdApi = initLinkTwdPanel(bankAccountsApi);
+  bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
 
   const initSettingsPage = () => {
     const page = document.querySelector("[data-settings-page]");
@@ -14118,7 +14182,6 @@
 
   initChecklistPanel();
   initLimitsPanel();
-  initBankAccountsPanel();
   initSettingsPage();
   initSupportGuidePage();
   initCommunityPage();

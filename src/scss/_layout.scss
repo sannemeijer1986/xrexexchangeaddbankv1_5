@@ -1950,6 +1950,229 @@ html[data-active-tab="wallet"] {
   background: #2d2f2f;
 }
 
+// Figma 7621:1541 — Link TWD account (slides over bank accounts)
+.link-twd-panel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: #0d0e0f;
+  z-index: 2200;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+
+.link-twd-panel.is-open {
+  transform: translateX(0);
+}
+
+.link-twd-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 16px 16px 16px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.link-twd-panel__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  flex: 1;
+  text-align: left;
+}
+
+.link-twd-panel__icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.link-twd-panel__icon-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+.link-twd-panel__divider {
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.link-twd-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 16px 16px;
+}
+
+.link-twd-panel__intro {
+  margin: 0 0 24px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.375;
+  color: #ffffff;
+}
+
+.link-twd-panel__steps-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: #1b1d1d;
+  margin-bottom: 24px;
+}
+
+.link-twd-panel__step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.link-twd-panel__step-badge {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(143, 184, 255, 0.12);
+  color: #8fb8ff;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-twd-panel__step-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.link-twd-panel__step-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.link-twd-panel p.link-twd-panel__step-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.43;
+  color: #9b9c9c;
+}
+
+.link-twd-panel__step-divider {
+  height: 1px;
+  margin: 0 16px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.link-twd-panel__custodian-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #151718;
+}
+
+.link-twd-panel__custodian-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.link-twd-panel__custodian-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.link-twd-panel__custodian-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.link-twd-panel__custodian-name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #5ac47d;
+}
+
+.link-twd-panel__custodian-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-twd-panel__custodian-icon img {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.link-twd-panel p.link-twd-panel__custodian-desc {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #9b9c9c;
+}
+
+.link-twd-panel__custodian-link {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #3f78ff;
+  cursor: pointer;
+}
+
+.link-twd-panel__footer {
+  flex-shrink: 0;
+  padding: 16px;
+}
+
+.link-twd-panel__btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 16px;
+  border: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.link-twd-panel__btn--primary {
+  background: #275cfd;
+}
+
 .limits-panel__section-label {
   font-size: 12px;
   font-weight: 600;
