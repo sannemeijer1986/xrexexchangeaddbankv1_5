@@ -2258,7 +2258,8 @@ html[data-active-tab="wallet"] {
   gap: 4px;
 }
 
-.custodian-panel__intro {
+// Beat `.phone-container p` margin-bottom from _base.scss
+.phone-container p.custodian-panel__intro {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
