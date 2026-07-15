@@ -7320,14 +7320,42 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                     </select>
                 </div>
             </div>
-            <div class="build-badge__group" data-state-group="visMode">
-                <div class="build-badge__group-label">State</div>
+            <div class="build-badge__section-row">
+                <div class="build-badge__section-title">TWD custodian</div>
+                <div class="build-badge__checkbox-group">
+                    <select class="build-badge__select" data-prototype-twd-custodian aria-label="TWD custodian">
+                        <option value="kgi-active" selected>KGI active</option>
+                        <option value="feb-active">FEB active</option>
+                    </select>
+                </div>
+            </div>
+            <div class="build-badge__section-row">
+                <div class="build-badge__section-title">USD custodian</div>
+                <div class="build-badge__checkbox-group">
+                    <select class="build-badge__select" data-prototype-usd-custodian aria-label="USD custodian">
+                        <option value="kgi-active" selected>KGI active</option>
+                    </select>
+                </div>
+            </div>
+            <div class="build-badge__group" data-state-group="twdBankAccount">
+                <div class="build-badge__group-label">TWD state</div>
                 <div class="build-badge__state">
                     <button type="button" class="build-badge__state-btn" data-state-action="down"
-                        aria-label="Previous state">−</button>
+                        aria-label="Previous TWD state">−</button>
                     <span class="build-badge__state-value" data-state-value></span>
                     <button type="button" class="build-badge__state-btn" data-state-action="up"
-                        aria-label="Next state">+</button>
+                        aria-label="Next TWD state">+</button>
+                    <span class="build-badge__state-name" data-state-name></span>
+                </div>
+            </div>
+            <div class="build-badge__group" data-state-group="usdBankAccount">
+                <div class="build-badge__group-label">USD state</div>
+                <div class="build-badge__state">
+                    <button type="button" class="build-badge__state-btn" data-state-action="down"
+                        aria-label="Previous USD state">−</button>
+                    <span class="build-badge__state-value" data-state-value></span>
+                    <button type="button" class="build-badge__state-btn" data-state-action="up"
+                        aria-label="Next USD state">+</button>
                     <span class="build-badge__state-name" data-state-name></span>
                 </div>
             </div>

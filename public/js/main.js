@@ -45,7 +45,53 @@
         3: "Staking success",
       },
     },
+    twdBankAccount: {
+      storageKey: "xrexexchange.twdBankAccountState.v1",
+      min: 1,
+      max: 5,
+      labels: {
+        1: "No TWD BA",
+        2: "TWD BA submitted",
+        3: "TWD BA approved",
+        4: "TWD BA issues",
+        5: "TWD BA rejected",
+      },
+    },
+    usdBankAccount: {
+      storageKey: "xrexexchange.usdBankAccountState.v1",
+      min: 1,
+      max: 5,
+      labels: {
+        1: "No USD BA",
+        2: "USD BA submitted",
+        3: "USD BA approved",
+        4: "USD BA issues",
+        5: "USD BA rejected",
+      },
+    },
   };
+
+  const PROTOTYPE_CUSTODIAN_CONFIGS = {
+    twd: {
+      storageKey: "xrexexchange.prototypeTwdCustodian.v1",
+      // Keep select attr distinct from the <html data-*> mirror, or
+      // querySelector('[data-prototype-twd-custodian]') matches <html> first.
+      selectAttr: "data-prototype-twd-custodian",
+      datasetKey: "prototypeTwdCustodianActive",
+      default: "kgi-active",
+      allowed: ["kgi-active", "feb-active"],
+    },
+    usd: {
+      storageKey: "xrexexchange.prototypeUsdCustodian.v1",
+      selectAttr: "data-prototype-usd-custodian",
+      datasetKey: "prototypeUsdCustodianActive",
+      default: "kgi-active",
+      allowed: ["kgi-active"],
+    },
+  };
+
+  const queryPrototypeCustodianSelect = (cfg) =>
+    document.querySelector(`select[${cfg.selectAttr}]`);
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const states = {};
@@ -63,6 +109,26 @@
     document.documentElement.dataset.prototypeFunding = String(
       states.funding ?? 1,
     );
+  };
+
+  const syncPrototypeBankAccountStatesToDocument = () => {
+    document.documentElement.dataset.prototypeTwdBankAccount = String(
+      states.twdBankAccount ?? 1,
+    );
+    document.documentElement.dataset.prototypeUsdBankAccount = String(
+      states.usdBankAccount ?? 1,
+    );
+  };
+
+  const syncPrototypeCustodiansToDocument = () => {
+    Object.values(PROTOTYPE_CUSTODIAN_CONFIGS).forEach((cfg) => {
+      const sel = queryPrototypeCustodianSelect(cfg);
+      const raw = String(sel?.value || cfg.default);
+      const value = cfg.allowed.includes(raw) ? raw : cfg.default;
+      document.documentElement.dataset[cfg.datasetKey] = value;
+      // Remove any legacy mirror attr that collided with the <select> attribute.
+      document.documentElement.removeAttribute(cfg.selectAttr);
+    });
   };
 
   /** Set by initMyPlansPanel — refreshes plan cards when Flow progress changes */
@@ -444,6 +510,9 @@
       syncMyPlansFlowUi();
       applyFinanceSummaryMeta();
     }
+    if (group === "twdBankAccount" || group === "usdBankAccount") {
+      syncPrototypeBankAccountStatesToDocument();
+    }
     return clamped;
   };
 
@@ -468,6 +537,7 @@
     });
     syncPrototypeFlowToDocument();
     syncPrototypeFundingToDocument();
+    syncPrototypeBankAccountStatesToDocument();
     syncFinanceSummaryVisibility();
     syncFinanceIntroState();
     syncEarnPortfolioVisMode();
@@ -7402,6 +7472,10 @@
     },
   };
 
+  // Maps between custodian data keys and the prototype-control select values.
+  const CUSTODIAN_KEY_TO_PROTO = { kgi: "kgi-active", fareastern: "feb-active" };
+  const PROTO_TO_CUSTODIAN_KEY = { "kgi-active": "kgi", "feb-active": "fareastern" };
+
   const initCustodianSelectPanel = ({ getState, setPreviewKey, applyPreview }) => {
     const sheet = document.querySelector("[data-custodian-select-panel]");
     if (!sheet) return { open: () => {}, close: () => {} };
@@ -7562,12 +7636,35 @@
         shortName: custodian.selectorName,
         summary: custodian.summary,
       });
+      // Keep the prototype-controls TWD custodian select in sync.
+      setPrototypeCustodian(
+        "twd",
+        CUSTODIAN_KEY_TO_PROTO[state.persistedKey] || "kgi-active",
+      );
       setOpen(false);
     });
     selectorBtn?.addEventListener("click", () => selectPanelApi.open());
     learnMoreBtn?.addEventListener("click", () =>
       showSnackbar("Not in prototype"),
     );
+
+    // Prototype controls → custodian flow (select change, reset, initial load).
+    const syncFromPrototype = () => {
+      const proto =
+        document.documentElement.dataset.prototypeTwdCustodianActive ||
+        "kgi-active";
+      const key = PROTO_TO_CUSTODIAN_KEY[proto] || "kgi";
+      if (state.persistedKey === key) return;
+      state.persistedKey = key;
+      state.previewKey = key;
+      applyPreview();
+      const custodian = CUSTODIANS[key];
+      onKeep?.({
+        shortName: custodian.selectorName,
+        summary: custodian.summary,
+      });
+    };
+    document.addEventListener("prototype-twd-custodian-change", syncFromPrototype);
 
     applyPreview();
 
@@ -8563,6 +8660,70 @@
       });
   };
 
+  const getPrototypeCustodian = (key) => {
+    const cfg = PROTOTYPE_CUSTODIAN_CONFIGS[key];
+    if (!cfg) return "";
+    const sel = queryPrototypeCustodianSelect(cfg);
+    const raw = String(sel?.value || cfg.default);
+    return cfg.allowed.includes(raw) ? raw : cfg.default;
+  };
+
+  const notifyPrototypeCustodianChange = (key) => {
+    if (key !== "twd") return;
+    document.dispatchEvent(new CustomEvent("prototype-twd-custodian-change"));
+  };
+
+  const setPrototypeCustodian = (key, next) => {
+    const cfg = PROTOTYPE_CUSTODIAN_CONFIGS[key];
+    if (!cfg) return;
+    const sel = queryPrototypeCustodianSelect(cfg);
+    if (!sel) return;
+    const value = cfg.allowed.includes(String(next)) ? String(next) : cfg.default;
+    sel.value = value;
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(cfg.storageKey, value);
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    syncPrototypeCustodiansToDocument();
+    notifyPrototypeCustodianChange(key);
+  };
+
+  const initPrototypeCustodianControls = () => {
+    Object.entries(PROTOTYPE_CUSTODIAN_CONFIGS).forEach(([key, cfg]) => {
+      const sel = queryPrototypeCustodianSelect(cfg);
+      if (!sel) return;
+      let value = cfg.default;
+      try {
+        if (window.localStorage) {
+          value = window.localStorage.getItem(cfg.storageKey) || cfg.default;
+        }
+      } catch (_) {
+        // ignore storage errors
+      }
+      if (!cfg.allowed.includes(value)) value = cfg.default;
+      sel.value = value;
+      sel.addEventListener("change", () => {
+        const next = String(sel.value || cfg.default);
+        const safe = cfg.allowed.includes(next) ? next : cfg.default;
+        sel.value = safe;
+        try {
+          if (window.localStorage) {
+            window.localStorage.setItem(cfg.storageKey, safe);
+          }
+        } catch (_) {
+          // ignore storage errors
+        }
+        syncPrototypeCustodiansToDocument();
+        notifyPrototypeCustodianChange(key);
+      });
+    });
+    syncPrototypeCustodiansToDocument();
+    notifyPrototypeCustodianChange("twd");
+  };
+
   const initPrototypeReset = () => {
     const resetBtn = document.querySelector("[data-prototype-reset]");
     if (!resetBtn) return;
@@ -8570,6 +8731,8 @@
       Object.keys(STATE_CONFIGS).forEach((group) => {
         setState(group, STATE_CONFIGS[group].min, { force: true });
       });
+      setPrototypeCustodian("twd", PROTOTYPE_CUSTODIAN_CONFIGS.twd.default);
+      setPrototypeCustodian("usd", PROTOTYPE_CUSTODIAN_CONFIGS.usd.default);
       financeSummaryConfirmedNextBuy = "";
       financeSummaryConfirmedReserved = null;
       myPlansSubmittedPlan = null;
@@ -25203,6 +25366,7 @@
   };
 
   initPrototypeReset();
+  initPrototypeCustodianControls();
   syncPrototypeFinanceCurrencySelectorVisible();
 
   // Drag-to-scroll for spotlight crypto grid.
@@ -26135,6 +26299,10 @@
       set: (group, value) => setState(group, value),
       change: (group, delta) => changeState(group, delta),
       label: (group, value) => getLabel(group, value),
+      getTwdCustodian: () => getPrototypeCustodian("twd"),
+      setTwdCustodian: (value) => setPrototypeCustodian("twd", value),
+      getUsdCustodian: () => getPrototypeCustodian("usd"),
+      setUsdCustodian: (value) => setPrototypeCustodian("usd", value),
       setPrefundLog: (v) => setPrototypePrefundLog(v),
       getPrefundLog: () => getPrototypePrefundLog(),
     };
