@@ -3779,8 +3779,13 @@
                 <div class="custodian-panel__field">
                     <div class="custodian-panel__field-label">TWD custodian</div>
                     <button class="custodian-panel__selector" type="button" data-custodian-selector aria-label="Choose custodian">
-                        <img class="custodian-panel__selector-icon" data-custodian-selector-icon src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
-                        <span class="custodian-panel__selector-name" data-custodian-selector-name>KGI bank</span>
+                        <span class="custodian-panel__selector-icon-wrap" aria-hidden="true">
+                            <img class="custodian-panel__selector-icon" data-custodian-selector-icon src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                        </span>
+                        <span class="custodian-panel__selector-copy">
+                            <span class="custodian-panel__selector-name" data-custodian-selector-name>KGI bank</span>
+                            <span class="custodian-panel__selector-current" data-custodian-selector-current>Currently active</span>
+                        </span>
                         <img class="custodian-panel__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
                     </button>
                 </div>
@@ -3871,7 +3876,9 @@
                     <h2 class="currency-sheet__title custodian-select-sheet__title">TWD custodians</h2>
                     <div class="custodian-select-sheet__list">
                         <button class="custodian-select-sheet__item is-selected" type="button" data-custodian-select-option="kgi" aria-pressed="true">
-                            <img class="custodian-select-sheet__item-icon" src="assets/icon_custodian_kgi.svg" alt="" width="32" height="32" />
+                            <span class="custodian-select-sheet__item-icon-wrap" aria-hidden="true">
+                                <img class="custodian-select-sheet__item-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                            </span>
                             <span class="custodian-select-sheet__item-copy">
                                 <span class="custodian-select-sheet__item-name">KGI Bank</span>
                                 <span class="custodian-select-sheet__item-current" data-custodian-select-current="kgi">Currently active</span>
@@ -3880,7 +3887,9 @@
                         </button>
                         <div class="custodian-select-sheet__divider" aria-hidden="true"></div>
                         <button class="custodian-select-sheet__item" type="button" data-custodian-select-option="fareastern" aria-pressed="false">
-                            <img class="custodian-select-sheet__item-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="32" height="32" />
+                            <span class="custodian-select-sheet__item-icon-wrap" aria-hidden="true">
+                                <img class="custodian-select-sheet__item-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="20" height="20" />
+                            </span>
                             <span class="custodian-select-sheet__item-copy">
                                 <span class="custodian-select-sheet__item-name">Far Eastern Bank</span>
                                 <span class="custodian-select-sheet__item-current" data-custodian-select-current="fareastern" hidden>Currently active</span>

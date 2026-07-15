@@ -7196,6 +7196,9 @@
     const learnMoreBtn = panel.querySelector("[data-custodian-learn-more]");
     const selectorIconEl = panel.querySelector("[data-custodian-selector-icon]");
     const selectorNameEl = panel.querySelector("[data-custodian-selector-name]");
+    const selectorCurrentEl = panel.querySelector(
+      "[data-custodian-selector-current]",
+    );
     const detailEls = {
       bankName: panel.querySelector("[data-custodian-bank-name]"),
       bankCountry: panel.querySelector("[data-custodian-bank-country]"),
@@ -7223,13 +7226,14 @@
 
     const applyPreview = () => {
       const custodian = CUSTODIANS[state.previewKey] || CUSTODIANS.kgi;
+      const hasChanged = state.previewKey !== state.persistedKey;
       if (selectorIconEl) selectorIconEl.src = custodian.icon;
       if (selectorNameEl) selectorNameEl.textContent = custodian.selectorName;
+      if (selectorCurrentEl) selectorCurrentEl.hidden = hasChanged;
       Object.entries(custodian.details).forEach(([field, value]) => {
         if (detailEls[field]) detailEls[field].textContent = value;
       });
       if (keepBtn) {
-        const hasChanged = state.previewKey !== state.persistedKey;
         keepBtn.textContent = hasChanged
           ? `Use ${custodian.selectorName} as custodian`
           : `Keep ${custodian.selectorName} as custodian`;
