@@ -2006,7 +2006,7 @@ html[data-active-tab="wallet"] {
 .link-twd-panel__divider {
   height: 1px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.08);
+  background: #ffffff14;
   flex-shrink: 0;
 }
 
@@ -2021,7 +2021,7 @@ html[data-active-tab="wallet"] {
   margin: 0 0 24px;
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.375;
+  line-height: normal;
   color: #ffffff;
 }
 
@@ -2045,10 +2045,11 @@ html[data-active-tab="wallet"] {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(143, 184, 255, 0.12);
+  background: #081b68;
   color: #8fb8ff;
   font-size: 12px;
   font-weight: 600;
+  line-height: normal;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2065,7 +2066,7 @@ html[data-active-tab="wallet"] {
 .link-twd-panel__step-title {
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: normal;
   color: #ffffff;
 }
 
@@ -2073,14 +2074,14 @@ html[data-active-tab="wallet"] {
   margin: 0;
   font-size: 14px;
   font-weight: 400;
-  line-height: 1.43;
+  line-height: 20px;
   color: #9b9c9c;
 }
 
 .link-twd-panel__step-divider {
   height: 1px;
   margin: 0 16px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #ffffff14;
 }
 
 .link-twd-panel__custodian-card {
@@ -2106,14 +2107,14 @@ html[data-active-tab="wallet"] {
 .link-twd-panel__custodian-label {
   font-size: 14px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: normal;
   color: #ffffff;
 }
 
 .link-twd-panel__custodian-name {
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: normal;
   color: #5ac47d;
 }
 
@@ -2121,6 +2122,8 @@ html[data-active-tab="wallet"] {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
+  border-radius: 50%;
+  background: #2d2f2f;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2136,7 +2139,7 @@ html[data-active-tab="wallet"] {
   margin: 0;
   font-size: 12px;
   font-weight: 400;
-  line-height: 1.35;
+  line-height: normal;
   color: #9b9c9c;
 }
 
@@ -2148,7 +2151,7 @@ html[data-active-tab="wallet"] {
   background: transparent;
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: normal;
   color: #3f78ff;
   cursor: pointer;
 }
@@ -2165,6 +2168,7 @@ html[data-active-tab="wallet"] {
   border: 0;
   font-size: 16px;
   font-weight: 600;
+  line-height: normal;
   color: #ffffff;
   cursor: pointer;
 }
