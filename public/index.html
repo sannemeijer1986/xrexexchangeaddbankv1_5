@@ -3757,48 +3757,102 @@
             </div>
         </section>
 
-        <div class="currency-sheet custodian-sheet" data-custodian-sheet hidden aria-modal="true" role="dialog" aria-label="Choose TWD custodian">
-            <button class="currency-sheet__backdrop" type="button" data-custodian-sheet-close aria-label="Close"></button>
-            <div class="currency-sheet__panel custodian-sheet__panel">
-                <div class="custodian-sheet__header">
-                    <h2 class="custodian-sheet__title">Your TWD custodian (choose one)</h2>
+        <section class="custodian-panel" data-custodian-panel hidden aria-label="TWD custodians">
+            <div class="custodian-panel__header">
+                <button class="custodian-panel__icon-btn" type="button" data-custodian-panel-close aria-label="Close">
+                    <img src="assets/icon_close.svg" alt="" />
+                </button>
+                <div class="custodian-panel__title">TWD custodians</div>
+                <button class="custodian-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </div>
+            <div class="custodian-panel__body">
+                <div class="custodian-panel__intro-block">
+                    <p class="custodian-panel__intro">
+                        Custodians safeguards your TWD on XREX.
+                        <span class="custodian-panel__intro-note">Note: It&rsquo;s not your bank account.</span>
+                    </p>
+                    <button class="custodian-panel__learn-more" type="button" data-custodian-learn-more>Learn more about custodians</button>
                 </div>
-                <div class="custodian-sheet__body">
-                    <p class="custodian-sheet__intro">Your TWD is held in trust at the custodian you pick. You don&rsquo;t need an account there to use XREX.</p>
-                    <div class="custodian-sheet__faq">
-                        <button class="custodian-sheet__faq-link" type="button" data-custodian-faq="what">What is a custodian?</button>
-                        <button class="custodian-sheet__faq-link" type="button" data-custodian-faq="why">Why do I need one?</button>
-                        <button class="custodian-sheet__faq-link" type="button" data-custodian-faq="account">Do I need a custodian account?</button>
-                    </div>
-                    <div class="custodian-sheet__list" role="radiogroup" aria-label="TWD custodian options">
-                        <button class="custodian-sheet__card is-selected" type="button" data-custodian-option="kgi" aria-pressed="true">
-                            <div class="custodian-sheet__card-copy">
-                                <span class="custodian-sheet__card-name">KGI</span>
-                                <span class="custodian-sheet__card-desc">Your Taiwan dollar will be held at KGI Bank, licensed in Taiwan. No account at KGI is needed.</span>
-                            </div>
-                            <img class="custodian-sheet__radio" src="assets/icon_radio_on.svg" alt="" width="24" height="24" aria-hidden="true" />
-                        </button>
-                        <button class="custodian-sheet__card" type="button" data-custodian-option="cathay" aria-pressed="false">
-                            <div class="custodian-sheet__card-copy">
-                                <span class="custodian-sheet__card-name">Cathay United</span>
-                                <span class="custodian-sheet__card-desc">Your Taiwan dollar will be held at Cathay United Bank, licensed in Taiwan. No account at Cathay is needed.</span>
-                            </div>
-                            <img class="custodian-sheet__radio" src="assets/icon_radio_off.svg" alt="" width="24" height="24" aria-hidden="true" />
-                        </button>
-                        <button class="custodian-sheet__card" type="button" data-custodian-option="ctbc" aria-pressed="false">
-                            <div class="custodian-sheet__card-copy">
-                                <span class="custodian-sheet__card-name">CTBC Bank</span>
-                                <span class="custodian-sheet__card-desc">Your Taiwan dollar will be held at CTBC Bank, licensed in Taiwan. No account at CTBC is needed.</span>
-                            </div>
-                            <img class="custodian-sheet__radio" src="assets/icon_radio_off.svg" alt="" width="24" height="24" aria-hidden="true" />
-                        </button>
-                    </div>
+
+                <div class="custodian-panel__field">
+                    <div class="custodian-panel__field-label">Your TWD custodian</div>
+                    <button class="custodian-panel__selector" type="button" data-custodian-selector aria-label="Choose custodian">
+                        <img class="custodian-panel__selector-icon" data-custodian-selector-icon src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                        <span class="custodian-panel__selector-name" data-custodian-selector-name>KGI bank</span>
+                        <img class="custodian-panel__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
+                    </button>
                 </div>
-                <div class="custodian-sheet__footer">
-                    <button class="custodian-sheet__cancel" type="button" data-custodian-sheet-close>Cancel</button>
+
+                <div class="custodian-panel__field">
+                    <div class="custodian-panel__field-label">Details</div>
+                    <div class="custodian-panel__details-card">
+                        <div class="custodian-panel__details-block">
+                            <div class="custodian-panel__row">
+                                <span>Bank name</span>
+                                <strong data-custodian-bank-name>KGI Bank</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Bank country</span>
+                                <strong data-custodian-bank-country>Taiwan</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Account name</span>
+                                <strong data-custodian-account-name>凱基受託鏈科信託財產專戶</strong>
+                            </div>
+                        </div>
+                        <div class="custodian-panel__details-divider" aria-hidden="true"></div>
+                        <div class="custodian-panel__details-block">
+                            <div class="custodian-panel__details-heading">Deposit</div>
+                            <div class="custodian-panel__row">
+                                <span>Single</span>
+                                <strong data-custodian-deposit-single>1,500,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Daily</span>
+                                <strong data-custodian-deposit-daily>2,000,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Annually</span>
+                                <strong data-custodian-deposit-annually>3,000,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Fee</span>
+                                <strong data-custodian-deposit-fee>Free</strong>
+                            </div>
+                        </div>
+                        <div class="custodian-panel__details-divider" aria-hidden="true"></div>
+                        <div class="custodian-panel__details-block">
+                            <div class="custodian-panel__details-heading">Withdraw</div>
+                            <div class="custodian-panel__row">
+                                <span>Single</span>
+                                <strong data-custodian-withdraw-single>1,000,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Daily</span>
+                                <strong data-custodian-withdraw-daily>2,000,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Monthly</span>
+                                <strong data-custodian-withdraw-monthly>10,000,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Annually</span>
+                                <strong data-custodian-withdraw-annually>60,000,000 TWD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Fee</span>
+                                <strong data-custodian-withdraw-fee>15 TWD</strong>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="custodian-panel__footer">
+                <button class="custodian-panel__keep" type="button" data-custodian-keep>Keep KGI bank as custodian</button>
+            </div>
+        </section>
 
         <section class="settings-page" data-settings-page hidden aria-label="Settings">
             <header class="settings-page__header">

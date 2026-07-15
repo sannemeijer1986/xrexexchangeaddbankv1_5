@@ -7057,14 +7057,14 @@
       showSnackbar("Not in prototype"),
     );
 
-    const custodianSheetApi = initCustodianSheet({
+    const custodianPanelApi = initCustodianPanel({
       showSnackbar,
-      onSelect: ({ shortName, summary }) => {
+      onKeep: ({ shortName, summary }) => {
         if (custodianNameEl) custodianNameEl.textContent = shortName;
         if (custodianDescEl) custodianDescEl.textContent = summary;
       },
     });
-    compareBtn?.addEventListener("click", () => custodianSheetApi.open());
+    compareBtn?.addEventListener("click", () => custodianPanelApi.open());
 
     return {
       open: () => setOpen(true),
@@ -7072,82 +7072,57 @@
     };
   };
 
-  const initCustodianSheet = ({ showSnackbar, onSelect }) => {
-    const sheet = document.querySelector("[data-custodian-sheet]");
-    if (!sheet) return { open: () => {}, close: () => {} };
+  const initCustodianPanel = ({ showSnackbar, onKeep }) => {
+    const panel = document.querySelector("[data-custodian-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
 
-    const panel = sheet.querySelector(".currency-sheet__panel");
-    const cards = Array.from(
-      sheet.querySelectorAll("[data-custodian-option]"),
+    const keepBtn = panel.querySelector("[data-custodian-keep]");
+    const selectorBtn = panel.querySelector("[data-custodian-selector]");
+    const learnMoreBtn = panel.querySelector("[data-custodian-learn-more]");
+
+    const selected = {
+      key: "kgi",
+      shortName: "KGI bank",
+      summary:
+        "Your TWD will be held in trust at KGI Bank, our custodian partner. You don\u2019t need a KGI account.",
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".custodian-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    panel.querySelectorAll("[data-custodian-panel-close]").forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    keepBtn?.addEventListener("click", () => {
+      onKeep?.(selected);
+      setOpen(false);
+    });
+    // Custodian selector bottom sheet to be built later.
+    selectorBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
     );
-    const faqButtons = sheet.querySelectorAll("[data-custodian-faq]");
-    let selectedValue = "kgi";
+    learnMoreBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
 
-    const CUSTODIANS = {
-      kgi: {
-        shortName: "KGI bank",
-        summary:
-          "Your TWD will be held in trust at KGI Bank, our custodian partner. You don\u2019t need a KGI account.",
-      },
-      cathay: {
-        shortName: "Cathay United",
-        summary:
-          "Your TWD will be held in trust at Cathay United Bank, our custodian partner. You don\u2019t need a Cathay account.",
-      },
-      ctbc: {
-        shortName: "CTBC Bank",
-        summary:
-          "Your TWD will be held in trust at CTBC Bank, our custodian partner. You don\u2019t need a CTBC account.",
-      },
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
     };
-
-    const setSelected = (value) => {
-      selectedValue = value;
-      cards.forEach((card) => {
-        const isSelected =
-          card.getAttribute("data-custodian-option") === value;
-        card.classList.toggle("is-selected", isSelected);
-        card.setAttribute("aria-pressed", isSelected ? "true" : "false");
-        const radio = card.querySelector(".custodian-sheet__radio");
-        if (radio) {
-          radio.src = isSelected
-            ? "assets/icon_radio_on.svg"
-            : "assets/icon_radio_off.svg";
-        }
-      });
-      onSelect?.(CUSTODIANS[value] || CUSTODIANS.kgi);
-    };
-
-    const open = () => {
-      setSelected(selectedValue);
-      sheet.hidden = false;
-      requestAnimationFrame(() => sheet.classList.add("is-open"));
-    };
-
-    const close = () => {
-      sheet.classList.remove("is-open");
-      const onEnd = () => {
-        if (!sheet.classList.contains("is-open")) sheet.hidden = true;
-        panel?.removeEventListener("transitionend", onEnd);
-        sheet.removeEventListener("transitionend", onEnd);
-      };
-      panel?.addEventListener("transitionend", onEnd);
-      setTimeout(onEnd, 290);
-    };
-
-    sheet.querySelectorAll("[data-custodian-sheet-close]").forEach((btn) => {
-      btn.addEventListener("click", close);
-    });
-    cards.forEach((card) => {
-      card.addEventListener("click", () => {
-        setSelected(card.getAttribute("data-custodian-option"));
-      });
-    });
-    faqButtons.forEach((btn) => {
-      btn.addEventListener("click", () => showSnackbar("Not in prototype"));
-    });
-
-    return { open, close };
   };
 
   const bankAccountsApi = initBankAccountsPanel();
