@@ -3728,7 +3728,7 @@
                             </div>
                         </div>
                         <button class="bank-accounts-panel__btn bank-accounts-panel__btn--secondary" type="button" data-bank-accounts-link="usd">
-                            Link USD account
+                            Link USD bank account
                         </button>
                     </div>
                     <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
@@ -3754,7 +3754,7 @@
             </div>
         </section>
 
-        <section class="link-twd-panel" data-link-twd-panel hidden aria-label="Link TWD account">
+        <section class="link-twd-panel" data-link-twd-panel hidden aria-label="Link TWD bank account">
             <div class="link-twd-panel__header">
                 <button class="link-twd-panel__icon-btn" type="button" data-link-twd-close aria-label="Back">
                     <img src="assets/icon_back.svg" alt="" />
@@ -3812,7 +3812,58 @@
                 </div>
             </div>
             <div class="link-twd-panel__footer">
-                <button class="link-twd-panel__btn link-twd-panel__btn--primary" type="button" data-link-twd-choose-bank>Understood, continue</button>
+                <button class="link-twd-panel__btn link-twd-panel__btn--secondary" type="button" data-link-twd-close>Back</button>
+                <button class="link-twd-panel__btn link-twd-panel__btn--primary" type="button" data-link-twd-choose-bank>Ok, continue</button>
+            </div>
+        </section>
+
+        <section class="link-usd-panel" data-link-usd-panel hidden aria-label="Link USD bank account">
+            <div class="link-twd-panel__header">
+                <button class="link-twd-panel__icon-btn" type="button" data-link-usd-close aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="link-twd-panel__title">Link USD bank account</div>
+                <button class="link-twd-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </div>
+            <div class="link-twd-panel__divider" aria-hidden="true"></div>
+            <div class="link-twd-panel__body">
+                <p class="link-twd-panel__intro">We currently only support KGI Bank accounts for USD: Use a KGI Bank account to deposit and withdraw USD.</p>
+                <div class="link-twd-panel__steps-card">
+                    <div class="link-twd-panel__step">
+                        <span class="link-twd-panel__step-badge" aria-hidden="true">1</span>
+                        <div class="link-twd-panel__step-copy">
+                            <div class="link-twd-panel__step-title">Provide your KGI bank details</div>
+                            <p class="link-twd-panel__step-desc">The account must be with KGI Bank and must be in your name: Same as your verified ID.</p>
+                        </div>
+                    </div>
+                    <div class="link-twd-panel__step-divider" aria-hidden="true"></div>
+                    <div class="link-twd-panel__step">
+                        <span class="link-twd-panel__step-badge" aria-hidden="true">2</span>
+                        <div class="link-twd-panel__step-copy">
+                            <div class="link-twd-panel__step-title">We verify it</div>
+                            <p class="link-twd-panel__step-desc">This takes 1-2 business days. We&rsquo;ll notify you when deposits are ready.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-twd-panel__custodian-card">
+                    <div class="link-twd-panel__custodian-head">
+                        <div class="link-twd-panel__custodian-copy">
+                            <div class="link-twd-panel__custodian-label">USD custodian</div>
+                            <div class="link-twd-panel__custodian-name" data-link-usd-custodian-name>KGI bank</div>
+                        </div>
+                        <span class="link-twd-panel__custodian-icon-wrap" aria-hidden="true">
+                            <img class="link-twd-panel__custodian-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                        </span>
+                    </div>
+                    <p class="link-twd-panel__custodian-desc">Your USD will be held in trust at KGI Bank, our custodian partner.</p>
+                    <button class="link-twd-panel__custodian-link" type="button" data-link-usd-custodian-details>View custodian details</button>
+                </div>
+            </div>
+            <div class="link-twd-panel__footer">
+                <button class="link-twd-panel__btn link-twd-panel__btn--secondary" type="button" data-link-usd-close>Back</button>
+                <button class="link-twd-panel__btn link-twd-panel__btn--primary" type="button" data-link-usd-continue>Ok, continue</button>
             </div>
         </section>
 

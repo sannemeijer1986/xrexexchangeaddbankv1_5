@@ -7056,12 +7056,13 @@
   const initBankAccountsPanel = () => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
     const container = document.querySelector(".phone-container");
-    if (!panel) return { showSnackbar: () => {}, setOnLinkTwd: () => {} };
+    if (!panel) return { showSnackbar: () => {}, setOnLinkTwd: () => {}, setOnLinkUsd: () => {} };
     const openButtons = document.querySelectorAll("[data-bank-accounts-open]");
     const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
     const linkButtons = panel.querySelectorAll("[data-bank-accounts-link]");
     let snackbarTimeout = null;
     let onLinkTwd = () => {};
+    let onLinkUsd = () => {};
 
     const showSnackbar = (message) => {
       const snackbar = container?.querySelector("[data-snackbar]");
@@ -7144,6 +7145,8 @@
       button.addEventListener("click", () => {
         if (button.dataset.bankAccountsLink === "twd") {
           onLinkTwd();
+        } else if (button.dataset.bankAccountsLink === "usd") {
+          onLinkUsd();
         } else {
           showSnackbar("Not in prototype");
         }
@@ -7163,6 +7166,9 @@
       showSnackbar,
       setOnLinkTwd: (fn) => {
         onLinkTwd = typeof fn === "function" ? fn : () => {};
+      },
+      setOnLinkUsd: (fn) => {
+        onLinkUsd = typeof fn === "function" ? fn : () => {};
       },
     };
   };
@@ -7505,6 +7511,68 @@
     };
   };
 
+  const initLinkUsdPanel = (bankAccountsApi) => {
+    const panel = document.querySelector("[data-link-usd-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const closeButtons = panel.querySelectorAll("[data-link-usd-close]");
+    const continueBtn = panel.querySelector("[data-link-usd-continue]");
+    const custodianDetailsBtn = panel.querySelector(
+      "[data-link-usd-custodian-details]",
+    );
+    const custodianNameEl = panel.querySelector("[data-link-usd-custodian-name]");
+    const showSnackbar =
+      bankAccountsApi?.showSnackbar ||
+      (() => {
+        /* noop */
+      });
+
+    const syncCustodian = () => {
+      const proto =
+        document.documentElement.dataset.prototypeUsdCustodianActive ||
+        "kgi-active";
+      const name =
+        PROTOTYPE_CUSTODIAN_LABELS[proto] ||
+        PROTOTYPE_CUSTODIAN_LABELS["kgi-active"];
+      if (custodianNameEl) custodianNameEl.textContent = name;
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        syncCustodian();
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".link-twd-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", () => setOpen(false));
+    });
+    continueBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
+    custodianDetailsBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
+
+    document.addEventListener("prototype-usd-custodian-change", syncCustodian);
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
+  };
+
   const CUSTODIANS = {
     kgi: {
       key: "kgi",
@@ -7756,7 +7824,9 @@
 
   const bankAccountsApi = initBankAccountsPanel();
   const linkTwdApi = initLinkTwdPanel(bankAccountsApi);
+  const linkUsdApi = initLinkUsdPanel(bankAccountsApi);
   bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
+  bankAccountsApi.setOnLinkUsd(linkUsdApi.open);
 
   const initSettingsPage = () => {
     const page = document.querySelector("[data-settings-page]");
@@ -8749,8 +8819,12 @@
   };
 
   const notifyPrototypeCustodianChange = (key) => {
-    if (key !== "twd") return;
-    document.dispatchEvent(new CustomEvent("prototype-twd-custodian-change"));
+    if (key === "twd") {
+      document.dispatchEvent(new CustomEvent("prototype-twd-custodian-change"));
+    }
+    if (key === "usd") {
+      document.dispatchEvent(new CustomEvent("prototype-usd-custodian-change"));
+    }
   };
 
   const setPrototypeCustodian = (key, next) => {
@@ -8802,6 +8876,7 @@
     });
     syncPrototypeCustodiansToDocument();
     notifyPrototypeCustodianChange("twd");
+    notifyPrototypeCustodianChange("usd");
   };
 
   const initPrototypeReset = () => {
