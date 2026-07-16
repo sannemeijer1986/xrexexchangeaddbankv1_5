@@ -1841,12 +1841,21 @@ html[data-active-tab="wallet"] {
 .limits-panel__body,
 .bank-accounts-panel__body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 0 16px 24px;
 }
 
 .bank-accounts-panel__body {
   padding: 24px 0 32px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
 
 .bank-accounts-panel__divider {
@@ -1865,13 +1874,176 @@ html[data-active-tab="wallet"] {
   margin-top: 8px;
 }
 
+.bank-accounts-panel__section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 16px 0;
+}
+
 .bank-accounts-panel__section-title {
   margin: 0;
-  padding: 16px 16px 0;
+  padding: 0;
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 18px;
   font-weight: 700;
   line-height: 1.25;
   color: #ffffff;
+}
+
+.bank-accounts-panel__section-custodian {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.bank-accounts-panel__section-custodian-label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+  white-space: nowrap;
+}
+
+.bank-accounts-panel__section-custodian-btn {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.bank-accounts-panel__section-custodian-btn img {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+// Explicit display on these blocks beats UA `[hidden]`; keep empty/linked views exclusive.
+.bank-accounts-panel__card[hidden],
+.bank-accounts-panel__linked[hidden],
+.bank-accounts-panel__section-custodian[hidden] {
+  display: none !important;
+}
+
+.bank-accounts-panel__linked {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px 16px;
+}
+
+.bank-accounts-panel__list-card {
+  border-radius: 16px;
+  background: #1b1d1d;
+}
+
+.bank-accounts-panel__list-item {
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bank-accounts-panel__list-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bank-accounts-panel__list-icon img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.bank-accounts-panel__list-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bank-accounts-panel__list-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-accounts-panel__list-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #9b9c9c;
+}
+
+.bank-accounts-panel__list-meta span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-accounts-panel__list-status {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bank-accounts-panel__list-status--submitted {
+  color: #8fb8ff;
+}
+
+.bank-accounts-panel__list-status--verified {
+  color: #5ac47d;
+}
+
+.bank-accounts-panel__list-status--issues {
+  color: #ff6d47;
+}
+
+.bank-accounts-panel__list-status--rejected {
+  color: #eb5347;
+}
+
+.bank-accounts-panel__list-chevron {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+}
+
+.bank-accounts-panel__edit-link {
+  align-self: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #3f78ff;
+  cursor: pointer;
 }
 
 .bank-accounts-panel__card {
@@ -2105,21 +2277,26 @@ html[data-active-tab="wallet"] {
 }
 
 .link-twd-panel__custodian-label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #ffffff;
 }
 
 .link-twd-panel__custodian-name {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #5ac47d;
 }
 
-.link-twd-panel__custodian-icon {
+.link-twd-panel__custodian-icons {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.link-twd-panel__custodian-icon-wrap {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -2127,12 +2304,22 @@ html[data-active-tab="wallet"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
 }
 
-.link-twd-panel__custodian-icon img {
+.link-twd-panel__custodian-icon-wrap + .link-twd-panel__custodian-icon-wrap {
+  margin-left: -10px;
+  z-index: 2;
+  box-shadow: -2px 0 0 #151718;
+}
+
+.link-twd-panel__custodian-icon {
   width: 20px;
   height: 20px;
   display: block;
+  object-fit: contain;
 }
 
 .link-twd-panel p.link-twd-panel__custodian-desc {
@@ -2149,7 +2336,7 @@ html[data-active-tab="wallet"] {
   padding: 0;
   border: 0;
   background: transparent;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   line-height: normal;
   color: #3f78ff;

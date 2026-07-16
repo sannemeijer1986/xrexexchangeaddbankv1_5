@@ -3662,9 +3662,17 @@
             </div>
             <div class="bank-accounts-panel__divider" aria-hidden="true"></div>
             <div class="bank-accounts-panel__body">
-                <div class="bank-accounts-panel__section">
-                    <h3 class="bank-accounts-panel__section-title">TWD</h3>
-                    <div class="bank-accounts-panel__card">
+                <div class="bank-accounts-panel__section" data-bank-accounts-section="twd">
+                    <div class="bank-accounts-panel__section-head">
+                        <h3 class="bank-accounts-panel__section-title">TWD</h3>
+                        <div class="bank-accounts-panel__section-custodian" data-bank-accounts-custodian-wrap hidden>
+                            <span class="bank-accounts-panel__section-custodian-label" data-bank-accounts-custodian-label>Custodian: KGI Bank</span>
+                            <button class="bank-accounts-panel__section-custodian-btn" type="button" data-bank-accounts-custodian-edit aria-label="Edit TWD custodian">
+                                <img src="assets/icon_edit_grey.svg" alt="" width="16" height="16" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bank-accounts-panel__card" data-bank-accounts-empty>
                         <div class="bank-accounts-panel__card-top">
                             <div class="bank-accounts-panel__illu" aria-hidden="true">
                                 <img class="bank-accounts-panel__illu-img" src="assets/illu_bank_TWD.svg" alt="" />
@@ -3678,11 +3686,38 @@
                             Link TWD bank account
                         </button>
                     </div>
+                    <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
+                        <div class="bank-accounts-panel__list-card">
+                            <button class="bank-accounts-panel__list-item" type="button" data-bank-accounts-item="twd">
+                                <span class="bank-accounts-panel__list-icon" aria-hidden="true">
+                                    <img src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" />
+                                </span>
+                                <span class="bank-accounts-panel__list-copy">
+                                    <span class="bank-accounts-panel__list-title">My CTBC bank</span>
+                                    <span class="bank-accounts-panel__list-meta">
+                                        <span>Bank Name : CTBC Bank</span>
+                                        <span>Account number : 12345678999</span>
+                                    </span>
+                                    <span class="bank-accounts-panel__list-status bank-accounts-panel__list-status--verified" data-bank-accounts-status>Verified</span>
+                                </span>
+                                <img class="bank-accounts-panel__list-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                            </button>
+                        </div>
+                        <button class="bank-accounts-panel__edit-link" type="button" data-bank-accounts-edit="twd">Edit account</button>
+                    </div>
                 </div>
 
-                <div class="bank-accounts-panel__section">
-                    <h3 class="bank-accounts-panel__section-title">USD</h3>
-                    <div class="bank-accounts-panel__card">
+                <div class="bank-accounts-panel__section" data-bank-accounts-section="usd">
+                    <div class="bank-accounts-panel__section-head">
+                        <h3 class="bank-accounts-panel__section-title">USD</h3>
+                        <div class="bank-accounts-panel__section-custodian" data-bank-accounts-custodian-wrap hidden>
+                            <span class="bank-accounts-panel__section-custodian-label" data-bank-accounts-custodian-label>Custodian: KGI Bank</span>
+                            <button class="bank-accounts-panel__section-custodian-btn" type="button" data-bank-accounts-custodian-edit aria-label="Edit USD custodian">
+                                <img src="assets/icon_edit_grey.svg" alt="" width="16" height="16" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bank-accounts-panel__card" data-bank-accounts-empty>
                         <div class="bank-accounts-panel__card-top">
                             <div class="bank-accounts-panel__illu" aria-hidden="true">
                                 <img class="bank-accounts-panel__illu-img" src="assets/illu_bank_USD.svg" alt="" />
@@ -3695,6 +3730,25 @@
                         <button class="bank-accounts-panel__btn bank-accounts-panel__btn--secondary" type="button" data-bank-accounts-link="usd">
                             Link USD account
                         </button>
+                    </div>
+                    <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
+                        <div class="bank-accounts-panel__list-card">
+                            <button class="bank-accounts-panel__list-item" type="button" data-bank-accounts-item="usd">
+                                <span class="bank-accounts-panel__list-icon" aria-hidden="true">
+                                    <img src="assets/icon_currency_USD.svg" alt="" width="32" height="32" />
+                                </span>
+                                <span class="bank-accounts-panel__list-copy">
+                                    <span class="bank-accounts-panel__list-title">My KGI bank</span>
+                                    <span class="bank-accounts-panel__list-meta">
+                                        <span>Bank Name : KGI bank</span>
+                                        <span>Account number : 12345678999</span>
+                                    </span>
+                                    <span class="bank-accounts-panel__list-status bank-accounts-panel__list-status--verified" data-bank-accounts-status>Verified</span>
+                                </span>
+                                <img class="bank-accounts-panel__list-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                            </button>
+                        </div>
+                        <button class="bank-accounts-panel__edit-link" type="button" data-bank-accounts-edit="usd">Edit account</button>
                     </div>
                 </div>
             </div>
@@ -3712,7 +3766,7 @@
             </div>
             <div class="link-twd-panel__divider" aria-hidden="true"></div>
             <div class="link-twd-panel__body">
-                <p class="link-twd-panel__intro">Use any Taiwan bank account you already have to deposit and withdraw TWD.</p>
+                <p class="link-twd-panel__intro">Use your preferred Taiwan bank account to deposit and withdraw TWD.</p>
                 <div class="link-twd-panel__steps-card">
                     <div class="link-twd-panel__step">
                         <span class="link-twd-panel__step-badge" aria-hidden="true">1</span>
@@ -3744,8 +3798,13 @@
                             <div class="link-twd-panel__custodian-label">TWD custodian</div>
                             <div class="link-twd-panel__custodian-name">KGI bank</div>
                         </div>
-                        <span class="link-twd-panel__custodian-icon" aria-hidden="true">
-                            <img src="assets/icon_green_shield.svg" alt="" />
+                        <span class="link-twd-panel__custodian-icons" aria-hidden="true">
+                            <span class="link-twd-panel__custodian-icon-wrap">
+                                <img class="link-twd-panel__custodian-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                            </span>
+                            <span class="link-twd-panel__custodian-icon-wrap">
+                                <img class="link-twd-panel__custodian-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="20" height="20" />
+                            </span>
                         </span>
                     </div>
                     <p class="link-twd-panel__custodian-desc">Your TWD will be held in trust at KGI Bank, our custodian partner. You don&rsquo;t need a KGI account.</p>

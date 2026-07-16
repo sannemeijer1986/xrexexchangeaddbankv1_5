@@ -118,6 +118,75 @@
     document.documentElement.dataset.prototypeUsdBankAccount = String(
       states.usdBankAccount ?? 1,
     );
+    syncBankAccountsPanelUi();
+  };
+
+  const BANK_ACCOUNT_LINKED_STATUS = {
+    2: { label: "Submitted", modifier: "submitted" },
+    3: { label: "Verified", modifier: "verified" },
+    4: { label: "Issues", modifier: "issues" },
+    5: { label: "Rejected", modifier: "rejected" },
+  };
+
+  const PROTOTYPE_CUSTODIAN_LABELS = {
+    "kgi-active": "KGI Bank",
+    "feb-active": "Far Eastern Bank",
+  };
+
+  const syncBankAccountsPanelUi = () => {
+    const twdState = states.twdBankAccount ?? 1;
+    const usdState = states.usdBankAccount ?? 1;
+    const twdCustodian =
+      document.documentElement.dataset.prototypeTwdCustodianActive || "kgi-active";
+    const usdCustodian =
+      document.documentElement.dataset.prototypeUsdCustodianActive || "kgi-active";
+
+    [
+      { currency: "twd", state: twdState, custodian: twdCustodian },
+      { currency: "usd", state: usdState, custodian: usdCustodian },
+    ].forEach(({ currency, state, custodian }) => {
+      const section = document.querySelector(
+        `[data-bank-accounts-section="${currency}"]`,
+      );
+      if (!section) return;
+
+      const emptyEl = section.querySelector("[data-bank-accounts-empty]");
+      const linkedEl = section.querySelector("[data-bank-accounts-linked]");
+      const custodianWrap = section.querySelector(
+        "[data-bank-accounts-custodian-wrap]",
+      );
+      const custodianLabel = section.querySelector(
+        "[data-bank-accounts-custodian-label]",
+      );
+      const statusEl = section.querySelector("[data-bank-accounts-status]");
+
+      const isLinked = state >= 2;
+      if (emptyEl) emptyEl.hidden = isLinked;
+      if (linkedEl) linkedEl.hidden = !isLinked;
+      if (custodianWrap) custodianWrap.hidden = !isLinked;
+
+      if (custodianLabel) {
+        const name =
+          PROTOTYPE_CUSTODIAN_LABELS[custodian] ||
+          PROTOTYPE_CUSTODIAN_LABELS["kgi-active"];
+        custodianLabel.textContent = `Custodian: ${name}`;
+      }
+
+      if (statusEl) {
+        const cfg =
+          BANK_ACCOUNT_LINKED_STATUS[state] || BANK_ACCOUNT_LINKED_STATUS[3];
+        statusEl.textContent = cfg.label;
+        statusEl.classList.remove(
+          "bank-accounts-panel__list-status--submitted",
+          "bank-accounts-panel__list-status--verified",
+          "bank-accounts-panel__list-status--issues",
+          "bank-accounts-panel__list-status--rejected",
+        );
+        statusEl.classList.add(
+          `bank-accounts-panel__list-status--${cfg.modifier}`,
+        );
+      }
+    });
   };
 
   const syncPrototypeCustodiansToDocument = () => {
@@ -129,6 +198,7 @@
       // Remove any legacy mirror attr that collided with the <select> attribute.
       document.documentElement.removeAttribute(cfg.selectAttr);
     });
+    syncBankAccountsPanelUi();
   };
 
   /** Set by initMyPlansPanel — refreshes plan cards when Flow progress changes */
@@ -7079,6 +7149,15 @@
         }
       });
     });
+    panel
+      .querySelectorAll(
+        "[data-bank-accounts-item], [data-bank-accounts-edit], [data-bank-accounts-custodian-edit]",
+      )
+      .forEach((button) => {
+        button.addEventListener("click", () => showSnackbar("Not in prototype"));
+      });
+
+    syncBankAccountsPanelUi();
 
     return {
       showSnackbar,
@@ -7346,6 +7425,7 @@
     );
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
+      setState("twdBankAccount", 2, { force: true });
       const gen = (submitGeneration += 1);
       if (loaderEl) loaderEl.hidden = false;
       window.setTimeout(() => {
