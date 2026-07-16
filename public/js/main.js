@@ -7247,8 +7247,8 @@
     ];
     // Demo convenience: auto-fill each field on focus.
     const autofillValues = new Map([
-      [accountNumberInput, "12345678901234"],
-      [accountNicknameInput, "My KGI Bank"],
+      [accountNumberInput, "12345678999"],
+      [accountNicknameInput, "My CTBC bank"],
       [chineseNameInput, "王小明"],
       [englishNameInput, "XIAO MING WANG"],
     ]);
@@ -7316,7 +7316,7 @@
       state.branchSelected = true;
 
       if (bankValueEl) {
-        bankValueEl.textContent = "809 KGI Bank";
+        bankValueEl.textContent = "CTBC Bank";
         bankValueEl.classList.remove("is-placeholder");
       }
       if (branchValueEl) {
@@ -7377,7 +7377,7 @@
     bankBtn?.addEventListener("click", () => {
       state.bankSelected = true;
       if (bankValueEl) {
-        bankValueEl.textContent = "809 KGI Bank";
+        bankValueEl.textContent = "CTBC Bank";
         bankValueEl.classList.remove("is-placeholder");
       }
       if (branchBtn) {
@@ -7561,8 +7561,10 @@
     continueBtn?.addEventListener("click", () =>
       showSnackbar("Not in prototype"),
     );
+
+    const usdCustodianPanelApi = initUsdCustodianPanel({ showSnackbar });
     custodianDetailsBtn?.addEventListener("click", () =>
-      showSnackbar("Not in prototype"),
+      usdCustodianPanelApi.open(),
     );
 
     document.addEventListener("prototype-usd-custodian-change", syncCustodian);
@@ -7618,6 +7620,87 @@
         withdrawFee: "15 TWD",
       },
     },
+  };
+
+  const USD_CUSTODIAN = {
+    selectorName: "KGI bank",
+    icon: "assets/icon_custodian_kgi.svg",
+    details: {
+      bankName: "KGI Bank",
+      bankCountry: "Taiwan",
+      accountName: "凱基受託鏈科信託財產專戶",
+      depositSingle: "1,500,000 USD",
+      depositDaily: "2,000,000 USD",
+      depositAnnually: "3,000,000 USD",
+      depositFee: "Free",
+      withdrawSingle: "1,000,000 USD",
+      withdrawDaily: "2,000,000 USD",
+      withdrawMonthly: "10,000,000 USD",
+      withdrawAnnually: "60,000,000 USD",
+      withdrawFee: "15 USD",
+    },
+  };
+
+  const initUsdCustodianPanel = ({ showSnackbar }) => {
+    const panel = document.querySelector("[data-usd-custodian-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const selectorNameEl = panel.querySelector("[data-usd-custodian-selector-name]");
+    const detailEls = {
+      bankName: panel.querySelector("[data-usd-custodian-bank-name]"),
+      bankCountry: panel.querySelector("[data-usd-custodian-bank-country]"),
+      accountName: panel.querySelector("[data-usd-custodian-account-name]"),
+      depositSingle: panel.querySelector("[data-usd-custodian-deposit-single]"),
+      depositDaily: panel.querySelector("[data-usd-custodian-deposit-daily]"),
+      depositAnnually: panel.querySelector("[data-usd-custodian-deposit-annually]"),
+      depositFee: panel.querySelector("[data-usd-custodian-deposit-fee]"),
+      withdrawSingle: panel.querySelector("[data-usd-custodian-withdraw-single]"),
+      withdrawDaily: panel.querySelector("[data-usd-custodian-withdraw-daily]"),
+      withdrawMonthly: panel.querySelector("[data-usd-custodian-withdraw-monthly]"),
+      withdrawAnnually: panel.querySelector("[data-usd-custodian-withdraw-annually]"),
+      withdrawFee: panel.querySelector("[data-usd-custodian-withdraw-fee]"),
+    };
+
+    const applyContent = () => {
+      if (selectorNameEl) selectorNameEl.textContent = USD_CUSTODIAN.selectorName;
+      Object.entries(USD_CUSTODIAN.details).forEach(([field, value]) => {
+        if (detailEls[field]) detailEls[field].textContent = value;
+      });
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        applyContent();
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".custodian-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    panel
+      .querySelectorAll("[data-usd-custodian-panel-close], [data-usd-custodian-done]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => setOpen(false));
+      });
+    panel
+      .querySelector("[data-usd-custodian-learn-more]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    applyContent();
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
   };
 
   // Maps between custodian data keys and the prototype-control select values.

@@ -2910,7 +2910,7 @@ html[data-active-tab="wallet"] {
 }
 
 .custodian-panel__intro-note {
-  color: #fcd536;
+  color: #5ac47d;
 }
 
 .custodian-panel__learn-more {
@@ -3011,6 +3011,28 @@ html[data-active-tab="wallet"] {
   display: block;
   opacity: 0.9;
   margin-left: auto;
+}
+
+.usd-custodian-panel .custodian-panel__selector--locked {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 14px;
+  background: transparent;
+  min-height: 52px;
+  padding: 16px;
+  cursor: default;
+}
+
+.usd-custodian-panel .custodian-panel__selector-name {
+  font-size: 14px;
+}
+
+.custodian-panel__selector-lock {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+  margin-left: auto;
+  opacity: 0.5;
 }
 
 .custodian-panel__details-card {

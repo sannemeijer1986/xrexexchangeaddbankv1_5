@@ -3892,13 +3892,13 @@
                     <label class="twd-bank-details-panel__field">
                         <span class="twd-bank-details-panel__field-label">Account number</span>
                         <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-twd-bank-details-account-number placeholder="ex: 12345678901234" />
+                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-twd-bank-details-account-number placeholder="ex: 12345678999" />
                         </span>
                     </label>
                     <label class="twd-bank-details-panel__field">
                         <span class="twd-bank-details-panel__field-label">Account nickname</span>
                         <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" data-twd-bank-details-account-nickname placeholder="ex: My KGI Bank" />
+                            <input class="twd-bank-details-panel__input" type="text" data-twd-bank-details-account-nickname placeholder="ex: My CTBC bank" />
                         </span>
                     </label>
                 </div>
@@ -3982,7 +3982,7 @@
                 <div class="custodian-panel__intro-block">
                     <p class="custodian-panel__intro">
                         Custodians safeguards your TWD on XREX.
-                        <span class="custodian-panel__intro-note">Note: It&rsquo;s not your bank account.</span>
+                        Note: <span class="custodian-panel__intro-note">It&rsquo;s not your bank account.</span>
                     </p>
                     <button class="custodian-panel__learn-more" type="button" data-custodian-learn-more>Learn more about custodians</button>
                 </div>
@@ -4067,6 +4067,107 @@
             </div>
             <div class="custodian-panel__footer">
                 <button class="custodian-panel__keep" type="button" data-custodian-keep>Keep KGI bank as custodian</button>
+            </div>
+        </section>
+
+        <section class="custodian-panel usd-custodian-panel" data-usd-custodian-panel hidden aria-label="USD custodian">
+            <div class="custodian-panel__header">
+                <button class="custodian-panel__icon-btn" type="button" data-usd-custodian-panel-close aria-label="Close">
+                    <img src="assets/icon_close.svg" alt="" />
+                </button>
+                <div class="custodian-panel__title">USD custodian</div>
+                <button class="custodian-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </div>
+            <div class="custodian-panel__body">
+                <div class="custodian-panel__intro-block">
+                    <p class="custodian-panel__intro">
+                        Custodians safeguards your USD on XREX.
+                        Note: <span class="custodian-panel__intro-note">It&rsquo;s not your bank account.</span>
+                    </p>
+                    <button class="custodian-panel__learn-more" type="button" data-usd-custodian-learn-more>Learn more about custodians</button>
+                </div>
+
+                <div class="custodian-panel__field">
+                    <div class="custodian-panel__field-label">USD custodian</div>
+                    <div class="custodian-panel__selector custodian-panel__selector--locked" aria-disabled="true">
+                        <span class="custodian-panel__selector-icon-wrap" aria-hidden="true">
+                            <img class="custodian-panel__selector-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                        </span>
+                        <span class="custodian-panel__selector-copy">
+                            <span class="custodian-panel__selector-name" data-usd-custodian-selector-name>KGI bank</span>
+                        </span>
+                        <img class="custodian-panel__selector-lock" src="assets/icon_lock.svg" alt="" width="24" height="24" aria-hidden="true" />
+                    </div>
+                </div>
+
+                <div class="custodian-panel__field">
+                    <div class="custodian-panel__field-label">Details</div>
+                    <div class="custodian-panel__details-card">
+                        <div class="custodian-panel__details-block">
+                            <div class="custodian-panel__row">
+                                <span>Bank name</span>
+                                <strong data-usd-custodian-bank-name>KGI Bank</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Bank country</span>
+                                <strong data-usd-custodian-bank-country>Taiwan</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Account name</span>
+                                <strong data-usd-custodian-account-name>凱基受託鏈科信託財產專戶</strong>
+                            </div>
+                        </div>
+                        <div class="custodian-panel__details-divider" aria-hidden="true"></div>
+                        <div class="custodian-panel__details-block">
+                            <div class="custodian-panel__details-heading">Deposit</div>
+                            <div class="custodian-panel__row">
+                                <span>Single</span>
+                                <strong data-usd-custodian-deposit-single>1,500,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Daily</span>
+                                <strong data-usd-custodian-deposit-daily>2,000,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Annually</span>
+                                <strong data-usd-custodian-deposit-annually>3,000,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Fee</span>
+                                <strong data-usd-custodian-deposit-fee>Free</strong>
+                            </div>
+                        </div>
+                        <div class="custodian-panel__details-divider" aria-hidden="true"></div>
+                        <div class="custodian-panel__details-block">
+                            <div class="custodian-panel__details-heading">Withdraw</div>
+                            <div class="custodian-panel__row">
+                                <span>Single</span>
+                                <strong data-usd-custodian-withdraw-single>1,000,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Daily</span>
+                                <strong data-usd-custodian-withdraw-daily>2,000,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Monthly</span>
+                                <strong data-usd-custodian-withdraw-monthly>10,000,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Annually</span>
+                                <strong data-usd-custodian-withdraw-annually>60,000,000 USD</strong>
+                            </div>
+                            <div class="custodian-panel__row">
+                                <span>Fee</span>
+                                <strong data-usd-custodian-withdraw-fee>15 USD</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="custodian-panel__footer">
+                <button class="custodian-panel__keep" type="button" data-usd-custodian-done>Done</button>
             </div>
         </section>
 
