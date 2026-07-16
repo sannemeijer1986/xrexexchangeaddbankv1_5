@@ -2398,7 +2398,9 @@ html[data-active-tab="wallet"] {
 }
 
 // Figma 7652:8055 / 7652:11013 — TWD bank account details (slides over link TWD)
-.twd-bank-details-panel {
+// Figma 7663:45208 / 7663:45309 — USD bank account details (slides over link USD)
+.twd-bank-details-panel,
+.usd-bank-details-panel {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -2412,7 +2414,8 @@ html[data-active-tab="wallet"] {
   transition: transform 0.35s ease;
 }
 
-.twd-bank-details-panel.is-open {
+.twd-bank-details-panel.is-open,
+.usd-bank-details-panel.is-open {
   transform: translateX(0);
 }
 
@@ -2704,6 +2707,39 @@ html[data-active-tab="wallet"] {
     height: 168px;
     background: #2d2f2f;
   }
+}
+
+.usd-bank-details-panel__bank-icon-wrap {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.usd-bank-details-panel__bank-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.usd-bank-details-panel .twd-bank-details-panel__selector--locked {
+  cursor: default;
+  pointer-events: none;
+}
+
+.usd-bank-details-panel__selector-lock {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+  margin-left: auto;
+  opacity: 0.72;
+}
+
+.usd-bank-details-panel__consent-block {
+  padding-bottom: 16px;
 }
 
 // Figma 7655:10288 — TWD bank account submitted success

@@ -3949,6 +3949,75 @@
             </div>
         </section>
 
+        <section class="twd-bank-details-panel usd-bank-details-panel" data-usd-bank-details-panel hidden aria-label="USD bank account details">
+            <div class="twd-bank-details-panel__header">
+                <button class="twd-bank-details-panel__icon-btn" type="button" data-usd-bank-details-back aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="twd-bank-details-panel__title">USD bank account details</div>
+                <button class="twd-bank-details-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </div>
+            <div class="twd-bank-details-panel__divider" aria-hidden="true"></div>
+            <div class="twd-bank-details-panel__body">
+                <div class="twd-bank-details-panel__section">
+                    <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                    <div class="twd-bank-details-panel__selector twd-bank-details-panel__selector--locked" aria-disabled="true">
+                        <span class="usd-bank-details-panel__bank-icon-wrap" aria-hidden="true">
+                            <img class="usd-bank-details-panel__bank-icon" src="assets/icon_custodian_kgi.svg" alt="" width="32" height="32" />
+                        </span>
+                        <span class="twd-bank-details-panel__selector-value">KGI Bank</span>
+                        <img class="usd-bank-details-panel__selector-lock" src="assets/icon_lock.svg" alt="" width="24" height="24" aria-hidden="true" />
+                    </div>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Account number</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-usd-bank-details-account-number placeholder="ex: 12345678901234" />
+                        </span>
+                    </label>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Account nickname</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-account-nickname placeholder="ex: My KGI Bank" value="My KGI Bank" />
+                        </span>
+                    </label>
+                </div>
+                <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
+                <div class="twd-bank-details-panel__section">
+                    <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Holder&rsquo;s Chinese name</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-chinese-name placeholder="ex: 王小明" />
+                        </span>
+                    </label>
+                    <label class="twd-bank-details-panel__field">
+                        <span class="twd-bank-details-panel__field-label">Holder&rsquo;s English name</span>
+                        <span class="twd-bank-details-panel__input-wrap">
+                            <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-english-name placeholder="ex: XIAO MING WANG" />
+                        </span>
+                    </label>
+                </div>
+                <div class="usd-bank-details-panel__consent-block">
+                    <button class="twd-bank-details-panel__consent" type="button" data-usd-bank-details-consent="not-us-taxpayer" aria-pressed="false">
+                        <img class="twd-bank-details-panel__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                        <span class="twd-bank-details-panel__consent-copy">I confirm that I am not a taxpayer in the US</span>
+                    </button>
+                </div>
+                <div class="twd-bank-details-panel__actions">
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-usd-bank-details-back>Back</button>
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-usd-bank-details-submit disabled>Submit</button>
+                </div>
+            </div>
+            <div class="twd-bank-details-panel__loader plan-submit-loader" data-usd-bank-details-loader hidden>
+                <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
+                <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">
+                    <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
+                </div>
+            </div>
+        </section>
+
         <section class="twd-bank-success-panel" data-twd-bank-success-panel hidden aria-label="Application submitted">
             <header class="twd-bank-success-panel__header">
                 <button class="twd-bank-success-panel__icon-btn" type="button" data-twd-bank-success-close aria-label="Close">
@@ -7512,6 +7581,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
         <div class="build-badge__body" id="prototypeStatesBody">
             <button class="build-badge__reset" type="button" data-prototype-reset>Reset states</button>
             <button class="build-badge__reset" type="button" data-prototype-fill-twd-bank>Fill TWD bank details</button>
+            <button class="build-badge__reset" type="button" data-prototype-fill-usd-bank>Fill USD bank details</button>
             <div class="build-badge__checkbox-stack" role="group" aria-label="Prototype display toggles">
                 <div class="build-badge__section-row">
                     <label class="build-badge__checkbox">

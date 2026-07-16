@@ -7173,9 +7173,11 @@
     };
   };
 
-  const initTwdBankSuccessPanel = ({ onDismiss }) => {
+  const initTwdBankSuccessPanel = () => {
     const panel = document.querySelector("[data-twd-bank-success-panel]");
-    if (!panel) return { open: () => {}, close: () => {} };
+    if (!panel) return { open: () => {}, close: () => {}, setOnDismiss: () => {} };
+
+    let onDismiss = () => {};
 
     const closeButtons = panel.querySelectorAll(
       "[data-twd-bank-success-close], [data-twd-bank-success-done]",
@@ -7198,7 +7200,7 @@
 
     const dismiss = () => {
       setOpen(false);
-      onDismiss?.();
+      onDismiss();
     };
 
     closeButtons.forEach((btn) => {
@@ -7209,6 +7211,9 @@
       open: () => setOpen(true),
       close: () => setOpen(false),
       dismiss,
+      setOnDismiss: (fn) => {
+        onDismiss = typeof fn === "function" ? fn : () => {};
+      },
     };
   };
 
@@ -7447,7 +7452,176 @@
     };
   };
 
-  const initLinkTwdPanel = (bankAccountsApi) => {
+  const initUsdBankDetailsPanel = ({ showSnackbar, onSubmitComplete }) => {
+    const panel = document.querySelector("[data-usd-bank-details-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const accountNumberInput = panel.querySelector(
+      "[data-usd-bank-details-account-number]",
+    );
+    const accountNicknameInput = panel.querySelector(
+      "[data-usd-bank-details-account-nickname]",
+    );
+    const chineseNameInput = panel.querySelector(
+      "[data-usd-bank-details-chinese-name]",
+    );
+    const englishNameInput = panel.querySelector(
+      "[data-usd-bank-details-english-name]",
+    );
+    const submitBtn = panel.querySelector("[data-usd-bank-details-submit]");
+    const loaderEl = panel.querySelector("[data-usd-bank-details-loader]");
+    const consentButtons = Array.from(
+      panel.querySelectorAll("[data-usd-bank-details-consent]"),
+    );
+    const backButtons = panel.querySelectorAll("[data-usd-bank-details-back]");
+    const textInputs = [
+      accountNumberInput,
+      accountNicknameInput,
+      chineseNameInput,
+      englishNameInput,
+    ];
+    const autofillValues = new Map([
+      [accountNumberInput, "12345678901234"],
+      [accountNicknameInput, "My KGI Bank"],
+      [chineseNameInput, "王小明"],
+      [englishNameInput, "XIAO MING WANG"],
+    ]);
+    const DEFAULT_NICKNAME = "My KGI Bank";
+
+    const state = {
+      consents: {
+        "not-us-taxpayer": false,
+      },
+    };
+    let submitGeneration = 0;
+    const SUBMIT_LOADER_MS = 1600;
+
+    const syncSubmit = () => {
+      const isValid =
+        accountNumberInput?.value.trim() &&
+        accountNicknameInput?.value.trim() &&
+        chineseNameInput?.value.trim() &&
+        englishNameInput?.value.trim() &&
+        state.consents["not-us-taxpayer"];
+      if (submitBtn) submitBtn.disabled = !isValid;
+    };
+
+    const resetForm = () => {
+      state.consents["not-us-taxpayer"] = false;
+
+      textInputs.forEach((input) => {
+        if (!input) return;
+        input.value =
+          input === accountNicknameInput ? DEFAULT_NICKNAME : "";
+      });
+
+      consentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-usd-bank-details-consent");
+        if (key) state.consents[key] = false;
+        btn.setAttribute("aria-pressed", "false");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_off.svg";
+      });
+
+      syncSubmit();
+    };
+
+    const fillAll = () => {
+      textInputs.forEach((input) => {
+        if (input) input.value = autofillValues.get(input) || "";
+      });
+
+      consentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-usd-bank-details-consent");
+        if (key) state.consents[key] = true;
+        btn.setAttribute("aria-pressed", "true");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_on.svg";
+      });
+
+      syncSubmit();
+    };
+
+    document
+      .querySelector("[data-prototype-fill-usd-bank]")
+      ?.addEventListener("click", fillAll);
+
+    const setOpen = (nextOpen, opts = {}) => {
+      if (nextOpen) {
+        submitGeneration += 1;
+        if (loaderEl) loaderEl.hidden = true;
+        resetForm();
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else {
+        submitGeneration += 1;
+        if (loaderEl) loaderEl.hidden = true;
+        if (opts.instant) {
+          panel.classList.remove("is-open");
+          panel.hidden = true;
+          return;
+        }
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    textInputs.forEach((input) => {
+      input?.addEventListener("input", syncSubmit);
+      input?.addEventListener("focus", () => {
+        if (input.value.trim()) return;
+        input.value = autofillValues.get(input) || "";
+        syncSubmit();
+      });
+    });
+
+    consentButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-usd-bank-details-consent");
+        if (!key) return;
+        const nextChecked = !state.consents[key];
+        state.consents[key] = nextChecked;
+        btn.setAttribute("aria-pressed", nextChecked ? "true" : "false");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) {
+          icon.src = nextChecked
+            ? "assets/icon_checkbox_on.svg"
+            : "assets/icon_checkbox_off.svg";
+        }
+        syncSubmit();
+      });
+    });
+
+    backButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+
+    submitBtn?.addEventListener("click", () => {
+      if (submitBtn.disabled) return;
+      setState("usdBankAccount", 2, { force: true });
+      const gen = (submitGeneration += 1);
+      if (loaderEl) loaderEl.hidden = false;
+      window.setTimeout(() => {
+        if (gen !== submitGeneration) return;
+        if (loaderEl) loaderEl.hidden = true;
+        onSubmitComplete?.();
+      }, SUBMIT_LOADER_MS);
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: (opts) => setOpen(false, opts),
+    };
+  };
+
+  const initLinkTwdPanel = (bankAccountsApi, bankAccountSuccessApi) => {
     const panel = document.querySelector("[data-link-twd-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
 
@@ -7484,15 +7658,15 @@
     });
 
     let twdBankDetailsApi;
-    const twdBankSuccessApi = initTwdBankSuccessPanel({
-      onDismiss: () => {
-        twdBankDetailsApi?.close({ instant: true });
-        setOpen(false);
-      },
-    });
     twdBankDetailsApi = initTwdBankDetailsPanel({
       showSnackbar,
-      onSubmitComplete: () => twdBankSuccessApi.open(),
+      onSubmitComplete: () => {
+        bankAccountSuccessApi.setOnDismiss(() => {
+          twdBankDetailsApi?.close({ instant: true });
+          setOpen(false);
+        });
+        bankAccountSuccessApi.open();
+      },
     });
     chooseBankBtn?.addEventListener("click", () => twdBankDetailsApi.open());
 
@@ -7511,7 +7685,7 @@
     };
   };
 
-  const initLinkUsdPanel = (bankAccountsApi) => {
+  const initLinkUsdPanel = (bankAccountsApi, bankAccountSuccessApi) => {
     const panel = document.querySelector("[data-link-usd-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
 
@@ -7558,9 +7732,18 @@
     closeButtons.forEach((button) => {
       button.addEventListener("click", () => setOpen(false));
     });
-    continueBtn?.addEventListener("click", () =>
-      showSnackbar("Not in prototype"),
-    );
+    let usdBankDetailsApi;
+    usdBankDetailsApi = initUsdBankDetailsPanel({
+      showSnackbar,
+      onSubmitComplete: () => {
+        bankAccountSuccessApi.setOnDismiss(() => {
+          usdBankDetailsApi?.close({ instant: true });
+          setOpen(false);
+        });
+        bankAccountSuccessApi.open();
+      },
+    });
+    continueBtn?.addEventListener("click", () => usdBankDetailsApi.open());
 
     const usdCustodianPanelApi = initUsdCustodianPanel({ showSnackbar });
     custodianDetailsBtn?.addEventListener("click", () =>
@@ -7906,8 +8089,9 @@
   };
 
   const bankAccountsApi = initBankAccountsPanel();
-  const linkTwdApi = initLinkTwdPanel(bankAccountsApi);
-  const linkUsdApi = initLinkUsdPanel(bankAccountsApi);
+  const bankAccountSuccessApi = initTwdBankSuccessPanel();
+  const linkTwdApi = initLinkTwdPanel(bankAccountsApi, bankAccountSuccessApi);
+  const linkUsdApi = initLinkUsdPanel(bankAccountsApi, bankAccountSuccessApi);
   bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
   bankAccountsApi.setOnLinkUsd(linkUsdApi.open);
 
