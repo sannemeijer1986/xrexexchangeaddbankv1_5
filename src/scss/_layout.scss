@@ -1929,7 +1929,9 @@ html[data-active-tab="wallet"] {
 // Explicit display on these blocks beats UA `[hidden]`; keep empty/linked views exclusive.
 .bank-accounts-panel__card[hidden],
 .bank-accounts-panel__linked[hidden],
-.bank-accounts-panel__section-custodian[hidden] {
+.bank-accounts-panel__section[hidden],
+.bank-accounts-panel__section-custodian[hidden],
+.bank-accounts-panel__edit-link[hidden] {
   display: none !important;
 }
 
@@ -17278,6 +17280,7 @@ div.currency-sheet__item-icon {
   display: flex;
   flex-direction: column;
   color-scheme: dark;
+  --build-badge-select-width: 132px;
 
   pointer-events: auto;
   transition: width 0.15s ease, max-height 0.25s ease, opacity 0.2s ease;
@@ -17859,8 +17862,8 @@ div.currency-sheet__item-icon {
   justify-content: flex-end;
 }
 
-.build-badge__section-row .build-badge__select {
-  width: 132px;
+.build-badge__section-row .build-badge__checkbox-group > .build-badge__select {
+  width: var(--build-badge-select-width);
   max-width: 100%;
 }
 

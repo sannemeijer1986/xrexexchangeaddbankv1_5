@@ -133,6 +133,79 @@
     "feb-active": "Far Eastern Bank",
   };
 
+  const PROTOTYPE_REGION_CONFIG = {
+    storageKey: "xrexexchange.prototypeRegion.v1",
+    default: "taiwan",
+    allowed: ["taiwan", "cayman"],
+  };
+
+  const getPrototypeRegion = () => {
+    const raw =
+      document.documentElement.dataset.prototypeRegionActive ||
+      PROTOTYPE_REGION_CONFIG.default;
+    return PROTOTYPE_REGION_CONFIG.allowed.includes(raw)
+      ? raw
+      : PROTOTYPE_REGION_CONFIG.default;
+  };
+
+  const queryPrototypeRegionSelect = () =>
+    document.querySelector("select[data-prototype-region]");
+
+  const syncPrototypeRegionToDocument = () => {
+    const sel = queryPrototypeRegionSelect();
+    const raw = String(sel?.value || PROTOTYPE_REGION_CONFIG.default);
+    const value = PROTOTYPE_REGION_CONFIG.allowed.includes(raw)
+      ? raw
+      : PROTOTYPE_REGION_CONFIG.default;
+    if (sel instanceof HTMLSelectElement && sel.value !== value) {
+      sel.value = value;
+    }
+    document.documentElement.dataset.prototypeRegionActive = value;
+    // Avoid colliding with the region <select data-prototype-region>.
+    document.documentElement.removeAttribute("data-prototype-region");
+    syncBankAccountsPanelRegionUi();
+  };
+
+  const setPrototypeRegion = (next) => {
+    const sel = queryPrototypeRegionSelect();
+    if (!(sel instanceof HTMLSelectElement)) return;
+    const value = PROTOTYPE_REGION_CONFIG.allowed.includes(String(next))
+      ? String(next)
+      : PROTOTYPE_REGION_CONFIG.default;
+    sel.value = value;
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(PROTOTYPE_REGION_CONFIG.storageKey, value);
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    syncPrototypeRegionToDocument();
+    document.dispatchEvent(new CustomEvent("prototype-region-change"));
+  };
+
+  const initPrototypeRegionControls = () => {
+    const sel = queryPrototypeRegionSelect();
+    if (!(sel instanceof HTMLSelectElement)) return;
+    let value = PROTOTYPE_REGION_CONFIG.default;
+    try {
+      if (window.localStorage) {
+        value =
+          window.localStorage.getItem(PROTOTYPE_REGION_CONFIG.storageKey) ||
+          PROTOTYPE_REGION_CONFIG.default;
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    if (!PROTOTYPE_REGION_CONFIG.allowed.includes(value)) {
+      value = PROTOTYPE_REGION_CONFIG.default;
+    }
+    sel.value = value;
+    sel.addEventListener("change", () => setPrototypeRegion(sel.value));
+    syncPrototypeRegionToDocument();
+    document.dispatchEvent(new CustomEvent("prototype-region-change"));
+  };
+
   const syncBankAccountsPanelUi = () => {
     const twdState = states.twdBankAccount ?? 1;
     const usdState = states.usdBankAccount ?? 1;
@@ -187,6 +260,44 @@
         );
       }
     });
+    syncBankAccountsPanelRegionUi();
+  };
+
+  const syncBankAccountsPanelRegionUi = () => {
+    const isCayman = getPrototypeRegion() === "cayman";
+    const twdSection = document.querySelector(
+      '[data-bank-accounts-section="twd"]',
+    );
+    const twdLinkBtn = document.querySelector('[data-bank-accounts-link="twd"]');
+    const usdLinkBtn = document.querySelector('[data-bank-accounts-link="usd"]');
+
+    if (twdSection) twdSection.hidden = isCayman;
+
+    const setLinkBtnVariant = (btn, variant) => {
+      if (!btn) return;
+      btn.classList.remove(
+        "bank-accounts-panel__btn--primary",
+        "bank-accounts-panel__btn--secondary",
+      );
+      btn.classList.add(
+        variant === "primary"
+          ? "bank-accounts-panel__btn--primary"
+          : "bank-accounts-panel__btn--secondary",
+      );
+    };
+
+    if (isCayman) {
+      setLinkBtnVariant(usdLinkBtn, "primary");
+    } else {
+      setLinkBtnVariant(twdLinkBtn, "primary");
+      setLinkBtnVariant(usdLinkBtn, "secondary");
+    }
+
+    document
+      .querySelectorAll(".bank-accounts-panel__edit-link")
+      .forEach((btn) => {
+        btn.hidden = !isCayman;
+      });
   };
 
   const syncPrototypeCustodiansToDocument = () => {
@@ -9155,6 +9266,7 @@
       });
       setPrototypeCustodian("twd", PROTOTYPE_CUSTODIAN_CONFIGS.twd.default);
       setPrototypeCustodian("usd", PROTOTYPE_CUSTODIAN_CONFIGS.usd.default);
+      setPrototypeRegion(PROTOTYPE_REGION_CONFIG.default);
       financeSummaryConfirmedNextBuy = "";
       financeSummaryConfirmedReserved = null;
       myPlansSubmittedPlan = null;
@@ -25789,6 +25901,7 @@
 
   initPrototypeReset();
   initPrototypeCustodianControls();
+  initPrototypeRegionControls();
   syncPrototypeFinanceCurrencySelectorVisible();
 
   // Drag-to-scroll for spotlight crypto grid.

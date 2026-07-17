@@ -3679,11 +3679,11 @@
                             </div>
                             <div class="bank-accounts-panel__card-copy">
                                 <div class="bank-accounts-panel__card-title">Deposit and withdraw TWD</div>
-                                <div class="bank-accounts-panel__card-desc">Link a bank account you already have: Any bank in Taiwan.</div>
+                                <div class="bank-accounts-panel__card-desc">Add a bank account you already have: Any bank in Taiwan.</div>
                             </div>
                         </div>
                         <button class="bank-accounts-panel__btn bank-accounts-panel__btn--primary" type="button" data-bank-accounts-link="twd">
-                            Link TWD bank account
+                            Add TWD bank account
                         </button>
                     </div>
                     <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
@@ -3728,7 +3728,7 @@
                             </div>
                         </div>
                         <button class="bank-accounts-panel__btn bank-accounts-panel__btn--secondary" type="button" data-bank-accounts-link="usd">
-                            Link USD bank account
+                            Add USD bank account
                         </button>
                     </div>
                     <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
@@ -3754,12 +3754,12 @@
             </div>
         </section>
 
-        <section class="link-twd-panel" data-link-twd-panel hidden aria-label="Link TWD bank account">
+        <section class="link-twd-panel" data-link-twd-panel hidden aria-label="Add TWD bank account">
             <div class="link-twd-panel__header">
                 <button class="link-twd-panel__icon-btn" type="button" data-link-twd-close aria-label="Back">
                     <img src="assets/icon_back.svg" alt="" />
                 </button>
-                <div class="link-twd-panel__title">Link TWD bank account</div>
+                <div class="link-twd-panel__title">Add TWD bank account</div>
                 <button class="link-twd-panel__icon-btn" type="button" aria-label="Support">
                     <img src="assets/icon_intercom.svg" alt="" />
                 </button>
@@ -3817,12 +3817,12 @@
             </div>
         </section>
 
-        <section class="link-usd-panel" data-link-usd-panel hidden aria-label="Link USD bank account">
+        <section class="link-usd-panel" data-link-usd-panel hidden aria-label="Add USD bank account">
             <div class="link-twd-panel__header">
                 <button class="link-twd-panel__icon-btn" type="button" data-link-usd-close aria-label="Back">
                     <img src="assets/icon_back.svg" alt="" />
                 </button>
-                <div class="link-twd-panel__title">Link USD bank account</div>
+                <div class="link-twd-panel__title">Add USD bank account</div>
                 <button class="link-twd-panel__icon-btn" type="button" aria-label="Support">
                     <img src="assets/icon_intercom.svg" alt="" />
                 </button>
@@ -7602,7 +7602,16 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                 </div>
             </div>
             <div class="build-badge__section-row">
-                <div class="build-badge__section-title">TWD custodian</div>
+                <div class="build-badge__section-title">Region</div>
+                <div class="build-badge__checkbox-group">
+                    <select class="build-badge__select" id="prototype-region" data-prototype-region aria-label="Prototype region">
+                        <option value="taiwan" selected>🇹🇼 Taiwan</option>
+                        <option value="cayman">🇰🇾 Cayman</option>
+                    </select>
+                </div>
+            </div>
+            <div class="build-badge__section-row">
+                <div class="build-badge__section-title">TWD custdn</div>
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" data-prototype-twd-custodian aria-label="TWD custodian">
                         <option value="kgi-active" selected>KGI active</option>
@@ -7611,7 +7620,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                 </div>
             </div>
             <div class="build-badge__section-row">
-                <div class="build-badge__section-title">USD custodian</div>
+                <div class="build-badge__section-title">USD custdn</div>
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" data-prototype-usd-custodian aria-label="USD custodian">
                         <option value="kgi-active" selected>KGI active</option>
