@@ -327,6 +327,15 @@
 
     if (twdSection) twdSection.hidden = isCayman;
 
+    const usdCardDesc = document.querySelector(
+      "[data-bank-accounts-usd-card-desc]",
+    );
+    if (usdCardDesc) {
+      usdCardDesc.textContent = isCayman
+        ? "Add a foreign-currency bank account you already have."
+        : "Add a KGI USD bank account you already have.";
+    }
+
     const setLinkBtnVariant = (btn, variant) => {
       if (!btn) return;
       btn.classList.remove(
