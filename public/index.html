@@ -3703,7 +3703,7 @@
                                 <img class="bank-accounts-panel__list-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
                             </button>
                         </div>
-                        <button class="bank-accounts-panel__edit-link" type="button" data-bank-accounts-edit="twd">Edit account</button>
+                        <button class="bank-accounts-panel__edit-link" type="button" data-bank-accounts-edit="twd">- -</button>
                     </div>
                 </div>
 
@@ -3732,23 +3732,41 @@
                         </button>
                     </div>
                     <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
-                        <div class="bank-accounts-panel__list-card">
-                            <button class="bank-accounts-panel__list-item" type="button" data-bank-accounts-item="usd">
-                                <span class="bank-accounts-panel__list-icon" aria-hidden="true">
-                                    <img src="assets/icon_currency_USD.svg" alt="" width="32" height="32" />
-                                </span>
-                                <span class="bank-accounts-panel__list-copy">
-                                    <span class="bank-accounts-panel__list-title">My KGI bank</span>
-                                    <span class="bank-accounts-panel__list-meta">
-                                        <span>Bank Name : KGI bank</span>
-                                        <span>Account number : 12345678999</span>
+                        <div class="bank-accounts-panel__list-stack">
+                            <div class="bank-accounts-panel__list-card">
+                                <button class="bank-accounts-panel__list-item" type="button" data-bank-accounts-item="usd">
+                                    <span class="bank-accounts-panel__list-icon" aria-hidden="true">
+                                        <img src="assets/icon_currency_USD.svg" alt="" width="32" height="32" />
                                     </span>
-                                    <span class="bank-accounts-panel__list-status bank-accounts-panel__list-status--verified" data-bank-accounts-status>Verified</span>
-                                </span>
-                                <img class="bank-accounts-panel__list-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
-                            </button>
+                                    <span class="bank-accounts-panel__list-copy">
+                                        <span class="bank-accounts-panel__list-title">My KGI bank</span>
+                                        <span class="bank-accounts-panel__list-meta">
+                                            <span>Bank Name : KGI bank</span>
+                                            <span>Account number : 12345678999</span>
+                                        </span>
+                                        <span class="bank-accounts-panel__list-status bank-accounts-panel__list-status--verified" data-bank-accounts-status>Verified</span>
+                                    </span>
+                                    <img class="bank-accounts-panel__list-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div class="bank-accounts-panel__list-card" data-bank-accounts-usd-card="secondary" hidden>
+                                <button class="bank-accounts-panel__list-item" type="button" data-bank-accounts-item="usd">
+                                    <span class="bank-accounts-panel__list-icon" aria-hidden="true">
+                                        <img src="assets/icon_currency_USD.svg" alt="" width="32" height="32" />
+                                    </span>
+                                    <span class="bank-accounts-panel__list-copy">
+                                        <span class="bank-accounts-panel__list-title">My KGI bank 2</span>
+                                        <span class="bank-accounts-panel__list-meta">
+                                            <span>Bank Name : KGI bank</span>
+                                            <span>Account number : 12345678999</span>
+                                        </span>
+                                        <span class="bank-accounts-panel__list-status bank-accounts-panel__list-status--verified" data-bank-accounts-status>Verified</span>
+                                    </span>
+                                    <img class="bank-accounts-panel__list-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                </button>
+                            </div>
                         </div>
-                        <button class="bank-accounts-panel__edit-link" type="button" data-bank-accounts-edit="usd">Edit account</button>
+                        <button class="bank-accounts-panel__edit-link" type="button" data-bank-accounts-edit="usd">Add USD account</button>
                     </div>
                 </div>
             </div>

@@ -60,13 +60,14 @@
     usdBankAccount: {
       storageKey: "xrexexchange.usdBankAccountState.v1",
       min: 1,
-      max: 5,
+      max: 6,
       labels: {
         1: "No USD BA",
         2: "USD BA submitted",
         3: "USD BA approved",
         4: "USD BA issues",
         5: "USD BA rejected",
+        6: "USD BA multiple",
       },
     },
   };
@@ -126,6 +127,7 @@
     3: { label: "Verified", modifier: "verified" },
     4: { label: "Issues", modifier: "issues" },
     5: { label: "Rejected", modifier: "rejected" },
+    6: { label: "Verified", modifier: "verified" },
   };
 
   const PROTOTYPE_CUSTODIAN_LABELS = {
@@ -140,13 +142,27 @@
   };
 
   const getPrototypeRegion = () => {
-    const raw =
-      document.documentElement.dataset.prototypeRegionActive ||
-      PROTOTYPE_REGION_CONFIG.default;
-    return PROTOTYPE_REGION_CONFIG.allowed.includes(raw)
-      ? raw
-      : PROTOTYPE_REGION_CONFIG.default;
+    const fromDoc = document.documentElement.dataset.prototypeRegionActive;
+    if (fromDoc && PROTOTYPE_REGION_CONFIG.allowed.includes(fromDoc)) {
+      return fromDoc;
+    }
+    try {
+      if (window.localStorage) {
+        const stored = window.localStorage.getItem(
+          PROTOTYPE_REGION_CONFIG.storageKey,
+        );
+        if (stored && PROTOTYPE_REGION_CONFIG.allowed.includes(stored)) {
+          return stored;
+        }
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    return PROTOTYPE_REGION_CONFIG.default;
   };
+
+  const getUsdBankAccountMaxState = () =>
+    getPrototypeRegion() === "cayman" ? 6 : 5;
 
   const queryPrototypeRegionSelect = () =>
     document.querySelector("select[data-prototype-region]");
@@ -164,6 +180,7 @@
     // Avoid colliding with the region <select data-prototype-region>.
     document.documentElement.removeAttribute("data-prototype-region");
     syncBankAccountsPanelRegionUi();
+    updateGroupUI("usdBankAccount");
   };
 
   const setPrototypeRegion = (next) => {
@@ -232,11 +249,48 @@
         "[data-bank-accounts-custodian-label]",
       );
       const statusEl = section.querySelector("[data-bank-accounts-status]");
+      const isUsdMultiple =
+        currency === "usd" &&
+        state === 6 &&
+        getPrototypeRegion() === "cayman";
 
       const isLinked = state >= 2;
       if (emptyEl) emptyEl.hidden = isLinked;
       if (linkedEl) linkedEl.hidden = !isLinked;
       if (custodianWrap) custodianWrap.hidden = !isLinked;
+
+      if (currency === "usd") {
+        const usdListItems = section.querySelectorAll(
+          "[data-bank-accounts-item='usd']",
+        );
+        const usdSecondaryCard = section.querySelector(
+          '[data-bank-accounts-usd-card="secondary"]',
+        );
+        if (usdSecondaryCard) usdSecondaryCard.hidden = !isUsdMultiple;
+        usdListItems.forEach((item, index) => {
+          const titleEl = item.querySelector(".bank-accounts-panel__list-title");
+          if (titleEl) {
+            titleEl.textContent = isUsdMultiple
+              ? `My KGI bank ${index + 1}`
+              : "My KGI bank";
+          }
+          const itemStatusEl = item.querySelector("[data-bank-accounts-status]");
+          if (itemStatusEl) {
+            const cfg =
+              BANK_ACCOUNT_LINKED_STATUS[state] || BANK_ACCOUNT_LINKED_STATUS[3];
+            itemStatusEl.textContent = cfg.label;
+            itemStatusEl.classList.remove(
+              "bank-accounts-panel__list-status--submitted",
+              "bank-accounts-panel__list-status--verified",
+              "bank-accounts-panel__list-status--issues",
+              "bank-accounts-panel__list-status--rejected",
+            );
+            itemStatusEl.classList.add(
+              `bank-accounts-panel__list-status--${cfg.modifier}`,
+            );
+          }
+        });
+      }
 
       if (custodianLabel) {
         const name =
@@ -245,7 +299,7 @@
         custodianLabel.textContent = `Custodian: ${name}`;
       }
 
-      if (statusEl) {
+      if (statusEl && currency !== "usd") {
         const cfg =
           BANK_ACCOUNT_LINKED_STATUS[state] || BANK_ACCOUNT_LINKED_STATUS[3];
         statusEl.textContent = cfg.label;
@@ -298,6 +352,10 @@
       .forEach((btn) => {
         btn.hidden = !isCayman;
       });
+
+    if (!isCayman && (states.usdBankAccount ?? 1) === 6) {
+      setState("usdBankAccount", 5, { force: true });
+    }
   };
 
   const syncPrototypeCustodiansToDocument = () => {
@@ -633,13 +691,17 @@
       nameEl.dataset.stateLabel = label;
     }
     if (downBtn) downBtn.disabled = value <= config.min;
-    if (upBtn) upBtn.disabled = value >= config.max;
+    const max =
+      group === "usdBankAccount" ? getUsdBankAccountMaxState() : config.max;
+    if (upBtn) upBtn.disabled = value >= max;
   };
 
   const setState = (group, next, opts = {}) => {
     const config = STATE_CONFIGS[group];
     if (!config) return config?.min ?? 1;
-    const clamped = clamp(parseInt(next, 10), config.min, config.max);
+    const max =
+      group === "usdBankAccount" ? getUsdBankAccountMaxState() : config.max;
+    const clamped = clamp(parseInt(next, 10), config.min, max);
     if (!opts.force && states[group] === clamped) return clamped;
 
     states[group] = clamped;
