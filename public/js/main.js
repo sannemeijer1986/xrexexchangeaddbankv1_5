@@ -7912,15 +7912,17 @@
     };
   };
 
-  const initLinkTwdPanel = (bankAccountsApi, bankAccountSuccessApi) => {
+  const initLinkTwdPanel = (
+    bankAccountsApi,
+    bankAccountSuccessApi,
+    custodianPanelApi,
+  ) => {
     const panel = document.querySelector("[data-link-twd-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
 
     const closeButtons = panel.querySelectorAll("[data-link-twd-close]");
     const compareBtn = panel.querySelector("[data-link-twd-compare]");
     const chooseBankBtn = panel.querySelector("[data-link-twd-choose-bank]");
-    const custodianNameEl = panel.querySelector(".link-twd-panel__custodian-name");
-    const custodianDescEl = panel.querySelector(".link-twd-panel__custodian-desc");
     const showSnackbar =
       bankAccountsApi?.showSnackbar ||
       (() => {
@@ -7961,14 +7963,7 @@
     });
     chooseBankBtn?.addEventListener("click", () => twdBankDetailsApi.open());
 
-    const custodianPanelApi = initCustodianPanel({
-      showSnackbar,
-      onKeep: ({ shortName, summary }) => {
-        if (custodianNameEl) custodianNameEl.textContent = shortName;
-        if (custodianDescEl) custodianDescEl.textContent = summary;
-      },
-    });
-    compareBtn?.addEventListener("click", () => custodianPanelApi.open());
+    compareBtn?.addEventListener("click", () => custodianPanelApi?.open?.());
 
     return {
       open: () => setOpen(true),
@@ -8379,7 +8374,7 @@
     };
   };
 
-  const initBaWizardFlow = () => {
+  const initBaWizardFlow = ({ custodianPanelApi, bankAccountSuccessApi } = {}) => {
     const container = document.querySelector(".phone-container");
     const panels = {
       intro: document.querySelector("[data-ba-wizard-intro]"),
@@ -8389,24 +8384,74 @@
       return { openFromMenu: () => {}, closeAll: () => {} };
     }
 
-    const stageEl = panels.flow.querySelector("[data-ba-wizard-stage]");
     const progressEl = panels.flow.querySelector("[data-ba-wizard-progress]");
     const progressLabelEl = panels.flow.querySelector(
       "[data-ba-wizard-progress-label]",
     );
-    const stepTitleEl = panels.flow.querySelector("[data-ba-wizard-step-title]");
+    const stepTitleEls = Array.from(
+      panels.flow.querySelectorAll("[data-ba-wizard-step-title]"),
+    );
+    let activeTitleEl = stepTitleEls[0] || null;
     const footerEl = panels.flow.querySelector("[data-ba-wizard-flow-footer]");
     const stepEls = Array.from(
       panels.flow.querySelectorAll("[data-ba-wizard-step]"),
     );
     const detailsPanel = panels.flow;
     let flowStep = 1;
+    let submitGeneration = 0;
+    const SUBMIT_LOADER_MS = 1600;
 
     const BA_WIZARD_STEP_TITLES = {
       1: "Choose the type of bank account you wish to add",
       2: "How adding your<br />bank works",
       3: "TWD bank account<br />details",
     };
+    const BA_WIZARD_MOTION_CLASSES = [
+      "is-leaving",
+      "is-enter-right",
+      "is-enter-left",
+      "is-leave-left",
+      "is-leave-right",
+    ];
+    const BA_WIZARD_MOTION_MS = 280;
+
+    const clearBaWizardStepMotion = (el) => {
+      el.classList.remove(...BA_WIZARD_MOTION_CLASSES);
+    };
+
+    const getBaWizardMotionClasses = (direction) => ({
+      enterClass: direction === "forward" ? "is-enter-right" : "is-enter-left",
+      leaveClass: direction === "forward" ? "is-leave-left" : "is-leave-right",
+    });
+
+    const prepareBaWizardLeaving = (el, leaveClass) => {
+      if (!el) return;
+      clearBaWizardStepMotion(el);
+      el.classList.remove("is-active");
+      el.classList.add("is-leaving", leaveClass);
+    };
+
+    const prepareBaWizardEntering = (el, enterClass) => {
+      if (!el) return;
+      clearBaWizardStepMotion(el);
+      el.classList.remove("is-active");
+      el.classList.add(enterClass);
+    };
+
+    const playBaWizardSlideMotion = (enteringEls) => {
+      enteringEls.filter(Boolean).forEach((el) => void el.offsetWidth);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          enteringEls.filter(Boolean).forEach((el) => {
+            el.classList.add("is-active");
+            el.classList.remove("is-enter-right", "is-enter-left");
+          });
+        });
+      });
+    };
+
+    const getInactiveTitleEl = () =>
+      stepTitleEls.find((el) => el !== activeTitleEl) || null;
 
     const syncBaWizardStepper = (step) => {
       if (!progressEl) return;
@@ -8417,8 +8462,28 @@
       );
       progressEl.classList.add(`ba-wizard-progress--step-${step}`);
       if (progressLabelEl) progressLabelEl.textContent = String(step);
-      if (stepTitleEl) {
-        stepTitleEl.innerHTML = BA_WIZARD_STEP_TITLES[step] || "";
+    };
+
+    const setBaWizardTitleInstant = (step) => {
+      const inactiveTitleEl = getInactiveTitleEl();
+      if (!activeTitleEl) return;
+
+      activeTitleEl.innerHTML = BA_WIZARD_STEP_TITLES[step] || "";
+      activeTitleEl.hidden = false;
+      activeTitleEl.classList.add("is-instant");
+      clearBaWizardStepMotion(activeTitleEl);
+      activeTitleEl.classList.add("is-active");
+      void activeTitleEl.offsetWidth;
+      activeTitleEl.classList.remove("is-instant");
+
+      if (inactiveTitleEl) {
+        inactiveTitleEl.hidden = true;
+        inactiveTitleEl.setAttribute("aria-hidden", "true");
+        inactiveTitleEl.classList.add("is-instant");
+        clearBaWizardStepMotion(inactiveTitleEl);
+        inactiveTitleEl.classList.remove("is-active");
+        void inactiveTitleEl.offsetWidth;
+        inactiveTitleEl.classList.remove("is-instant");
       }
     };
 
@@ -8432,13 +8497,16 @@
 
     const resetFlowSteps = () => {
       flowStep = 1;
-      if (stageEl) stageEl.dataset.direction = "forward";
       stepEls.forEach((el) => {
         const step = Number(el.dataset.baWizardStep);
-        el.classList.remove("is-leaving");
+        el.classList.add("is-instant");
+        clearBaWizardStepMotion(el);
         el.classList.toggle("is-active", step === 1);
+        void el.offsetWidth;
+        el.classList.remove("is-instant");
       });
       syncBaWizardStepper(1);
+      setBaWizardTitleInstant(1);
       syncFlowFooter(1);
     };
 
@@ -8454,21 +8522,35 @@
 
       if (direction === "forward" && nextStep === 3) resetDetailsForm();
 
-      if (stageEl) stageEl.dataset.direction = direction;
+      const { enterClass, leaveClass } = getBaWizardMotionClasses(direction);
+      const leavingTitleEl = activeTitleEl;
+      const nextTitleEl = getInactiveTitleEl();
 
-      if (currentEl && currentEl !== nextEl) {
-        currentEl.classList.remove("is-active");
-        currentEl.classList.add("is-leaving");
-        window.setTimeout(() => {
-          currentEl.classList.remove("is-leaving");
-        }, 280);
+      if (nextTitleEl) {
+        nextTitleEl.innerHTML = BA_WIZARD_STEP_TITLES[nextStep] || "";
+        nextTitleEl.hidden = false;
+        nextTitleEl.removeAttribute("aria-hidden");
       }
+      if (leavingTitleEl) leavingTitleEl.setAttribute("aria-hidden", "true");
 
-      nextEl.classList.remove("is-active", "is-leaving");
-      void nextEl.offsetWidth;
-      requestAnimationFrame(() => {
-        nextEl.classList.add("is-active");
-      });
+      prepareBaWizardLeaving(currentEl, leaveClass);
+      prepareBaWizardLeaving(leavingTitleEl, leaveClass);
+      prepareBaWizardEntering(nextEl, enterClass);
+      prepareBaWizardEntering(nextTitleEl, enterClass);
+      playBaWizardSlideMotion([nextEl, nextTitleEl]);
+
+      window.setTimeout(() => {
+        clearBaWizardStepMotion(currentEl);
+        if (leavingTitleEl) {
+          clearBaWizardStepMotion(leavingTitleEl);
+          leavingTitleEl.hidden = true;
+          leavingTitleEl.setAttribute("aria-hidden", "true");
+        }
+        if (nextTitleEl) {
+          nextTitleEl.removeAttribute("aria-hidden");
+          activeTitleEl = nextTitleEl;
+        }
+      }, BA_WIZARD_MOTION_MS);
 
       nextEl.scrollTop = 0;
       const scrollInner =
@@ -8546,6 +8628,8 @@
     };
 
     const closeAll = (opts = {}) => {
+      submitGeneration += 1;
+      if (loaderEl) loaderEl.hidden = true;
       setPanelOpen(panels.flow, false, opts);
       setPanelOpen(panels.intro, false, opts);
       resetFlowSteps();
@@ -8594,6 +8678,7 @@
       "[data-ba-wizard-details-english-name]",
     );
     const submitBtn = detailsPanel.querySelector("[data-ba-wizard-details-submit]");
+    const loaderEl = detailsPanel.querySelector("[data-ba-wizard-details-loader]");
     const editIdBtn = detailsPanel.querySelector("[data-ba-wizard-details-edit-id]");
     const consentButtons = Array.from(
       detailsPanel.querySelectorAll("[data-ba-wizard-details-consent]"),
@@ -8684,7 +8769,7 @@
       ?.addEventListener("click", () => goToStep(3, "forward"));
     panels.flow
       ?.querySelector("[data-ba-wizard-explainer-compare]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+      ?.addEventListener("click", () => custodianPanelApi?.open?.());
 
     detailsPanel
       ?.querySelectorAll("[data-ba-wizard-details-back-action]")
@@ -8749,21 +8834,99 @@
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
       setState("twdBankAccount", 2, { force: true });
-      showSnackbar("Application submitted");
-      closeAll();
+      const gen = (submitGeneration += 1);
+      if (loaderEl) loaderEl.hidden = false;
+      window.setTimeout(() => {
+        if (gen !== submitGeneration) return;
+        if (loaderEl) loaderEl.hidden = true;
+        bankAccountSuccessApi?.setOnDismiss?.(() => {
+          closeAll({ instant: true });
+        });
+        bankAccountSuccessApi?.open?.();
+      }, SUBMIT_LOADER_MS);
     });
+
+    const fillTwdBankDetails = () => {
+      detailsState.bankSelected = true;
+      detailsState.branchSelected = true;
+
+      if (bankValueEl) {
+        bankValueEl.textContent = "CTBC Bank";
+        bankValueEl.classList.remove("is-placeholder");
+      }
+      if (branchValueEl) {
+        branchValueEl.textContent = "0436 Taipei Xinyi";
+        branchValueEl.classList.remove("is-placeholder");
+      }
+      if (branchBtn) {
+        branchBtn.disabled = false;
+        branchBtn.classList.remove("is-disabled");
+      }
+
+      textInputs.forEach((input) => {
+        if (input) input.value = autofillValues.get(input) || "";
+      });
+
+      consentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-ba-wizard-details-consent");
+        if (key) detailsState.consents[key] = true;
+        btn.setAttribute("aria-pressed", "true");
+        const icon = btn.querySelector(".ba-wizard-details__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_on.svg";
+      });
+
+      syncDetailsSubmit();
+    };
 
     return {
       openFromMenu: openIntro,
       closeAll,
+      fillTwdBankDetails,
     };
   };
 
   const bankAccountsApi = initBankAccountsPanel();
-  const baWizardApi = initBaWizardFlow();
-  openBaWizardFromMenu = baWizardApi.openFromMenu;
+  const showSnackbar =
+    bankAccountsApi?.showSnackbar ||
+    (() => {
+      /* noop */
+    });
+  const syncTwdCustodianCardCopy = ({ shortName, summary }) => {
+    document
+      .querySelectorAll(
+        ".link-twd-panel__custodian-name, .ba-wizard-explainer__custodian-name",
+      )
+      .forEach((el) => {
+        el.textContent = shortName;
+      });
+    document
+      .querySelectorAll(
+        ".link-twd-panel__custodian-desc, .ba-wizard-explainer__custodian-desc",
+      )
+      .forEach((el) => {
+        el.textContent = summary;
+      });
+  };
+  const custodianPanelApi = initCustodianPanel({
+    showSnackbar,
+    onKeep: syncTwdCustodianCardCopy,
+  });
   const bankAccountSuccessApi = initTwdBankSuccessPanel();
-  const linkTwdApi = initLinkTwdPanel(bankAccountsApi, bankAccountSuccessApi);
+  const baWizardApi = initBaWizardFlow({
+    custodianPanelApi,
+    bankAccountSuccessApi,
+  });
+  openBaWizardFromMenu = baWizardApi.openFromMenu;
+  document
+    .querySelector("[data-prototype-fill-twd-bank]")
+    ?.addEventListener("click", () => {
+      baWizardApi.fillTwdBankDetails?.();
+    });
+  const linkTwdApi = initLinkTwdPanel(
+    bankAccountsApi,
+    bankAccountSuccessApi,
+    custodianPanelApi,
+  );
   const linkUsdApi = initLinkUsdPanel(bankAccountsApi, bankAccountSuccessApi);
   bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
   bankAccountsApi.setOnLinkUsd(linkUsdApi.open);

@@ -2160,6 +2160,9 @@ html[data-active-tab="wallet"] {
 
 .ba-wizard-flow {
   z-index: 2150;
+  --ba-wizard-motion-duration: 0.28s;
+  --ba-wizard-motion-easing: ease;
+  --ba-wizard-motion-distance: 20px;
 }
 
 .ba-wizard-intro.is-open,
@@ -2191,7 +2194,13 @@ html[data-active-tab="wallet"] {
   }
 }
 
+.ba-wizard-flow__step-title-wrap {
+  display: grid;
+  overflow: hidden;
+}
+
 .ba-wizard-flow__step-title {
+  grid-area: 1 / 1;
   margin: 0;
   padding: 0;
   font-size: 22px;
@@ -2199,6 +2208,59 @@ html[data-active-tab="wallet"] {
   line-height: normal;
   color: #ffffff;
   text-align: center;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+.ba-wizard-flow__step,
+.ba-wizard-flow__step-title {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(0);
+  transition:
+    opacity var(--ba-wizard-motion-duration) var(--ba-wizard-motion-easing),
+    transform var(--ba-wizard-motion-duration) var(--ba-wizard-motion-easing),
+    visibility var(--ba-wizard-motion-duration);
+  pointer-events: none;
+
+  &.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  &.is-leaving {
+    opacity: 0;
+    visibility: visible;
+  }
+
+  &.is-enter-right,
+  &.is-enter-left {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &.is-enter-right {
+    transform: translateX(var(--ba-wizard-motion-distance));
+  }
+
+  &.is-enter-left {
+    transform: translateX(calc(-1 * var(--ba-wizard-motion-distance)));
+  }
+
+  &.is-leaving.is-leave-left {
+    transform: translateX(calc(-1 * var(--ba-wizard-motion-distance)));
+  }
+
+  &.is-leaving.is-leave-right {
+    transform: translateX(var(--ba-wizard-motion-distance));
+  }
+
+  &.is-instant {
+    transition: none !important;
+  }
 }
 
 .ba-wizard-flow__stage {
@@ -2214,14 +2276,6 @@ html[data-active-tab="wallet"] {
   overflow-x: hidden;
   padding-top: 20px;
   overflow-y: auto;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(0);
-  transition:
-    opacity 0.28s ease,
-    transform 0.28s ease,
-    visibility 0.28s;
-  pointer-events: none;
   scrollbar-width: none;
   -ms-overflow-style: none;
 
@@ -2232,33 +2286,19 @@ html[data-active-tab="wallet"] {
   }
 
   &.is-active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(0);
     pointer-events: auto;
     z-index: 1;
   }
 
   &.is-leaving {
-    opacity: 0;
     z-index: 0;
   }
-}
 
-.ba-wizard-flow__stage[data-direction="forward"] .ba-wizard-flow__step:not(.is-active) {
-  transform: translateX(20px);
-}
-
-.ba-wizard-flow__stage[data-direction="forward"] .ba-wizard-flow__step.is-leaving {
-  transform: translateX(-20px);
-}
-
-.ba-wizard-flow__stage[data-direction="back"] .ba-wizard-flow__step:not(.is-active) {
-  transform: translateX(-20px);
-}
-
-.ba-wizard-flow__stage[data-direction="back"] .ba-wizard-flow__step.is-leaving {
-  transform: translateX(20px);
+  &.is-enter-right,
+  &.is-enter-left {
+    pointer-events: none;
+    z-index: 2;
+  }
 }
 
 .ba-wizard-flow__footer {
@@ -2270,6 +2310,20 @@ html[data-active-tab="wallet"] {
 
 .ba-wizard-flow__footer[hidden] {
   display: none !important;
+}
+
+.ba-wizard-flow__loader.plan-submit-loader {
+  z-index: 10;
+  background: transparent;
+
+  .plan-submit-loader__backdrop {
+    background: rgba(13, 14, 15, 0.75);
+  }
+
+  .plan-submit-loader__card {
+    width: 168px;
+    height: 168px;
+  }
 }
 
 .ba-wizard-flow__step--2-active .ba-wizard-explainer__scroll {
@@ -2366,6 +2420,17 @@ html[data-active-tab="wallet"] {
   font-weight: 400;
   line-height: 23px;
   color: #9b9c9c;
+}
+
+// Beat `.phone-container p` from _base.scss for Style 2 wizard intro copy.
+.ba-wizard-intro {
+  p.ba-wizard-intro__desc {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 23px;
+    color: #9b9c9c;
+  }
 }
 
 .ba-wizard-intro__footer {
@@ -2721,6 +2786,25 @@ html[data-active-tab="wallet"] {
   font-weight: 400;
   line-height: normal;
   color: #9b9c9c;
+}
+
+// Beat `.phone-container p` from _base.scss for Style 2 wizard explainer copy.
+.ba-wizard-flow {
+  p.ba-wizard-explainer__step-desc {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #9b9c9c;
+  }
+
+  p.ba-wizard-explainer__custodian-desc {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: normal;
+    color: #9b9c9c;
+  }
 }
 
 .ba-wizard-explainer__custodian-link {
@@ -3655,7 +3739,7 @@ html[data-active-tab="wallet"] {
   padding-bottom: 16px;
 }
 
-// Figma 7655:10288 — TWD bank account submitted success
+// Figma 7655:10288 / 7663:45410 — TWD bank account submitted success
 .twd-bank-success-panel {
   position: absolute;
   inset: 0;

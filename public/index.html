@@ -3690,7 +3690,10 @@
                     <span class="ba-wizard-progress__marker ba-wizard-progress__marker--side" data-ba-wizard-progress-slot="right-near"></span>
                     <span class="ba-wizard-progress__marker ba-wizard-progress__marker--side" data-ba-wizard-progress-slot="right-far"></span>
                 </div>
-                <h2 class="ba-wizard-flow__step-title" data-ba-wizard-step-title>Choose the type of bank account you wish to add</h2>
+                <div class="ba-wizard-flow__step-title-wrap" data-ba-wizard-step-title-wrap>
+                    <h2 class="ba-wizard-flow__step-title is-active" data-ba-wizard-step-title>Choose the type of bank account you wish to add</h2>
+                    <h2 class="ba-wizard-flow__step-title" data-ba-wizard-step-title hidden aria-hidden="true"></h2>
+                </div>
             </div>
             <div class="ba-wizard-flow__stage" data-ba-wizard-stage>
                 <div class="ba-wizard-flow__step is-active" data-ba-wizard-step="1">
@@ -3836,6 +3839,12 @@
             <footer class="ba-wizard-flow__footer" data-ba-wizard-flow-footer hidden>
                 <button class="ba-wizard-explainer__btn" type="button" data-ba-wizard-flow-understood>Understood</button>
             </footer>
+            <div class="ba-wizard-flow__loader plan-submit-loader" data-ba-wizard-details-loader hidden>
+                <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
+                <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">
+                    <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
+                </div>
+            </div>
         </section>
 
         <section class="bank-accounts-panel" data-bank-accounts-panel hidden aria-label="Bank accounts">
@@ -4224,7 +4233,7 @@
             </div>
         </section>
 
-        <section class="twd-bank-success-panel" data-twd-bank-success-panel hidden aria-label="Application submitted">
+        <section class="twd-bank-success-panel" data-twd-bank-success-panel hidden aria-label="Bank account submitted">
             <header class="twd-bank-success-panel__header">
                 <button class="twd-bank-success-panel__icon-btn" type="button" data-twd-bank-success-close aria-label="Close">
                     <img src="assets/icon_close.svg" alt="" />
@@ -4234,7 +4243,7 @@
             <div class="twd-bank-success-panel__body">
                 <div class="twd-bank-success-panel__hero">
                     <img class="twd-bank-success-panel__icon" src="assets/icon_success_screen.svg" alt="" width="60" height="60" aria-hidden="true" />
-                    <h2 class="twd-bank-success-panel__title">Application submitted</h2>
+                    <h2 class="twd-bank-success-panel__title">Bank account submitted</h2>
                     <p class="twd-bank-success-panel__sub">Bank account verification requires 1-3 business days</p>
                 </div>
             </div>
