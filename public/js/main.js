@@ -223,6 +223,104 @@
     document.dispatchEvent(new CustomEvent("prototype-region-change"));
   };
 
+  const PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG = {
+    storageKey: "xrexexchange.prototypeBankAccountsStyle.v1",
+    default: "style1",
+    allowed: ["style1", "style2"],
+  };
+
+  const getPrototypeBankAccountsStyle = () => {
+    const fromDoc =
+      document.documentElement.dataset.prototypeBankAccountsStyleActive;
+    if (
+      fromDoc &&
+      PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(fromDoc)
+    ) {
+      return fromDoc;
+    }
+    try {
+      if (window.localStorage) {
+        const stored = window.localStorage.getItem(
+          PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.storageKey,
+        );
+        if (
+          stored &&
+          PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(stored)
+        ) {
+          return stored;
+        }
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    return PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+  };
+
+  const queryPrototypeBankAccountsStyleSelect = () =>
+    document.querySelector("select[data-prototype-bank-accounts-style]");
+
+  const syncPrototypeBankAccountsStyleToDocument = () => {
+    const sel = queryPrototypeBankAccountsStyleSelect();
+    const raw = String(sel?.value || PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default);
+    const value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(raw)
+      ? raw
+      : PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+    if (sel instanceof HTMLSelectElement && sel.value !== value) {
+      sel.value = value;
+    }
+    document.documentElement.dataset.prototypeBankAccountsStyleActive = value;
+    document.documentElement.removeAttribute("data-prototype-bank-accounts-style");
+  };
+
+  let closeBaWizardFlow = () => {};
+
+  const setPrototypeBankAccountsStyle = (next) => {
+    const value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(
+      String(next),
+    )
+      ? String(next)
+      : PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(
+          PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.storageKey,
+          value,
+        );
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    const sel = queryPrototypeBankAccountsStyleSelect();
+    if (sel instanceof HTMLSelectElement) sel.value = value;
+    syncPrototypeBankAccountsStyleToDocument();
+    if (value === "style1") closeBaWizardFlow();
+    document.dispatchEvent(new CustomEvent("prototype-bank-accounts-style-change"));
+  };
+
+  const initPrototypeBankAccountsStyleControls = () => {
+    const sel = queryPrototypeBankAccountsStyleSelect();
+    if (!(sel instanceof HTMLSelectElement)) return;
+    let value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+    try {
+      if (window.localStorage) {
+        value =
+          window.localStorage.getItem(
+            PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.storageKey,
+          ) || PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    if (!PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(value)) {
+      value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+    }
+    sel.value = value;
+    sel.addEventListener("change", () =>
+      setPrototypeBankAccountsStyle(sel.value),
+    );
+    syncPrototypeBankAccountsStyleToDocument();
+  };
+
   const syncBankAccountsPanelUi = () => {
     const twdState = states.twdBankAccount ?? 1;
     const usdState = states.usdBankAccount ?? 1;
@@ -7235,6 +7333,8 @@
     });
   };
 
+  let openBaWizardFromMenu = () => {};
+
   const initBankAccountsPanel = () => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
     const container = document.querySelector(".phone-container");
@@ -7312,6 +7412,15 @@
 
     openButtons.forEach((button) => {
       button.addEventListener("click", () => {
+        if (getPrototypeBankAccountsStyle() === "style2") {
+          if (container && container.classList.contains("is-menu-open")) {
+            container.classList.remove("is-menu-open");
+            setTimeout(() => openBaWizardFromMenu(), 220);
+          } else {
+            openBaWizardFromMenu();
+          }
+          return;
+        }
         if (container && container.classList.contains("is-menu-open")) {
           container.classList.remove("is-menu-open");
           setTimeout(() => setOpen(true), 220);
@@ -8270,7 +8379,389 @@
     };
   };
 
+  const initBaWizardFlow = () => {
+    const container = document.querySelector(".phone-container");
+    const panels = {
+      intro: document.querySelector("[data-ba-wizard-intro]"),
+      flow: document.querySelector("[data-ba-wizard-flow]"),
+    };
+    if (!panels.intro || !panels.flow) {
+      return { openFromMenu: () => {}, closeAll: () => {} };
+    }
+
+    const stageEl = panels.flow.querySelector("[data-ba-wizard-stage]");
+    const progressEl = panels.flow.querySelector("[data-ba-wizard-progress]");
+    const progressLabelEl = panels.flow.querySelector(
+      "[data-ba-wizard-progress-label]",
+    );
+    const stepTitleEl = panels.flow.querySelector("[data-ba-wizard-step-title]");
+    const footerEl = panels.flow.querySelector("[data-ba-wizard-flow-footer]");
+    const stepEls = Array.from(
+      panels.flow.querySelectorAll("[data-ba-wizard-step]"),
+    );
+    const detailsPanel = panels.flow;
+    let flowStep = 1;
+
+    const BA_WIZARD_STEP_TITLES = {
+      1: "Choose the type of bank account you wish to add",
+      2: "How adding your<br />bank works",
+      3: "TWD bank account<br />details",
+    };
+
+    const syncBaWizardStepper = (step) => {
+      if (!progressEl) return;
+      progressEl.classList.remove(
+        "ba-wizard-progress--step-1",
+        "ba-wizard-progress--step-2",
+        "ba-wizard-progress--step-3",
+      );
+      progressEl.classList.add(`ba-wizard-progress--step-${step}`);
+      if (progressLabelEl) progressLabelEl.textContent = String(step);
+      if (stepTitleEl) {
+        stepTitleEl.innerHTML = BA_WIZARD_STEP_TITLES[step] || "";
+      }
+    };
+
+    const syncFlowFooter = (step) => {
+      if (footerEl) footerEl.hidden = step !== 2;
+      panels.flow.classList.toggle(
+        "ba-wizard-flow__step--2-active",
+        step === 2,
+      );
+    };
+
+    const resetFlowSteps = () => {
+      flowStep = 1;
+      if (stageEl) stageEl.dataset.direction = "forward";
+      stepEls.forEach((el) => {
+        const step = Number(el.dataset.baWizardStep);
+        el.classList.remove("is-leaving");
+        el.classList.toggle("is-active", step === 1);
+      });
+      syncBaWizardStepper(1);
+      syncFlowFooter(1);
+    };
+
+    const goToStep = (nextStep, direction = "forward") => {
+      if (nextStep === flowStep) return;
+      const currentEl = panels.flow.querySelector(
+        `[data-ba-wizard-step="${flowStep}"]`,
+      );
+      const nextEl = panels.flow.querySelector(
+        `[data-ba-wizard-step="${nextStep}"]`,
+      );
+      if (!nextEl) return;
+
+      if (direction === "forward" && nextStep === 3) resetDetailsForm();
+
+      if (stageEl) stageEl.dataset.direction = direction;
+
+      if (currentEl && currentEl !== nextEl) {
+        currentEl.classList.remove("is-active");
+        currentEl.classList.add("is-leaving");
+        window.setTimeout(() => {
+          currentEl.classList.remove("is-leaving");
+        }, 280);
+      }
+
+      nextEl.classList.remove("is-active", "is-leaving");
+      void nextEl.offsetWidth;
+      requestAnimationFrame(() => {
+        nextEl.classList.add("is-active");
+      });
+
+      nextEl.scrollTop = 0;
+      const scrollInner =
+        nextEl.querySelector(".ba-wizard-type__body") ||
+        nextEl.querySelector(".ba-wizard-explainer__scroll") ||
+        nextEl.querySelector(".ba-wizard-details__body");
+      if (scrollInner) scrollInner.scrollTop = 0;
+
+      syncBaWizardStepper(nextStep);
+      syncFlowFooter(nextStep);
+      flowStep = nextStep;
+    };
+
+    let snackbarTimeout = null;
+
+    const showSnackbar = (message) => {
+      const snackbar = container?.querySelector("[data-snackbar]");
+      if (!snackbar) return;
+      const text = snackbar.querySelector("[data-snackbar-text]");
+      if (text) text.textContent = message;
+      if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+        snackbarTimeout = null;
+      }
+      snackbar.hidden = false;
+      snackbar.classList.remove("is-visible");
+      void snackbar.offsetWidth;
+      requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+      snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove("is-visible");
+        snackbarTimeout = setTimeout(() => {
+          if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+        }, 320);
+      }, 2200);
+    };
+
+    const setPhoneShellOpen = (nextOpen) => {
+      if (!container) return;
+      if (nextOpen) {
+        container.classList.remove("is-bank-accounts-fading");
+        container.classList.remove("is-bank-accounts-open");
+        requestAnimationFrame(() => {
+          container.classList.add("is-bank-accounts-fading");
+        });
+        setTimeout(() => {
+          container.classList.add("is-bank-accounts-open");
+        }, 350);
+      } else {
+        scrollEntryContentToTop();
+        container.classList.add("is-bank-accounts-fading");
+        container.classList.remove("is-bank-accounts-open");
+        requestAnimationFrame(() => {
+          container.classList.remove("is-bank-accounts-fading");
+        });
+      }
+    };
+
+    const setPanelOpen = (panel, nextOpen, opts = {}) => {
+      if (!panel) return;
+      if (nextOpen) {
+        panel.hidden = false;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+      } else if (opts.instant) {
+        panel.classList.remove("is-open");
+        panel.hidden = true;
+      } else {
+        panel.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) panel.hidden = true;
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    const closeAll = (opts = {}) => {
+      setPanelOpen(panels.flow, false, opts);
+      setPanelOpen(panels.intro, false, opts);
+      resetFlowSteps();
+      setPhoneShellOpen(false);
+    };
+
+    closeBaWizardFlow = closeAll;
+
+    const openIntro = () => {
+      closeAll({ instant: true });
+      setPanelOpen(panels.intro, true);
+      setPhoneShellOpen(true);
+    };
+
+    const openFlow = () => {
+      resetFlowSteps();
+      setPanelOpen(panels.flow, true);
+    };
+
+    const backFromFlow = () => {
+      if (flowStep <= 1) {
+        setPanelOpen(panels.flow, false);
+      } else {
+        goToStep(flowStep - 1, "back");
+      }
+    };
+
+    const bankBtn = detailsPanel.querySelector("[data-ba-wizard-details-bank]");
+    const branchBtn = detailsPanel.querySelector("[data-ba-wizard-details-branch]");
+    const bankValueEl = detailsPanel.querySelector(
+      "[data-ba-wizard-details-bank-value]",
+    );
+    const branchValueEl = detailsPanel.querySelector(
+      "[data-ba-wizard-details-branch-value]",
+    );
+    const accountNumberInput = detailsPanel.querySelector(
+      "[data-ba-wizard-details-account-number]",
+    );
+    const accountNicknameInput = detailsPanel.querySelector(
+      "[data-ba-wizard-details-account-nickname]",
+    );
+    const chineseNameInput = detailsPanel.querySelector(
+      "[data-ba-wizard-details-chinese-name]",
+    );
+    const englishNameInput = detailsPanel.querySelector(
+      "[data-ba-wizard-details-english-name]",
+    );
+    const submitBtn = detailsPanel.querySelector("[data-ba-wizard-details-submit]");
+    const editIdBtn = detailsPanel.querySelector("[data-ba-wizard-details-edit-id]");
+    const consentButtons = Array.from(
+      detailsPanel.querySelectorAll("[data-ba-wizard-details-consent]"),
+    );
+    const textInputs = [
+      accountNumberInput,
+      accountNicknameInput,
+      chineseNameInput,
+      englishNameInput,
+    ];
+    const autofillValues = new Map([
+      [accountNumberInput, "12345678901234"],
+      [accountNicknameInput, "My CTBC bank"],
+      [chineseNameInput, "王小明"],
+      [englishNameInput, "XIAO MING WANG"],
+    ]);
+    const detailsState = {
+      bankSelected: false,
+      branchSelected: false,
+      consents: {
+        "id-match": false,
+        lawful: false,
+      },
+    };
+
+    const syncDetailsSubmit = () => {
+      const isValid =
+        detailsState.bankSelected &&
+        detailsState.branchSelected &&
+        accountNumberInput?.value.trim() &&
+        accountNicknameInput?.value.trim() &&
+        chineseNameInput?.value.trim() &&
+        englishNameInput?.value.trim() &&
+        detailsState.consents["id-match"] &&
+        detailsState.consents.lawful;
+      if (submitBtn) submitBtn.disabled = !isValid;
+    };
+
+    const resetDetailsForm = () => {
+      detailsState.bankSelected = false;
+      detailsState.branchSelected = false;
+      detailsState.consents["id-match"] = false;
+      detailsState.consents.lawful = false;
+
+      if (bankValueEl) {
+        bankValueEl.textContent = "Select bank";
+        bankValueEl.classList.add("is-placeholder");
+      }
+      if (branchValueEl) {
+        branchValueEl.textContent = "Select branch";
+        branchValueEl.classList.add("is-placeholder");
+      }
+      if (branchBtn) {
+        branchBtn.disabled = true;
+        branchBtn.classList.add("is-disabled");
+      }
+
+      textInputs.forEach((input) => {
+        if (input) input.value = "";
+      });
+
+      consentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-ba-wizard-details-consent");
+        if (key) detailsState.consents[key] = false;
+        btn.setAttribute("aria-pressed", "false");
+        const icon = btn.querySelector(".ba-wizard-details__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_off.svg";
+      });
+
+      syncDetailsSubmit();
+    };
+
+    panels.intro
+      ?.querySelector("[data-ba-wizard-intro-continue]")
+      ?.addEventListener("click", openFlow);
+
+    panels.flow
+      ?.querySelector("[data-ba-wizard-flow-back]")
+      ?.addEventListener("click", backFromFlow);
+    panels.flow
+      ?.querySelector("[data-ba-wizard-type-twd]")
+      ?.addEventListener("click", () => goToStep(2, "forward"));
+    panels.flow
+      ?.querySelector("[data-ba-wizard-type-usd]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    panels.flow
+      ?.querySelector("[data-ba-wizard-flow-understood]")
+      ?.addEventListener("click", () => goToStep(3, "forward"));
+    panels.flow
+      ?.querySelector("[data-ba-wizard-explainer-compare]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    detailsPanel
+      ?.querySelectorAll("[data-ba-wizard-details-back-action]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => goToStep(2, "back"));
+      });
+
+    bankBtn?.addEventListener("click", () => {
+      detailsState.bankSelected = true;
+      if (bankValueEl) {
+        bankValueEl.textContent = "CTBC Bank";
+        bankValueEl.classList.remove("is-placeholder");
+      }
+      if (branchBtn) {
+        branchBtn.disabled = false;
+        branchBtn.classList.remove("is-disabled");
+      }
+      syncDetailsSubmit();
+    });
+
+    branchBtn?.addEventListener("click", () => {
+      if (!detailsState.bankSelected) return;
+      detailsState.branchSelected = true;
+      if (branchValueEl) {
+        branchValueEl.textContent = "0436 Taipei Xinyi";
+        branchValueEl.classList.remove("is-placeholder");
+      }
+      syncDetailsSubmit();
+    });
+
+    textInputs.forEach((input) => {
+      input?.addEventListener("input", syncDetailsSubmit);
+      input?.addEventListener("focus", () => {
+        if (input.value.trim()) return;
+        input.value = autofillValues.get(input) || "";
+        syncDetailsSubmit();
+      });
+    });
+
+    consentButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-ba-wizard-details-consent");
+        if (!key) return;
+        const nextChecked = !detailsState.consents[key];
+        detailsState.consents[key] = nextChecked;
+        btn.setAttribute("aria-pressed", nextChecked ? "true" : "false");
+        const icon = btn.querySelector(".ba-wizard-details__consent-icon");
+        if (icon) {
+          icon.src = nextChecked
+            ? "assets/icon_checkbox_on.svg"
+            : "assets/icon_checkbox_off.svg";
+        }
+        syncDetailsSubmit();
+      });
+    });
+
+    panels.intro
+      ?.querySelector("[data-ba-wizard-intro-close]")
+      ?.addEventListener("click", () => closeAll());
+
+    editIdBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    submitBtn?.addEventListener("click", () => {
+      if (submitBtn.disabled) return;
+      setState("twdBankAccount", 2, { force: true });
+      showSnackbar("Application submitted");
+      closeAll();
+    });
+
+    return {
+      openFromMenu: openIntro,
+      closeAll,
+    };
+  };
+
   const bankAccountsApi = initBankAccountsPanel();
+  const baWizardApi = initBaWizardFlow();
+  openBaWizardFromMenu = baWizardApi.openFromMenu;
   const bankAccountSuccessApi = initTwdBankSuccessPanel();
   const linkTwdApi = initLinkTwdPanel(bankAccountsApi, bankAccountSuccessApi);
   const linkUsdApi = initLinkUsdPanel(bankAccountsApi, bankAccountSuccessApi);
@@ -9338,6 +9829,7 @@
       setPrototypeCustodian("twd", PROTOTYPE_CUSTODIAN_CONFIGS.twd.default);
       setPrototypeCustodian("usd", PROTOTYPE_CUSTODIAN_CONFIGS.usd.default);
       setPrototypeRegion(PROTOTYPE_REGION_CONFIG.default);
+      setPrototypeBankAccountsStyle(PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default);
       financeSummaryConfirmedNextBuy = "";
       financeSummaryConfirmedReserved = null;
       myPlansSubmittedPlan = null;
@@ -25973,6 +26465,7 @@
   initPrototypeReset();
   initPrototypeCustodianControls();
   initPrototypeRegionControls();
+  initPrototypeBankAccountsStyleControls();
   syncPrototypeFinanceCurrencySelectorVisible();
 
   // Drag-to-scroll for spotlight crypto grid.

@@ -3650,6 +3650,194 @@
             </div>
         </section>
 
+        <section class="ba-wizard-intro" data-ba-wizard-intro hidden aria-label="Add a bank account">
+            <div class="ba-wizard-intro__hero" aria-hidden="true">
+                <img class="ba-wizard-intro__hero-img" src="assets/illu_ba_wizard_intro.svg" alt="" />
+            </div>
+            <header class="ba-wizard-intro__header">
+                <button class="ba-wizard-intro__icon-btn" type="button" data-ba-wizard-intro-close aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="ba-wizard-intro__header-spacer" aria-hidden="true"></div>
+                <button class="ba-wizard-intro__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+            <div class="ba-wizard-intro__content">
+                <span class="ba-wizard-intro__badge">Set up</span>
+                <h2 class="ba-wizard-intro__title">Add a bank account</h2>
+                <p class="ba-wizard-intro__desc">Add a bank account you already have to easily deposit and withdraw Fiat money in XREX</p>
+            </div>
+            <footer class="ba-wizard-intro__footer">
+                <button class="ba-wizard-intro__btn" type="button" data-ba-wizard-intro-continue>Continue</button>
+            </footer>
+        </section>
+
+        <section class="ba-wizard-flow" data-ba-wizard-flow hidden aria-label="Add bank account wizard">
+            <header class="ba-wizard-pageheader">
+                <button class="ba-wizard-pageheader__icon-btn" type="button" data-ba-wizard-flow-back aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <button class="ba-wizard-pageheader__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+            <div class="ba-wizard-flow__stepper" data-ba-wizard-stepper>
+                <div class="ba-wizard-progress ba-wizard-progress--step-1" data-ba-wizard-progress>
+                    <span class="ba-wizard-progress__marker ba-wizard-progress__marker--side" data-ba-wizard-progress-slot="left-far"></span>
+                    <span class="ba-wizard-progress__marker ba-wizard-progress__marker--side" data-ba-wizard-progress-slot="left-near"></span>
+                    <span class="ba-wizard-progress__marker ba-wizard-progress__marker--active" data-ba-wizard-progress-label>1</span>
+                    <span class="ba-wizard-progress__marker ba-wizard-progress__marker--side" data-ba-wizard-progress-slot="right-near"></span>
+                    <span class="ba-wizard-progress__marker ba-wizard-progress__marker--side" data-ba-wizard-progress-slot="right-far"></span>
+                </div>
+                <h2 class="ba-wizard-flow__step-title" data-ba-wizard-step-title>Choose the type of bank account you wish to add</h2>
+            </div>
+            <div class="ba-wizard-flow__stage" data-ba-wizard-stage>
+                <div class="ba-wizard-flow__step is-active" data-ba-wizard-step="1">
+                    <div class="ba-wizard-type__body">
+                        <div class="ba-wizard-type__list">
+                            <button class="ba-wizard-type__item" type="button" data-ba-wizard-type-twd>
+                                <span class="ba-wizard-type__item-icon" aria-hidden="true">
+                                    <img src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" />
+                                </span>
+                                <span class="ba-wizard-type__item-copy">
+                                    <span class="ba-wizard-type__item-title">TWD bank account</span>
+                                    <span class="ba-wizard-type__item-desc">For Taiwan Dollar deposits &amp; withdrawals</span>
+                                </span>
+                                <img class="ba-wizard-type__item-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                            </button>
+                            <button class="ba-wizard-type__item" type="button" data-ba-wizard-type-usd>
+                                <span class="ba-wizard-type__item-icon" aria-hidden="true">
+                                    <img src="assets/icon_currency_USD.svg" alt="" width="32" height="32" />
+                                </span>
+                                <span class="ba-wizard-type__item-copy">
+                                    <span class="ba-wizard-type__item-title">USD bank account</span>
+                                    <span class="ba-wizard-type__item-desc">For US Dollar deposits &amp; withdrawals</span>
+                                    <span class="ba-wizard-type__item-note">Only KGI bank supported</span>
+                                </span>
+                                <img class="ba-wizard-type__item-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ba-wizard-flow__step" data-ba-wizard-step="2">
+                    <div class="ba-wizard-explainer__scroll">
+                        <div class="ba-wizard-explainer__steps-card">
+                            <div class="ba-wizard-explainer__step">
+                                <span class="ba-wizard-explainer__step-badge" aria-hidden="true">1</span>
+                                <div class="ba-wizard-explainer__step-copy">
+                                    <div class="ba-wizard-explainer__step-title">Choose your bank</div>
+                                    <p class="ba-wizard-explainer__step-desc">Any bank in Taiwan works: CTBC, Cathay, Post office, all of them.</p>
+                                </div>
+                            </div>
+                            <div class="ba-wizard-explainer__step-divider" aria-hidden="true"></div>
+                            <div class="ba-wizard-explainer__step">
+                                <span class="ba-wizard-explainer__step-badge" aria-hidden="true">2</span>
+                                <div class="ba-wizard-explainer__step-copy">
+                                    <div class="ba-wizard-explainer__step-title">Provide your bank details</div>
+                                    <p class="ba-wizard-explainer__step-desc">The account must be in your name: Same as your verified ID.</p>
+                                </div>
+                            </div>
+                            <div class="ba-wizard-explainer__step-divider" aria-hidden="true"></div>
+                            <div class="ba-wizard-explainer__step">
+                                <span class="ba-wizard-explainer__step-badge" aria-hidden="true">3</span>
+                                <div class="ba-wizard-explainer__step-copy">
+                                    <div class="ba-wizard-explainer__step-title">We verify it</div>
+                                    <p class="ba-wizard-explainer__step-desc">This takes 1-2 business days. We&rsquo;ll notify you when deposits are ready.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ba-wizard-explainer__custodian-card">
+                            <div class="ba-wizard-explainer__custodian-head">
+                                <div class="ba-wizard-explainer__custodian-copy">
+                                    <div class="ba-wizard-explainer__custodian-label">TWD custodian</div>
+                                    <div class="ba-wizard-explainer__custodian-name">KGI bank</div>
+                                </div>
+                                <span class="ba-wizard-explainer__custodian-icons" aria-hidden="true">
+                                    <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                        <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                                    </span>
+                                    <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                        <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="20" height="20" />
+                                    </span>
+                                </span>
+                            </div>
+                            <p class="ba-wizard-explainer__custodian-desc">Your TWD will be held in trust at KGI Bank, our custodian partner. You don&rsquo;t need a KGI account. If desired, you can explore other custodians.</p>
+                            <button class="ba-wizard-explainer__custodian-link" type="button" data-ba-wizard-explainer-compare>Compare custodians or change</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ba-wizard-flow__step" data-ba-wizard-step="3">
+                    <div class="ba-wizard-details__body">
+                        <div class="ba-wizard-details__section">
+                            <h3 class="ba-wizard-details__section-title">Your bank account</h3>
+                            <button class="ba-wizard-details__selector" type="button" data-ba-wizard-details-bank aria-label="Select bank">
+                                <span class="ba-wizard-details__selector-value is-placeholder" data-ba-wizard-details-bank-value>Select bank</span>
+                                <img class="ba-wizard-details__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
+                            </button>
+                            <button class="ba-wizard-details__selector is-disabled" type="button" data-ba-wizard-details-branch aria-label="Select branch" disabled>
+                                <span class="ba-wizard-details__selector-value is-placeholder" data-ba-wizard-details-branch-value>Select branch</span>
+                                <img class="ba-wizard-details__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
+                            </button>
+                            <label class="ba-wizard-details__field">
+                                <span class="ba-wizard-details__field-label">Account number</span>
+                                <span class="ba-wizard-details__input-wrap">
+                                    <input class="ba-wizard-details__input" type="text" inputmode="numeric" data-ba-wizard-details-account-number placeholder="ex: 12345678901234" />
+                                </span>
+                            </label>
+                            <label class="ba-wizard-details__field">
+                                <span class="ba-wizard-details__field-label">Account nickname</span>
+                                <span class="ba-wizard-details__input-wrap">
+                                    <input class="ba-wizard-details__input" type="text" data-ba-wizard-details-account-nickname placeholder="ex: My KGI Bank" />
+                                </span>
+                            </label>
+                        </div>
+                        <div class="ba-wizard-details__section-divider" aria-hidden="true"></div>
+                        <div class="ba-wizard-details__section">
+                            <h3 class="ba-wizard-details__section-title">Account holder</h3>
+                            <label class="ba-wizard-details__field">
+                                <span class="ba-wizard-details__field-label">Holder&rsquo;s Chinese name</span>
+                                <span class="ba-wizard-details__input-wrap">
+                                    <input class="ba-wizard-details__input" type="text" data-ba-wizard-details-chinese-name placeholder="ex: 王小明" />
+                                </span>
+                            </label>
+                            <label class="ba-wizard-details__field">
+                                <span class="ba-wizard-details__field-label">Holder&rsquo;s English name</span>
+                                <span class="ba-wizard-details__input-wrap">
+                                    <input class="ba-wizard-details__input" type="text" data-ba-wizard-details-english-name placeholder="ex: XIAO MING WANG" />
+                                </span>
+                            </label>
+                            <div class="ba-wizard-details__field">
+                                <span class="ba-wizard-details__field-label">ID number</span>
+                                <span class="ba-wizard-details__input-wrap ba-wizard-details__input-wrap--readonly">
+                                    <span class="ba-wizard-details__readonly-value">A1234567890</span>
+                                </span>
+                                <button class="ba-wizard-details__edit-link" type="button" data-ba-wizard-details-edit-id>Edit ID number</button>
+                            </div>
+                        </div>
+                        <div class="ba-wizard-details__consent-block">
+                            <button class="ba-wizard-details__consent" type="button" data-ba-wizard-details-consent="id-match" aria-pressed="false">
+                                <img class="ba-wizard-details__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                                <span class="ba-wizard-details__consent-copy">This ID number matches my bank account information</span>
+                            </button>
+                            <div class="ba-wizard-details__consent-divider" aria-hidden="true"></div>
+                            <button class="ba-wizard-details__consent" type="button" data-ba-wizard-details-consent="lawful" aria-pressed="false">
+                                <img class="ba-wizard-details__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                                <span class="ba-wizard-details__consent-copy">The linked bank account is lawfully owned by me, and all deposit and withdrawal funds come from legitimate sources, free of money laundering, fraud, or other illegal activity.</span>
+                            </button>
+                        </div>
+                        <div class="ba-wizard-details__actions">
+                            <button class="ba-wizard-details__btn ba-wizard-details__btn--secondary" type="button" data-ba-wizard-details-back-action>Back</button>
+                            <button class="ba-wizard-details__btn ba-wizard-details__btn--primary" type="button" data-ba-wizard-details-submit disabled>Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="ba-wizard-flow__footer" data-ba-wizard-flow-footer hidden>
+                <button class="ba-wizard-explainer__btn" type="button" data-ba-wizard-flow-understood>Understood</button>
+            </footer>
+        </section>
+
         <section class="bank-accounts-panel" data-bank-accounts-panel hidden aria-label="Bank accounts">
             <div class="bank-accounts-panel__header">
                 <button class="bank-accounts-panel__icon-btn" type="button" data-bank-accounts-close aria-label="Back">
@@ -7598,6 +7786,15 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
 
         <div class="build-badge__body" id="prototypeStatesBody">
             <button class="build-badge__reset" type="button" data-prototype-reset>Reset states</button>
+            <div class="build-badge__section-row">
+                <div class="build-badge__section-title">Style</div>
+                <div class="build-badge__checkbox-group">
+                    <select class="build-badge__select" id="prototype-bank-accounts-style" data-prototype-bank-accounts-style aria-label="Bank accounts style">
+                        <option value="style1" selected>Style 1</option>
+                        <option value="style2">Style 2</option>
+                    </select>
+                </div>
+            </div>
             <button class="build-badge__reset" type="button" data-prototype-fill-twd-bank>Fill TWD bank details</button>
             <button class="build-badge__reset" type="button" data-prototype-fill-usd-bank>Fill USD bank details</button>
             <div class="build-badge__checkbox-stack" role="group" aria-label="Prototype display toggles">
