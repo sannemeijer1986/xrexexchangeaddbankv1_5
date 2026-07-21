@@ -225,30 +225,28 @@
 
   const PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG = {
     storageKey: "xrexexchange.prototypeBankAccountsStyle.v1",
-    default: "style1",
-    allowed: ["style1", "style2"],
+    default: "mvp",
+    allowed: ["mvp", "concept"],
+  };
+
+  const normalizePrototypeBankAccountsStyle = (value) => {
+    const raw = String(value || "");
+    if (raw === "style1") return "mvp";
+    if (raw === "style2") return "concept";
+    if (PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(raw)) return raw;
+    return PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
   };
 
   const getPrototypeBankAccountsStyle = () => {
     const fromDoc =
       document.documentElement.dataset.prototypeBankAccountsStyleActive;
-    if (
-      fromDoc &&
-      PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(fromDoc)
-    ) {
-      return fromDoc;
-    }
+    if (fromDoc) return normalizePrototypeBankAccountsStyle(fromDoc);
     try {
       if (window.localStorage) {
         const stored = window.localStorage.getItem(
           PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.storageKey,
         );
-        if (
-          stored &&
-          PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(stored)
-        ) {
-          return stored;
-        }
+        if (stored) return normalizePrototypeBankAccountsStyle(stored);
       }
     } catch (_) {
       // ignore storage errors
@@ -257,7 +255,7 @@
   };
 
   const shouldStyle2UseBankAccountsOverview = () =>
-    getPrototypeBankAccountsStyle() === "style2" &&
+    getPrototypeBankAccountsStyle() === "concept" &&
     (states.twdBankAccount ?? 1) >= 2;
 
   const queryPrototypeBankAccountsStyleSelect = () =>
@@ -266,9 +264,7 @@
   const syncPrototypeBankAccountsStyleToDocument = () => {
     const sel = queryPrototypeBankAccountsStyleSelect();
     const raw = String(sel?.value || PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default);
-    const value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(raw)
-      ? raw
-      : PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+    const value = normalizePrototypeBankAccountsStyle(raw);
     if (sel instanceof HTMLSelectElement && sel.value !== value) {
       sel.value = value;
     }
@@ -279,11 +275,7 @@
   let closeBaWizardFlow = () => {};
 
   const setPrototypeBankAccountsStyle = (next) => {
-    const value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.allowed.includes(
-      String(next),
-    )
-      ? String(next)
-      : PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+    const value = normalizePrototypeBankAccountsStyle(next);
     try {
       if (window.localStorage) {
         window.localStorage.setItem(
@@ -297,7 +289,7 @@
     const sel = queryPrototypeBankAccountsStyleSelect();
     if (sel instanceof HTMLSelectElement) sel.value = value;
     syncPrototypeBankAccountsStyleToDocument();
-    if (value === "style1") closeBaWizardFlow();
+    if (value === "mvp") closeBaWizardFlow();
     document.dispatchEvent(new CustomEvent("prototype-bank-accounts-style-change"));
   };
 
@@ -307,10 +299,11 @@
     let value = PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
     try {
       if (window.localStorage) {
-        value =
+        value = normalizePrototypeBankAccountsStyle(
           window.localStorage.getItem(
             PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.storageKey,
-          ) || PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
+          ) || PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default,
+        );
       }
     } catch (_) {
       // ignore storage errors
@@ -438,7 +431,8 @@
         : "Add a KGI USD bank account you already have.";
     }
 
-    const setLinkBtnVariant = (btn, variant) => {
+    const setLinkBtnVariant = (cardBtn, variant) => {
+      const btn = cardBtn?.querySelector(".bank-accounts-panel__btn");
       if (!btn) return;
       btn.classList.remove(
         "bank-accounts-panel__btn--primary",
@@ -7433,7 +7427,7 @@
         };
 
         if (
-          getPrototypeBankAccountsStyle() === "style2" &&
+          getPrototypeBankAccountsStyle() === "concept" &&
           !shouldStyle2UseBankAccountsOverview()
         ) {
           if (container && container.classList.contains("is-menu-open")) {
@@ -7456,7 +7450,7 @@
         if (button.dataset.bankAccountsLink === "twd") {
           onLinkTwd();
         } else if (button.dataset.bankAccountsLink === "usd") {
-          if (getPrototypeBankAccountsStyle() === "style2") {
+          if (getPrototypeBankAccountsStyle() === "concept") {
             showSnackbar("Not in prototype");
             return;
           }
