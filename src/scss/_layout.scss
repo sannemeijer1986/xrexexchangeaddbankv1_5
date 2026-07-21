@@ -4310,6 +4310,10 @@ html[data-active-tab="wallet"] {
   color: #5ac47d;
 }
 
+.custodian-apply-sheet__desc-highlight[hidden] {
+  display: none !important;
+}
+
 .custodian-apply-sheet__details {
   display: flex;
   flex-direction: column;

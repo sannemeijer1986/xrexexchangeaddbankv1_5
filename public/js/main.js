@@ -8246,6 +8246,9 @@
       "[data-custodian-apply-limits-currency-withdraw]",
     );
     const compareBtn = sheet.querySelector("[data-custodian-apply-compare]");
+    const descHighlightEl = sheet.querySelector(
+      "[data-custodian-apply-desc-highlight]",
+    );
     const limitEls = {
       depositSingle: sheet.querySelector("[data-custodian-apply-deposit-single]"),
       depositDaily: sheet.querySelector("[data-custodian-apply-deposit-daily]"),
@@ -8350,6 +8353,19 @@
 
       if (compareBtn) {
         compareBtn.hidden = !isTwd;
+      }
+
+      if (descHighlightEl) {
+        const isTaiwan = getPrototypeRegion() === "taiwan";
+        if (isTaiwan && isTwd) {
+          descHighlightEl.hidden = false;
+          descHighlightEl.textContent = `You don\u2019t need a ${custodian.selectorName} account.`;
+        } else if (isTaiwan && !isTwd) {
+          descHighlightEl.hidden = true;
+        } else {
+          descHighlightEl.hidden = false;
+          descHighlightEl.textContent = "Not your bank account.";
+        }
       }
     };
 
