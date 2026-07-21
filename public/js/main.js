@@ -8229,11 +8229,15 @@
     const sheet = document.querySelector("[data-custodian-apply-sheet]");
     if (!sheet) return { open: () => {} };
 
-    const titleCurrencyEls = sheet.querySelectorAll(
-      "[data-custodian-apply-currency-label], [data-custodian-apply-currency-inline]",
+    const titleCurrencyEl = sheet.querySelector(
+      "[data-custodian-apply-currency-label]",
     );
     const custodianNameEl = sheet.querySelector(
       "[data-custodian-apply-custodian-name]",
+    );
+    const descBodyEl = sheet.querySelector("[data-custodian-apply-desc-body]");
+    const descHighlightEl = sheet.querySelector(
+      "[data-custodian-apply-desc-highlight]",
     );
     const depositCurrencyEl = sheet.querySelector(
       "[data-custodian-apply-limits-currency-deposit]",
@@ -8242,23 +8246,17 @@
       "[data-custodian-apply-limits-currency-withdraw]",
     );
     const compareBtn = sheet.querySelector("[data-custodian-apply-compare]");
-    const descHighlightEl = sheet.querySelector(
-      "[data-custodian-apply-desc-highlight]",
-    );
-    const descLeadEl = sheet.querySelector("[data-custodian-apply-desc-lead]");
     const limitEls = {
       depositSingle: sheet.querySelector("[data-custodian-apply-deposit-single]"),
       depositDaily: sheet.querySelector("[data-custodian-apply-deposit-daily]"),
       depositMonthly: sheet.querySelector(
         "[data-custodian-apply-deposit-monthly]",
       ),
-      depositFee: sheet.querySelector("[data-custodian-apply-deposit-fee]"),
       withdrawSingle: sheet.querySelector("[data-custodian-apply-withdraw-single]"),
       withdrawDaily: sheet.querySelector("[data-custodian-apply-withdraw-daily]"),
       withdrawMonthly: sheet.querySelector(
         "[data-custodian-apply-withdraw-monthly]",
       ),
-      withdrawFee: sheet.querySelector("[data-custodian-apply-withdraw-fee]"),
     };
 
     let onContinue = () => {};
@@ -8285,19 +8283,34 @@
       const custodian = isTwd
         ? getTwdCustodian()
         : {
+            listName: USD_CUSTODIAN.details.bankName,
             selectorName: USD_CUSTODIAN.selectorName,
             details: USD_CUSTODIAN.details,
           };
       const { details } = custodian;
+      const isTaiwan = getPrototypeRegion() === "taiwan";
 
-      titleCurrencyEls.forEach((el) => {
-        el.textContent = currencyLabel;
-      });
+      if (titleCurrencyEl) titleCurrencyEl.textContent = currencyLabel;
       if (custodianNameEl) {
-        custodianNameEl.textContent = custodian.selectorName;
+        custodianNameEl.textContent = isTwd
+          ? custodian.listName
+          : USD_CUSTODIAN.details.bankName;
       }
       if (depositCurrencyEl) depositCurrencyEl.textContent = currencyLabel;
       if (withdrawCurrencyEl) withdrawCurrencyEl.textContent = currencyLabel;
+
+      if (descBodyEl) {
+        descBodyEl.textContent = `This custodian holds your ${currencyLabel}. Deposits & withdrawals will go through it, with the limits below.`;
+      }
+      if (descHighlightEl) {
+        if (isTaiwan && isTwd) {
+          descHighlightEl.hidden = false;
+          descHighlightEl.textContent = ` Link any Taiwan bank account you prefer — no ${custodian.listName} account needed.`;
+        } else {
+          descHighlightEl.hidden = true;
+          descHighlightEl.textContent = "";
+        }
+      }
 
       if (limitEls.depositSingle) {
         limitEls.depositSingle.textContent = stripLimitValue(
@@ -8314,12 +8327,6 @@
       if (limitEls.depositMonthly) {
         limitEls.depositMonthly.textContent = stripLimitValue(
           details.depositAnnually,
-          currencyLabel,
-        );
-      }
-      if (limitEls.depositFee) {
-        limitEls.depositFee.textContent = stripLimitValue(
-          details.depositFee,
           currencyLabel,
         );
       }
@@ -8341,28 +8348,9 @@
           currencyLabel,
         );
       }
-      if (limitEls.withdrawFee) {
-        limitEls.withdrawFee.textContent = stripLimitValue(
-          details.withdrawFee,
-          currencyLabel,
-        );
-      }
 
       if (compareBtn) {
-        compareBtn.hidden = !isTwd;
-      }
-
-      if (descHighlightEl && descLeadEl) {
-        const isTaiwan = getPrototypeRegion() === "taiwan";
-        if (isTaiwan && isTwd) {
-          descLeadEl.hidden = false;
-          descHighlightEl.textContent = `You don\u2019t need a ${custodian.selectorName} account.`;
-        } else if (isTaiwan && !isTwd) {
-          descLeadEl.hidden = true;
-        } else {
-          descLeadEl.hidden = false;
-          descHighlightEl.textContent = "Not your bank account.";
-        }
+        compareBtn.hidden = !(isTaiwan && isTwd);
       }
     };
 

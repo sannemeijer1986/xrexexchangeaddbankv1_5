@@ -4227,6 +4227,13 @@ html[data-active-tab=wallet] .app-header__top {
   text-align: center;
 }
 
+.custodian-apply-sheet__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .phone-container p.custodian-apply-sheet__desc {
   margin: 0;
   padding-bottom: 8px;
@@ -4242,7 +4249,7 @@ html[data-active-tab=wallet] .app-header__top {
   color: #5ac47d;
 }
 
-.custodian-apply-sheet__desc-lead[hidden] {
+.custodian-apply-sheet__desc-highlight[hidden] {
   display: none !important;
 }
 
@@ -4299,12 +4306,24 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .custodian-apply-sheet__limits-head {
-  padding-bottom: 4px;
+  padding-bottom: 0;
 }
 
-.custodian-apply-sheet__limits-head-spacer {
+.custodian-apply-sheet__limits-head-label {
   width: 100px;
   flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.custodian-apply-sheet__limits-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding-top: 12px;
 }
 
 .custodian-apply-sheet__limits-col-head {
@@ -4319,15 +4338,14 @@ html[data-active-tab=wallet] .app-header__top {
 
 .custodian-apply-sheet__limits-col-title {
   font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
+  font-weight: 400;
+  line-height: 20px;
   color: #9b9c9c;
 }
 
 .custodian-apply-sheet__limits-col-currency {
-  margin-top: -2px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: normal;
   color: #9b9c9c;
 }
@@ -4352,21 +4370,10 @@ html[data-active-tab=wallet] .app-header__top {
   white-space: nowrap;
 }
 
-.custodian-apply-sheet__limits-row--fee {
-  padding-top: 0;
-}
-
-.custodian-apply-sheet__limits-divider {
-  height: 1px;
-  width: 100%;
-  margin: 10px 0;
-  background: #3c4248;
-}
-
 .custodian-apply-sheet__compare-link {
   align-self: center;
   margin: 0;
-  padding: 0;
+  padding: 4px 0;
   border: 0;
   background: transparent;
   font-size: 14px;
