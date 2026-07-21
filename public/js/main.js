@@ -256,6 +256,10 @@
     return PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default;
   };
 
+  const shouldStyle2UseBankAccountsOverview = () =>
+    getPrototypeBankAccountsStyle() === "style2" &&
+    (states.twdBankAccount ?? 1) >= 2;
+
   const queryPrototypeBankAccountsStyleSelect = () =>
     document.querySelector("select[data-prototype-bank-accounts-style]");
 
@@ -7338,7 +7342,14 @@
   const initBankAccountsPanel = () => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
     const container = document.querySelector(".phone-container");
-    if (!panel) return { showSnackbar: () => {}, setOnLinkTwd: () => {}, setOnLinkUsd: () => {} };
+    if (!panel) {
+      return {
+        showSnackbar: () => {},
+        openPanel: () => {},
+        setOnLinkTwd: () => {},
+        setOnLinkUsd: () => {},
+      };
+    }
     const openButtons = document.querySelectorAll("[data-bank-accounts-open]");
     const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
     const linkButtons = panel.querySelectorAll("[data-bank-accounts-link]");
@@ -7412,7 +7423,19 @@
 
     openButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        if (getPrototypeBankAccountsStyle() === "style2") {
+        const openPanelWithMenuClose = () => {
+          if (container && container.classList.contains("is-menu-open")) {
+            container.classList.remove("is-menu-open");
+            setTimeout(() => setOpen(true), 220);
+          } else {
+            setOpen(true);
+          }
+        };
+
+        if (
+          getPrototypeBankAccountsStyle() === "style2" &&
+          !shouldStyle2UseBankAccountsOverview()
+        ) {
           if (container && container.classList.contains("is-menu-open")) {
             container.classList.remove("is-menu-open");
             setTimeout(() => openBaWizardFromMenu(), 220);
@@ -7421,12 +7444,8 @@
           }
           return;
         }
-        if (container && container.classList.contains("is-menu-open")) {
-          container.classList.remove("is-menu-open");
-          setTimeout(() => setOpen(true), 220);
-        } else {
-          setOpen(true);
-        }
+
+        openPanelWithMenuClose();
       });
     });
     closeButtons.forEach((button) => {
@@ -7437,6 +7456,10 @@
         if (button.dataset.bankAccountsLink === "twd") {
           onLinkTwd();
         } else if (button.dataset.bankAccountsLink === "usd") {
+          if (getPrototypeBankAccountsStyle() === "style2") {
+            showSnackbar("Not in prototype");
+            return;
+          }
           onLinkUsd();
         } else {
           showSnackbar("Not in prototype");
@@ -7455,6 +7478,14 @@
 
     return {
       showSnackbar,
+      openPanel: () => {
+        if (container && container.classList.contains("is-menu-open")) {
+          container.classList.remove("is-menu-open");
+          setTimeout(() => setOpen(true), 220);
+        } else {
+          setOpen(true);
+        }
+      },
       setOnLinkTwd: (fn) => {
         onLinkTwd = typeof fn === "function" ? fn : () => {};
       },
@@ -7530,7 +7561,6 @@
     );
     const submitBtn = panel.querySelector("[data-twd-bank-details-submit]");
     const loaderEl = panel.querySelector("[data-twd-bank-details-loader]");
-    const editIdBtn = panel.querySelector("[data-twd-bank-details-edit-id]");
     const consentButtons = Array.from(
       panel.querySelectorAll("[data-twd-bank-details-consent]"),
     );
@@ -7553,7 +7583,6 @@
       bankSelected: false,
       branchSelected: false,
       consents: {
-        "id-match": false,
         lawful: false,
       },
     };
@@ -7568,7 +7597,6 @@
         accountNicknameInput?.value.trim() &&
         chineseNameInput?.value.trim() &&
         englishNameInput?.value.trim() &&
-        state.consents["id-match"] &&
         state.consents.lawful;
       if (submitBtn) submitBtn.disabled = !isValid;
     };
@@ -7576,7 +7604,6 @@
     const resetForm = () => {
       state.bankSelected = false;
       state.branchSelected = false;
-      state.consents["id-match"] = false;
       state.consents.lawful = false;
 
       if (bankValueEl) {
@@ -7722,9 +7749,6 @@
     backButtons.forEach((btn) => {
       btn.addEventListener("click", () => setOpen(false));
     });
-    editIdBtn?.addEventListener("click", () =>
-      showSnackbar("Not in prototype"),
-    );
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
       setState("twdBankAccount", 2, { force: true });
@@ -8374,7 +8398,11 @@
     };
   };
 
-  const initBaWizardFlow = ({ custodianPanelApi, bankAccountSuccessApi } = {}) => {
+  const initBaWizardFlow = ({
+    custodianPanelApi,
+    bankAccountSuccessApi,
+    bankAccountsApi,
+  } = {}) => {
     const container = document.querySelector(".phone-container");
     const panels = {
       intro: document.querySelector("[data-ba-wizard-intro]"),
@@ -8679,7 +8707,6 @@
     );
     const submitBtn = detailsPanel.querySelector("[data-ba-wizard-details-submit]");
     const loaderEl = detailsPanel.querySelector("[data-ba-wizard-details-loader]");
-    const editIdBtn = detailsPanel.querySelector("[data-ba-wizard-details-edit-id]");
     const consentButtons = Array.from(
       detailsPanel.querySelectorAll("[data-ba-wizard-details-consent]"),
     );
@@ -8699,7 +8726,6 @@
       bankSelected: false,
       branchSelected: false,
       consents: {
-        "id-match": false,
         lawful: false,
       },
     };
@@ -8712,7 +8738,6 @@
         accountNicknameInput?.value.trim() &&
         chineseNameInput?.value.trim() &&
         englishNameInput?.value.trim() &&
-        detailsState.consents["id-match"] &&
         detailsState.consents.lawful;
       if (submitBtn) submitBtn.disabled = !isValid;
     };
@@ -8720,7 +8745,6 @@
     const resetDetailsForm = () => {
       detailsState.bankSelected = false;
       detailsState.branchSelected = false;
-      detailsState.consents["id-match"] = false;
       detailsState.consents.lawful = false;
 
       if (bankValueEl) {
@@ -8830,7 +8854,6 @@
       ?.querySelector("[data-ba-wizard-intro-close]")
       ?.addEventListener("click", () => closeAll());
 
-    editIdBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
       setState("twdBankAccount", 2, { force: true });
@@ -8841,6 +8864,9 @@
         if (loaderEl) loaderEl.hidden = true;
         bankAccountSuccessApi?.setOnDismiss?.(() => {
           closeAll({ instant: true });
+          if (shouldStyle2UseBankAccountsOverview()) {
+            bankAccountsApi?.openPanel?.();
+          }
         });
         bankAccountSuccessApi?.open?.();
       }, SUBMIT_LOADER_MS);
@@ -8915,6 +8941,7 @@
   const baWizardApi = initBaWizardFlow({
     custodianPanelApi,
     bankAccountSuccessApi,
+    bankAccountsApi,
   });
   openBaWizardFromMenu = baWizardApi.openFromMenu;
   document
