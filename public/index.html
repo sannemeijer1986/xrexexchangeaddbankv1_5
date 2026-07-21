@@ -3738,7 +3738,7 @@
                                 <span class="ba-wizard-explainer__step-badge" aria-hidden="true">2</span>
                                 <div class="ba-wizard-explainer__step-copy">
                                     <div class="ba-wizard-explainer__step-title">Provide your bank details</div>
-                                    <p class="ba-wizard-explainer__step-desc">The account must be in your name: Same as your verified ID.</p>
+                                    <p class="ba-wizard-explainer__step-desc">The bank account must be in your name.</p>
                                 </div>
                             </div>
                             <div class="ba-wizard-explainer__step-divider" aria-hidden="true"></div>
@@ -3979,7 +3979,7 @@
                         <span class="link-twd-panel__step-badge" aria-hidden="true">2</span>
                         <div class="link-twd-panel__step-copy">
                             <div class="link-twd-panel__step-title">Provide your bank details</div>
-                            <p class="link-twd-panel__step-desc">The account must be in your name: Same as your verified ID.</p>
+                            <p class="link-twd-panel__step-desc">The bank account must be in your name.</p>
                         </div>
                     </div>
                     <div class="link-twd-panel__step-divider" aria-hidden="true"></div>
@@ -4492,15 +4492,16 @@
                         <span data-custodian-apply-custodian-name>KGI bank</span>
                     </h2>
                     <p class="custodian-apply-sheet__desc">
-                        <span class="custodian-apply-sheet__desc-highlight" data-custodian-apply-desc-highlight>Not your bank account.</span>
+                        <span class="custodian-apply-sheet__desc-lead" data-custodian-apply-desc-lead>
+                            <span class="custodian-apply-sheet__desc-highlight" data-custodian-apply-desc-highlight>Not your bank account.</span><br />
+                        </span>
                         This custodian will hold your <span data-custodian-apply-currency-inline>TWD</span>. Deposits &amp; withdrawals go through it. Limits below apply.
                     </p>
                     <div class="custodian-apply-sheet__details">
                         <div class="custodian-apply-sheet__alert" role="note">
                             <img class="custodian-apply-sheet__alert-icon" src="assets/icon_info_circle_blue.svg" alt="" width="16" height="16" aria-hidden="true" />
                             <p class="custodian-apply-sheet__alert-copy">
-                                These limits will apply for 31 days.<br />
-                                Higher limits unlock after <span data-custodian-apply-condition>verification</span>.
+                                These limits will apply for 31 days
                             </p>
                         </div>
                         <div class="custodian-apply-sheet__limits-card">
@@ -4530,22 +4531,13 @@
                                 <span class="custodian-apply-sheet__limits-value" data-custodian-apply-deposit-monthly>3,000,000</span>
                                 <span class="custodian-apply-sheet__limits-value" data-custodian-apply-withdraw-monthly>10,000,000</span>
                             </div>
-                            <div class="custodian-apply-sheet__limits-divider" aria-hidden="true"></div>
-                            <div class="custodian-apply-sheet__limits-row custodian-apply-sheet__limits-row--fee">
-                                <span class="custodian-apply-sheet__limits-label">Fee</span>
-                                <span class="custodian-apply-sheet__limits-value" data-custodian-apply-deposit-fee>Free</span>
-                                <span class="custodian-apply-sheet__limits-value" data-custodian-apply-withdraw-fee>15</span>
-                            </div>
                         </div>
-                        <button class="custodian-apply-sheet__terms-link" type="button" data-custodian-apply-terms>View full terms</button>
+                        <button class="custodian-apply-sheet__compare-link" type="button" data-custodian-apply-compare>Compare custodians or change</button>
                     </div>
                 </div>
                 <div class="currency-sheet__footer currency-sheet__footer--split custodian-apply-sheet__footer">
                     <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-custodian-apply-close>Cancel</button>
                     <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-custodian-apply-continue>Continue</button>
-                </div>
-                <div class="custodian-apply-sheet__compare-wrap">
-                    <button class="custodian-apply-sheet__compare-link" type="button" data-custodian-apply-compare>Compare custodians or change</button>
                 </div>
             </div>
         </div>

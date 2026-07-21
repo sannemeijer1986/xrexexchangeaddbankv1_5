@@ -8225,11 +8225,7 @@
   const CUSTODIAN_KEY_TO_PROTO = { kgi: "kgi-active", fareastern: "feb-active" };
   const PROTO_TO_CUSTODIAN_KEY = { "kgi-active": "kgi", "feb-active": "fareastern" };
 
-  const initCustodianApplySheet = ({
-    showSnackbar,
-    custodianPanelApi,
-    usdCustodianPanelApi,
-  }) => {
+  const initCustodianApplySheet = ({ custodianPanelApi }) => {
     const sheet = document.querySelector("[data-custodian-apply-sheet]");
     if (!sheet) return { open: () => {} };
 
@@ -8249,6 +8245,7 @@
     const descHighlightEl = sheet.querySelector(
       "[data-custodian-apply-desc-highlight]",
     );
+    const descLeadEl = sheet.querySelector("[data-custodian-apply-desc-lead]");
     const limitEls = {
       depositSingle: sheet.querySelector("[data-custodian-apply-deposit-single]"),
       depositDaily: sheet.querySelector("[data-custodian-apply-deposit-daily]"),
@@ -8355,15 +8352,15 @@
         compareBtn.hidden = !isTwd;
       }
 
-      if (descHighlightEl) {
+      if (descHighlightEl && descLeadEl) {
         const isTaiwan = getPrototypeRegion() === "taiwan";
         if (isTaiwan && isTwd) {
-          descHighlightEl.hidden = false;
+          descLeadEl.hidden = false;
           descHighlightEl.textContent = `You don\u2019t need a ${custodian.selectorName} account.`;
         } else if (isTaiwan && !isTwd) {
-          descHighlightEl.hidden = true;
+          descLeadEl.hidden = true;
         } else {
-          descHighlightEl.hidden = false;
+          descLeadEl.hidden = false;
           descHighlightEl.textContent = "Not your bank account.";
         }
       }
@@ -8394,15 +8391,8 @@
         setOpen(false);
         setTimeout(() => onContinue(), 400);
       });
-    sheet
-      .querySelector("[data-custodian-apply-terms]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
     compareBtn?.addEventListener("click", () => {
-      if (currentCurrency === "twd") {
-        custodianPanelApi?.open?.();
-      } else {
-        usdCustodianPanelApi?.open?.();
-      }
+      custodianPanelApi?.open?.();
     });
 
     document.addEventListener("prototype-twd-custodian-change", () => {
@@ -9161,9 +9151,7 @@
   });
   const usdCustodianPanelApi = initUsdCustodianPanel({ showSnackbar });
   const custodianApplySheetApi = initCustodianApplySheet({
-    showSnackbar,
     custodianPanelApi,
-    usdCustodianPanelApi,
   });
   const bankAccountSuccessApi = initTwdBankSuccessPanel();
   const baWizardApi = initBaWizardFlow({
