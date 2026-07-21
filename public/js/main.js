@@ -161,6 +161,18 @@
     return PROTOTYPE_REGION_CONFIG.default;
   };
 
+  const getPrototypeFirstTimeApplyCustodian = () => {
+    const input = document.querySelector(
+      "[data-prototype-first-time-apply-custodian]",
+    );
+    if (!input) return true;
+    return Boolean(input.checked);
+  };
+
+  const shouldShowFirstTimeApplyCustodianSheet = () =>
+    getPrototypeFirstTimeApplyCustodian() &&
+    getPrototypeRegion() === "taiwan";
+
   const getUsdBankAccountMaxState = () =>
     getPrototypeRegion() === "cayman" ? 6 : 5;
 
@@ -7934,6 +7946,7 @@
     bankAccountsApi,
     bankAccountSuccessApi,
     custodianPanelApi,
+    custodianApplySheetApi,
   ) => {
     const panel = document.querySelector("[data-link-twd-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
@@ -7979,7 +7992,14 @@
         bankAccountSuccessApi.open();
       },
     });
-    chooseBankBtn?.addEventListener("click", () => twdBankDetailsApi.open());
+    chooseBankBtn?.addEventListener("click", () => {
+      const openDetails = () => twdBankDetailsApi.open();
+      if (shouldShowFirstTimeApplyCustodianSheet()) {
+        custodianApplySheetApi?.open?.({ currency: "twd", onContinue: openDetails });
+        return;
+      }
+      openDetails();
+    });
 
     compareBtn?.addEventListener("click", () => custodianPanelApi?.open?.());
 
@@ -7989,7 +8009,12 @@
     };
   };
 
-  const initLinkUsdPanel = (bankAccountsApi, bankAccountSuccessApi) => {
+  const initLinkUsdPanel = (
+    bankAccountsApi,
+    bankAccountSuccessApi,
+    custodianApplySheetApi,
+    usdCustodianPanelApi,
+  ) => {
     const panel = document.querySelector("[data-link-usd-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
 
@@ -8047,11 +8072,17 @@
         bankAccountSuccessApi.open();
       },
     });
-    continueBtn?.addEventListener("click", () => usdBankDetailsApi.open());
+    continueBtn?.addEventListener("click", () => {
+      const openDetails = () => usdBankDetailsApi.open();
+      if (shouldShowFirstTimeApplyCustodianSheet()) {
+        custodianApplySheetApi?.open?.({ currency: "usd", onContinue: openDetails });
+        return;
+      }
+      openDetails();
+    });
 
-    const usdCustodianPanelApi = initUsdCustodianPanel({ showSnackbar });
     custodianDetailsBtn?.addEventListener("click", () =>
-      usdCustodianPanelApi.open(),
+      usdCustodianPanelApi?.open?.(),
     );
 
     document.addEventListener("prototype-usd-custodian-change", syncCustodian);
@@ -8193,6 +8224,187 @@
   // Maps between custodian data keys and the prototype-control select values.
   const CUSTODIAN_KEY_TO_PROTO = { kgi: "kgi-active", fareastern: "feb-active" };
   const PROTO_TO_CUSTODIAN_KEY = { "kgi-active": "kgi", "feb-active": "fareastern" };
+
+  const initCustodianApplySheet = ({
+    showSnackbar,
+    custodianPanelApi,
+    usdCustodianPanelApi,
+  }) => {
+    const sheet = document.querySelector("[data-custodian-apply-sheet]");
+    if (!sheet) return { open: () => {} };
+
+    const titleCurrencyEls = sheet.querySelectorAll(
+      "[data-custodian-apply-currency-label], [data-custodian-apply-currency-inline]",
+    );
+    const custodianNameEl = sheet.querySelector(
+      "[data-custodian-apply-custodian-name]",
+    );
+    const depositCurrencyEl = sheet.querySelector(
+      "[data-custodian-apply-limits-currency-deposit]",
+    );
+    const withdrawCurrencyEl = sheet.querySelector(
+      "[data-custodian-apply-limits-currency-withdraw]",
+    );
+    const compareBtn = sheet.querySelector("[data-custodian-apply-compare]");
+    const limitEls = {
+      depositSingle: sheet.querySelector("[data-custodian-apply-deposit-single]"),
+      depositDaily: sheet.querySelector("[data-custodian-apply-deposit-daily]"),
+      depositMonthly: sheet.querySelector(
+        "[data-custodian-apply-deposit-monthly]",
+      ),
+      depositFee: sheet.querySelector("[data-custodian-apply-deposit-fee]"),
+      withdrawSingle: sheet.querySelector("[data-custodian-apply-withdraw-single]"),
+      withdrawDaily: sheet.querySelector("[data-custodian-apply-withdraw-daily]"),
+      withdrawMonthly: sheet.querySelector(
+        "[data-custodian-apply-withdraw-monthly]",
+      ),
+      withdrawFee: sheet.querySelector("[data-custodian-apply-withdraw-fee]"),
+    };
+
+    let onContinue = () => {};
+    let currentCurrency = "twd";
+
+    const getTwdCustodian = () => {
+      const proto =
+        document.documentElement.dataset.prototypeTwdCustodianActive ||
+        "kgi-active";
+      const key = PROTO_TO_CUSTODIAN_KEY[proto] || "kgi";
+      return CUSTODIANS[key] || CUSTODIANS.kgi;
+    };
+
+    const stripLimitValue = (value, currencyLabel) => {
+      if (!value || value === "Free") return value;
+      const suffix = ` ${currencyLabel}`;
+      return value.endsWith(suffix) ? value.slice(0, -suffix.length) : value;
+    };
+
+    const populate = (currency) => {
+      currentCurrency = currency;
+      const isTwd = currency === "twd";
+      const currencyLabel = isTwd ? "TWD" : "USD";
+      const custodian = isTwd
+        ? getTwdCustodian()
+        : {
+            selectorName: USD_CUSTODIAN.selectorName,
+            details: USD_CUSTODIAN.details,
+          };
+      const { details } = custodian;
+
+      titleCurrencyEls.forEach((el) => {
+        el.textContent = currencyLabel;
+      });
+      if (custodianNameEl) {
+        custodianNameEl.textContent = custodian.selectorName;
+      }
+      if (depositCurrencyEl) depositCurrencyEl.textContent = currencyLabel;
+      if (withdrawCurrencyEl) withdrawCurrencyEl.textContent = currencyLabel;
+
+      if (limitEls.depositSingle) {
+        limitEls.depositSingle.textContent = stripLimitValue(
+          details.depositSingle,
+          currencyLabel,
+        );
+      }
+      if (limitEls.depositDaily) {
+        limitEls.depositDaily.textContent = stripLimitValue(
+          details.depositDaily,
+          currencyLabel,
+        );
+      }
+      if (limitEls.depositMonthly) {
+        limitEls.depositMonthly.textContent = stripLimitValue(
+          details.depositAnnually,
+          currencyLabel,
+        );
+      }
+      if (limitEls.depositFee) {
+        limitEls.depositFee.textContent = stripLimitValue(
+          details.depositFee,
+          currencyLabel,
+        );
+      }
+      if (limitEls.withdrawSingle) {
+        limitEls.withdrawSingle.textContent = stripLimitValue(
+          details.withdrawSingle,
+          currencyLabel,
+        );
+      }
+      if (limitEls.withdrawDaily) {
+        limitEls.withdrawDaily.textContent = stripLimitValue(
+          details.withdrawDaily,
+          currencyLabel,
+        );
+      }
+      if (limitEls.withdrawMonthly) {
+        limitEls.withdrawMonthly.textContent = stripLimitValue(
+          details.withdrawMonthly,
+          currencyLabel,
+        );
+      }
+      if (limitEls.withdrawFee) {
+        limitEls.withdrawFee.textContent = stripLimitValue(
+          details.withdrawFee,
+          currencyLabel,
+        );
+      }
+
+      if (compareBtn) {
+        compareBtn.hidden = !isTwd;
+      }
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+      } else {
+        const sheetPanel = sheet.querySelector(".currency-sheet__panel");
+        sheet.classList.remove("is-open");
+        const onEnd = () => {
+          if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+          sheetPanel?.removeEventListener("transitionend", onEnd);
+        };
+        sheetPanel?.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 300);
+      }
+    };
+
+    sheet.querySelectorAll("[data-custodian-apply-close]").forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    sheet
+      .querySelector("[data-custodian-apply-continue]")
+      ?.addEventListener("click", () => {
+        setOpen(false);
+        setTimeout(() => onContinue(), 400);
+      });
+    sheet
+      .querySelector("[data-custodian-apply-terms]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    compareBtn?.addEventListener("click", () => {
+      if (currentCurrency === "twd") {
+        custodianPanelApi?.open?.();
+      } else {
+        usdCustodianPanelApi?.open?.();
+      }
+    });
+
+    document.addEventListener("prototype-twd-custodian-change", () => {
+      if (!sheet.classList.contains("is-open") || currentCurrency !== "twd") {
+        return;
+      }
+      populate("twd");
+    });
+
+    return {
+      open: ({ currency = "twd", onContinue: continueCb } = {}) => {
+        onContinue = typeof continueCb === "function" ? continueCb : () => {};
+        populate(currency);
+        setOpen(true);
+      },
+      close: () => setOpen(false),
+    };
+  };
 
   const initCustodianSelectPanel = ({ getState, setPreviewKey, applyPreview }) => {
     const sheet = document.querySelector("[data-custodian-select-panel]");
@@ -8931,6 +9143,12 @@
     showSnackbar,
     onKeep: syncTwdCustodianCardCopy,
   });
+  const usdCustodianPanelApi = initUsdCustodianPanel({ showSnackbar });
+  const custodianApplySheetApi = initCustodianApplySheet({
+    showSnackbar,
+    custodianPanelApi,
+    usdCustodianPanelApi,
+  });
   const bankAccountSuccessApi = initTwdBankSuccessPanel();
   const baWizardApi = initBaWizardFlow({
     custodianPanelApi,
@@ -8947,8 +9165,14 @@
     bankAccountsApi,
     bankAccountSuccessApi,
     custodianPanelApi,
+    custodianApplySheetApi,
   );
-  const linkUsdApi = initLinkUsdPanel(bankAccountsApi, bankAccountSuccessApi);
+  const linkUsdApi = initLinkUsdPanel(
+    bankAccountsApi,
+    bankAccountSuccessApi,
+    custodianApplySheetApi,
+    usdCustodianPanelApi,
+  );
   bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
   bankAccountsApi.setOnLinkUsd(linkUsdApi.open);
 
@@ -10014,6 +10238,12 @@
       setPrototypeCustodian("usd", PROTOTYPE_CUSTODIAN_CONFIGS.usd.default);
       setPrototypeRegion(PROTOTYPE_REGION_CONFIG.default);
       setPrototypeBankAccountsStyle(PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default);
+      const firstTimeApplyCustodian = document.querySelector(
+        "[data-prototype-first-time-apply-custodian]",
+      );
+      if (firstTimeApplyCustodian instanceof HTMLInputElement) {
+        firstTimeApplyCustodian.checked = true;
+      }
       financeSummaryConfirmedNextBuy = "";
       financeSummaryConfirmedReserved = null;
       myPlansSubmittedPlan = null;

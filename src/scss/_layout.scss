@@ -4268,6 +4268,205 @@ html[data-active-tab="wallet"] {
   background: #2d2f2f;
 }
 
+// Figma 7724:80914 — First-time apply custodian bottom sheet (over link TWD/USD)
+.currency-sheet.custodian-apply-sheet {
+  z-index: 2250;
+
+  // Beat generic `.currency-sheet__body` (gap/padding/align) defined later in this file.
+  .currency-sheet__body {
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .custodian-apply-sheet__panel {
+    padding-bottom: 0;
+  }
+}
+
+.phone-container h2.custodian-apply-sheet__title {
+  margin: 0;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
+// Beat `.phone-container p` from _base.scss.
+.phone-container p.custodian-apply-sheet__desc {
+  margin: 0;
+  padding-bottom: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #9b9c9c;
+  text-align: center;
+}
+
+.custodian-apply-sheet__desc-highlight {
+  font-weight: 700;
+  color: #5ac47d;
+}
+
+.custodian-apply-sheet__details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.custodian-apply-sheet__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.custodian-apply-sheet__alert-icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+// Beat `.phone-container p` from _base.scss.
+.phone-container p.custodian-apply-sheet__alert-copy {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.custodian-apply-sheet__limits-card {
+  width: 100%;
+  padding: 16px;
+  border-radius: 8px;
+  background: #2d2f2f;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.custodian-apply-sheet__limits-head,
+.custodian-apply-sheet__limits-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0;
+}
+
+.custodian-apply-sheet__limits-head {
+  padding-bottom: 12px;
+}
+
+.custodian-apply-sheet__limits-head-spacer {
+  width: 100px;
+  flex: 0 0 auto;
+}
+
+.custodian-apply-sheet__limits-col-head {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+  text-align: right;
+}
+
+.custodian-apply-sheet__limits-col-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.custodian-apply-sheet__limits-col-currency {
+  margin-top: -2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.custodian-apply-sheet__limits-label {
+  width: 100px;
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #b4b4b4;
+}
+
+.custodian-apply-sheet__limits-value {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.custodian-apply-sheet__limits-row--fee {
+  padding-top: 0;
+}
+
+.custodian-apply-sheet__limits-divider {
+  height: 1px;
+  width: 100%;
+  margin: 10px 0;
+  background: #3c4248;
+}
+
+.custodian-apply-sheet__terms-link {
+  align-self: flex-end;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+}
+
+.custodian-apply-sheet__footer.currency-sheet__footer--split {
+  padding-top: 16px;
+}
+
+.custodian-apply-sheet__compare-wrap {
+  padding: 12px 16px 16px;
+  background: #1b1d1d;
+}
+
+.custodian-apply-sheet__compare-link {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.custodian-apply-sheet__compare-link[hidden] {
+  display: none !important;
+}
+
 .limits-panel__section-label {
   font-size: 12px;
   font-weight: 600;
