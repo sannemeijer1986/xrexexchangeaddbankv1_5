@@ -2152,6 +2152,7 @@ html[data-active-tab="wallet"] {
 
 // Figma 7693:23042 — Style 2 bank accounts wizard (independent from Style 1)
 .ba-wizard-intro,
+.ba-wizard-currency,
 .ba-wizard-how,
 .ba-wizard-flow {
   position: absolute;
@@ -2175,6 +2176,10 @@ html[data-active-tab="wallet"] {
   z-index: 2100;
 }
 
+.ba-wizard-currency {
+  z-index: 2112;
+}
+
 .ba-wizard-how {
   z-index: 2125;
 }
@@ -2187,6 +2192,7 @@ html[data-active-tab="wallet"] {
 }
 
 .ba-wizard-intro.is-open,
+.ba-wizard-currency.is-open,
 .ba-wizard-how.is-open,
 .ba-wizard-flow.is-open {
   transform: translateX(0);
@@ -2478,6 +2484,156 @@ html[data-active-tab="wallet"] {
   cursor: pointer;
 }
 
+.ba-wizard-currency__body {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px 16px 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+.ba-wizard-currency__onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ba-wizard-currency__step-label {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.ba-wizard-currency__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.ba-wizard-currency__desc {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #ffffff;
+}
+
+.ba-wizard-currency__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ba-wizard-currency__item {
+  width: 100%;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: #1b1d1d;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ba-wizard-currency__item-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ba-wizard-currency__item-icon img {
+  width: 32px;
+  height: 32px;
+}
+
+.ba-wizard-currency__item-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ba-wizard-currency__item-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.ba-wizard-currency__item-desc {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+
+.ba-wizard-currency__item-note {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.ba-wizard-currency__item-chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+// Beat `.phone-container p` from _base.scss for currency selection page.
+.ba-wizard-currency {
+  .ba-wizard-pageheader {
+    padding: 56px 16px 0;
+  }
+
+  p.ba-wizard-currency__step-label {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    color: #8fb8ff;
+  }
+
+  h2.ba-wizard-currency__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: normal;
+    color: #ffffff;
+  }
+
+  p.ba-wizard-currency__desc {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 23px;
+    color: #ffffff;
+  }
+}
+
 .ba-wizard-how__divider {
   display: none;
 }
@@ -2653,6 +2809,26 @@ html[data-active-tab="wallet"] {
   line-height: normal;
   color: #ffffff;
   cursor: pointer;
+}
+
+.ba-wizard-how__custodian-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #2d2f2f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ba-wizard-how__custodian-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.ba-wizard-how [data-ba-wizard-how-variant][hidden] {
+  display: none !important;
 }
 
 .ba-wizard-how__footer {

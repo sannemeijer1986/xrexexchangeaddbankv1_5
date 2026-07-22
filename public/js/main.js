@@ -8202,18 +8202,23 @@
         bankAccountSuccessApi.setOnDismiss(() => {
           usdBankDetailsApi?.close({ instant: true });
           setOpen(false);
+          closeBaWizardFlow({ instant: true });
+          if (hasLinkedBankAccounts()) {
+            bankAccountsApi?.openPanel?.();
+          }
         });
         bankAccountSuccessApi.open();
       },
     });
-    continueBtn?.addEventListener("click", () => {
+    const continueToDetails = () => {
       const openDetails = () => usdBankDetailsApi.open();
       if (shouldShowFirstTimeApplyCustodianSheet()) {
         custodianApplySheetApi?.open?.({ currency: "usd", onContinue: openDetails });
         return;
       }
       openDetails();
-    });
+    };
+    continueBtn?.addEventListener("click", continueToDetails);
 
     panel.querySelectorAll("[data-link-usd-custodian-details]").forEach((btn) => {
       btn.addEventListener("click", () => usdCustodianPanelApi?.open?.());
@@ -8225,6 +8230,7 @@
     return {
       open: () => setOpen(true),
       close: () => setOpen(false),
+      continueToDetails,
     };
   };
 
@@ -8785,6 +8791,7 @@
 
   const initBaWizardFlow = ({
     custodianPanelApi,
+    usdCustodianPanelApi,
     bankAccountSuccessApi,
     bankAccountsApi,
     onHowContinue,
@@ -8792,13 +8799,15 @@
     const container = document.querySelector(".phone-container");
     const panels = {
       intro: document.querySelector("[data-ba-wizard-intro]"),
+      currency: document.querySelector("[data-ba-wizard-currency]"),
       how: document.querySelector("[data-ba-wizard-how]"),
       flow: document.querySelector("[data-ba-wizard-flow]"),
     };
-    if (!panels.intro || !panels.how) {
+    if (!panels.intro || !panels.currency || !panels.how) {
       return { openFromMenu: () => {}, closeAll: () => {} };
     }
 
+    let selectedSetupCurrency = "twd";
     let continueFromHow =
       typeof onHowContinue === "function" ? onHowContinue : () => {};
 
@@ -8809,10 +8818,10 @@
       const key = PROTO_TO_CUSTODIAN_KEY[proto] || "kgi";
       const custodian = CUSTODIANS[key] || CUSTODIANS.kgi;
       const nameEl = panels.how?.querySelector(
-        "[data-ba-wizard-how-custodian-name]",
+        '[data-ba-wizard-how-variant="twd"] [data-ba-wizard-how-custodian-name]',
       );
       const descEl = panels.how?.querySelector(
-        "[data-ba-wizard-how-custodian-desc]",
+        '[data-ba-wizard-how-variant="twd"] [data-ba-wizard-how-custodian-desc]',
       );
       if (nameEl) {
         nameEl.textContent = `Custodian: ${custodian.selectorName}`;
@@ -8820,6 +8829,42 @@
       if (descEl) {
         descEl.textContent = `Your TWD isn't held by XREX, it's custodied (held in trust) at ${custodian.listName}, separate from our funds. You don't need a ${custodian.listName} account.`;
       }
+    };
+
+    const syncBaWizardHowUsdCustodian = () => {
+      const custodian = getUsdCustodian();
+      const nameEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-usd-custodian-name]",
+      );
+      const descEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-usd-custodian-desc]",
+      );
+      const iconEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-usd-custodian-icon]",
+      );
+      if (nameEl) {
+        nameEl.textContent = `Custodian: ${custodian.selectorName}`;
+      }
+      if (descEl) {
+        descEl.textContent = `Your USD isn't held by XREX, it's custodied (held in trust) at ${custodian.details.bankName}, separate from our funds.`;
+      }
+      if (iconEl) iconEl.src = custodian.icon;
+    };
+
+    const syncBaWizardHowContent = () => {
+      const isTwd = selectedSetupCurrency === "twd";
+      const titleEl = panels.how?.querySelector("[data-ba-wizard-how-title]");
+      if (titleEl) {
+        titleEl.textContent = isTwd
+          ? "How linking your TWD bank account works"
+          : "How linking your USD bank account works";
+      }
+      panels.how?.querySelectorAll("[data-ba-wizard-how-variant]").forEach((el) => {
+        const variant = el.getAttribute("data-ba-wizard-how-variant");
+        el.hidden = variant !== selectedSetupCurrency;
+      });
+      if (isTwd) syncBaWizardHowCustodian();
+      else syncBaWizardHowUsdCustodian();
     };
 
     const progressEl = panels.flow?.querySelector("[data-ba-wizard-progress]");
@@ -9073,6 +9118,7 @@
       if (loaderEl) loaderEl.hidden = true;
       if (panels.flow) setPanelOpen(panels.flow, false, opts);
       setPanelOpen(panels.how, false, opts);
+      setPanelOpen(panels.currency, false, opts);
       setPanelOpen(panels.intro, false, opts);
       if (panels.flow) resetFlowSteps();
       setPhoneShellOpen(false);
@@ -9086,8 +9132,20 @@
       setPhoneShellOpen(true);
     };
 
-    const openHow = () => {
-      syncBaWizardHowCustodian();
+    const openCurrency = () => {
+      selectedSetupCurrency = "twd";
+      setPanelOpen(panels.currency, true);
+      const scrollBody = panels.currency.querySelector(".ba-wizard-currency__body");
+      if (scrollBody) scrollBody.scrollTop = 0;
+    };
+
+    const backFromCurrency = () => {
+      setPanelOpen(panels.currency, false);
+    };
+
+    const openHow = (currency = selectedSetupCurrency) => {
+      selectedSetupCurrency = currency === "usd" ? "usd" : "twd";
+      syncBaWizardHowContent();
       setPanelOpen(panels.how, true);
       const scrollBody = panels.how.querySelector(".ba-wizard-how__body");
       if (scrollBody) scrollBody.scrollTop = 0;
@@ -9203,7 +9261,17 @@
 
     panels.intro
       ?.querySelector("[data-ba-wizard-intro-continue]")
-      ?.addEventListener("click", openHow);
+      ?.addEventListener("click", openCurrency);
+
+    panels.currency
+      ?.querySelector("[data-ba-wizard-currency-back]")
+      ?.addEventListener("click", backFromCurrency);
+    panels.currency
+      ?.querySelector("[data-ba-wizard-currency-twd]")
+      ?.addEventListener("click", () => openHow("twd"));
+    panels.currency
+      ?.querySelector("[data-ba-wizard-currency-usd]")
+      ?.addEventListener("click", () => openHow("usd"));
 
     panels.how
       ?.querySelectorAll("[data-ba-wizard-how-back], [data-ba-wizard-how-back-action]")
@@ -9217,13 +9285,23 @@
       ?.querySelector("[data-ba-wizard-how-compare]")
       ?.addEventListener("click", () => custodianPanelApi?.open?.());
     panels.how
-      ?.querySelector("[data-ba-wizard-how-learn-more]")
-      ?.addEventListener("click", () =>
-        showSnackbar("Not in prototype"),
-      );
+      ?.querySelectorAll(
+        "[data-ba-wizard-how-learn-more], [data-ba-wizard-how-usd-learn-more]",
+      )
+      .forEach((btn) => {
+        btn.addEventListener("click", () => showSnackbar("Not in prototype"));
+      });
+    panels.how
+      ?.querySelector("[data-ba-wizard-how-custodian-details]")
+      ?.addEventListener("click", () => usdCustodianPanelApi?.open?.());
 
-    document.addEventListener("prototype-twd-custodian-change", syncBaWizardHowCustodian);
-    syncBaWizardHowCustodian();
+    document.addEventListener("prototype-twd-custodian-change", () => {
+      if (selectedSetupCurrency === "twd") syncBaWizardHowCustodian();
+    });
+    document.addEventListener("prototype-usd-custodian-change", () => {
+      if (selectedSetupCurrency === "usd") syncBaWizardHowUsdCustodian();
+    });
+    syncBaWizardHowContent();
 
     panels.flow
       ?.querySelector("[data-ba-wizard-flow-back]")
@@ -9354,6 +9432,7 @@
       openFromMenu: openIntro,
       closeAll,
       fillTwdBankDetails,
+      getSelectedCurrency: () => selectedSetupCurrency,
       setOnHowContinue: (fn) => {
         continueFromHow = typeof fn === "function" ? fn : () => {};
       },
@@ -9393,6 +9472,7 @@
   const bankAccountSuccessApi = initTwdBankSuccessPanel();
   const baWizardApi = initBaWizardFlow({
     custodianPanelApi,
+    usdCustodianPanelApi,
     bankAccountSuccessApi,
     bankAccountsApi,
   });
@@ -9408,13 +9488,19 @@
     custodianPanelApi,
     custodianApplySheetApi,
   );
-  baWizardApi.setOnHowContinue?.(() => linkTwdApi.continueToDetails?.());
   const linkUsdApi = initLinkUsdPanel(
     bankAccountsApi,
     bankAccountSuccessApi,
     custodianApplySheetApi,
     usdCustodianPanelApi,
   );
+  baWizardApi.setOnHowContinue?.(() => {
+    if (baWizardApi.getSelectedCurrency() === "usd") {
+      linkUsdApi.continueToDetails?.();
+      return;
+    }
+    linkTwdApi.continueToDetails?.();
+  });
   bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
   bankAccountsApi.setOnLinkUsd(linkUsdApi.open);
   bankAccountsApi.setOnOpenTwdCustodian(() =>
