@@ -2139,6 +2139,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .ba-wizard-intro,
+.ba-wizard-how,
 .ba-wizard-flow {
   position: absolute;
   inset: 0;
@@ -2152,9 +2153,18 @@ html[data-active-tab=wallet] .app-header__top {
   transition: transform 0.35s ease;
   overflow: hidden;
 }
+.ba-wizard-intro.is-instant,
+.ba-wizard-how.is-instant,
+.ba-wizard-flow.is-instant {
+  transition: none !important;
+}
 
 .ba-wizard-intro {
   z-index: 2100;
+}
+
+.ba-wizard-how {
+  z-index: 2125;
 }
 
 .ba-wizard-flow {
@@ -2165,6 +2175,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .ba-wizard-intro.is-open,
+.ba-wizard-how.is-open,
 .ba-wizard-flow.is-open {
   transform: translateX(0);
 }
@@ -2406,7 +2417,7 @@ html[data-active-tab=wallet] .app-header__top {
   font-size: 16px;
   font-weight: 400;
   line-height: 23px;
-  color: #9b9c9c;
+  color: #ffffff;
 }
 
 .ba-wizard-intro p.ba-wizard-intro__desc {
@@ -2414,7 +2425,7 @@ html[data-active-tab=wallet] .app-header__top {
   font-size: 16px;
   font-weight: 400;
   line-height: 23px;
-  color: #9b9c9c;
+  color: #ffffff;
 }
 
 .ba-wizard-intro__footer {
@@ -2438,6 +2449,180 @@ html[data-active-tab=wallet] .app-header__top {
   line-height: normal;
   color: #ffffff;
   cursor: pointer;
+}
+
+.ba-wizard-how__divider {
+  display: none;
+}
+
+.ba-wizard-how__body {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 24px 16px 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ba-wizard-how__body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.ba-wizard-how__onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.ba-wizard-how__step-label {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.ba-wizard-how__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.ba-wizard-how__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ba-wizard-how .ba-wizard-explainer__steps-card {
+  margin-bottom: 0;
+  background: #151718;
+}
+
+.ba-wizard-how .ba-wizard-pageheader {
+  padding: 56px 16px 0;
+}
+.ba-wizard-how p.ba-wizard-how__step-label {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+.ba-wizard-how h2.ba-wizard-how__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+.ba-wizard-how p.ba-wizard-explainer__step-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+.ba-wizard-how p.ba-wizard-how__custodian-heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+.ba-wizard-how p.ba-wizard-how__custodian-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+.ba-wizard-how p.ba-wizard-how__custodian-desc {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: #9b9c9c;
+}
+.ba-wizard-how .ba-wizard-explainer__step-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.ba-wizard-how__custodian-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #151718;
+}
+
+.ba-wizard-how__custodian-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ba-wizard-how__custodian-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ba-wizard-how__custodian-heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.ba-wizard-how__custodian-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+
+.ba-wizard-how__custodian-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ba-wizard-how__custodian-btn {
+  border: 0;
+  border-radius: 12px;
+  min-height: 32px;
+  padding: 4px 10px;
+  background: #2d2f2f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.ba-wizard-how__footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
 }
 
 .ba-wizard-pageheader {

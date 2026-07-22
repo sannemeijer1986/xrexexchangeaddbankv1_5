@@ -292,6 +292,15 @@
     getPrototypeBankAccountsStyle() === "concept" &&
     (states.twdBankAccount ?? 1) >= 2;
 
+  const hasLinkedBankAccounts = () => {
+    const twdState = states.twdBankAccount ?? 1;
+    const usdState = states.usdBankAccount ?? 1;
+    return twdState >= 2 || usdState >= 2;
+  };
+
+  const shouldOpenSetupFlowFromMenu = () =>
+    getPrototypeRegion() === "taiwan" && !hasLinkedBankAccounts();
+
   const queryPrototypeBankAccountsStyleSelect = () =>
     document.querySelector("select[data-prototype-bank-accounts-style]");
 
@@ -7536,10 +7545,7 @@
           }
         };
 
-        if (
-          getPrototypeBankAccountsStyle() === "concept" &&
-          !shouldStyle2UseBankAccountsOverview()
-        ) {
+        if (shouldOpenSetupFlowFromMenu()) {
           if (container && container.classList.contains("is-menu-open")) {
             container.classList.remove("is-menu-open");
             setTimeout(() => openBaWizardFromMenu(), 220);
@@ -8102,24 +8108,30 @@
         bankAccountSuccessApi.setOnDismiss(() => {
           twdBankDetailsApi?.close({ instant: true });
           setOpen(false);
+          closeBaWizardFlow({ instant: true });
+          if (hasLinkedBankAccounts()) {
+            bankAccountsApi?.openPanel?.();
+          }
         });
         bankAccountSuccessApi.open();
       },
     });
-    chooseBankBtn?.addEventListener("click", () => {
+    const continueToDetails = () => {
       const openDetails = () => twdBankDetailsApi.open();
       if (shouldShowFirstTimeApplyCustodianSheet()) {
         custodianApplySheetApi?.open?.({ currency: "twd", onContinue: openDetails });
         return;
       }
       openDetails();
-    });
+    };
+    chooseBankBtn?.addEventListener("click", continueToDetails);
 
     compareBtn?.addEventListener("click", () => custodianPanelApi?.open?.());
 
     return {
       open: () => setOpen(true),
       close: () => setOpen(false),
+      continueToDetails,
     };
   };
 
@@ -8775,17 +8787,42 @@
     custodianPanelApi,
     bankAccountSuccessApi,
     bankAccountsApi,
+    onHowContinue,
   } = {}) => {
     const container = document.querySelector(".phone-container");
     const panels = {
       intro: document.querySelector("[data-ba-wizard-intro]"),
+      how: document.querySelector("[data-ba-wizard-how]"),
       flow: document.querySelector("[data-ba-wizard-flow]"),
     };
-    if (!panels.intro || !panels.flow) {
+    if (!panels.intro || !panels.how) {
       return { openFromMenu: () => {}, closeAll: () => {} };
     }
 
-    const progressEl = panels.flow.querySelector("[data-ba-wizard-progress]");
+    let continueFromHow =
+      typeof onHowContinue === "function" ? onHowContinue : () => {};
+
+    const syncBaWizardHowCustodian = () => {
+      const proto =
+        document.documentElement.dataset.prototypeTwdCustodianActive ||
+        "kgi-active";
+      const key = PROTO_TO_CUSTODIAN_KEY[proto] || "kgi";
+      const custodian = CUSTODIANS[key] || CUSTODIANS.kgi;
+      const nameEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-custodian-name]",
+      );
+      const descEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-custodian-desc]",
+      );
+      if (nameEl) {
+        nameEl.textContent = `Custodian: ${custodian.selectorName}`;
+      }
+      if (descEl) {
+        descEl.textContent = `Your TWD isn't held by XREX, it's custodied (held in trust) at ${custodian.listName}, separate from our funds. You don't need a ${custodian.listName} account.`;
+      }
+    };
+
+    const progressEl = panels.flow?.querySelector("[data-ba-wizard-progress]");
     const progressLabelEl = panels.flow.querySelector(
       "[data-ba-wizard-progress-label]",
     );
@@ -9015,8 +9052,11 @@
         panel.hidden = false;
         requestAnimationFrame(() => panel.classList.add("is-open"));
       } else if (opts.instant) {
+        panel.classList.add("is-instant");
         panel.classList.remove("is-open");
         panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
       } else {
         panel.classList.remove("is-open");
         const onEnd = () => {
@@ -9031,9 +9071,10 @@
     const closeAll = (opts = {}) => {
       submitGeneration += 1;
       if (loaderEl) loaderEl.hidden = true;
-      setPanelOpen(panels.flow, false, opts);
+      if (panels.flow) setPanelOpen(panels.flow, false, opts);
+      setPanelOpen(panels.how, false, opts);
       setPanelOpen(panels.intro, false, opts);
-      resetFlowSteps();
+      if (panels.flow) resetFlowSteps();
       setPhoneShellOpen(false);
     };
 
@@ -9045,7 +9086,19 @@
       setPhoneShellOpen(true);
     };
 
+    const openHow = () => {
+      syncBaWizardHowCustodian();
+      setPanelOpen(panels.how, true);
+      const scrollBody = panels.how.querySelector(".ba-wizard-how__body");
+      if (scrollBody) scrollBody.scrollTop = 0;
+    };
+
+    const backFromHow = () => {
+      setPanelOpen(panels.how, false);
+    };
+
     const openFlow = () => {
+      if (!panels.flow) return;
       resetFlowSteps();
       setPanelOpen(panels.flow, true);
     };
@@ -9150,7 +9203,27 @@
 
     panels.intro
       ?.querySelector("[data-ba-wizard-intro-continue]")
-      ?.addEventListener("click", openFlow);
+      ?.addEventListener("click", openHow);
+
+    panels.how
+      ?.querySelectorAll("[data-ba-wizard-how-back], [data-ba-wizard-how-back-action]")
+      .forEach((btn) => {
+        btn.addEventListener("click", backFromHow);
+      });
+    panels.how
+      ?.querySelector("[data-ba-wizard-how-continue]")
+      ?.addEventListener("click", () => continueFromHow());
+    panels.how
+      ?.querySelector("[data-ba-wizard-how-compare]")
+      ?.addEventListener("click", () => custodianPanelApi?.open?.());
+    panels.how
+      ?.querySelector("[data-ba-wizard-how-learn-more]")
+      ?.addEventListener("click", () =>
+        showSnackbar("Not in prototype"),
+      );
+
+    document.addEventListener("prototype-twd-custodian-change", syncBaWizardHowCustodian);
+    syncBaWizardHowCustodian();
 
     panels.flow
       ?.querySelector("[data-ba-wizard-flow-back]")
@@ -9237,7 +9310,7 @@
         if (loaderEl) loaderEl.hidden = true;
         bankAccountSuccessApi?.setOnDismiss?.(() => {
           closeAll({ instant: true });
-          if (shouldStyle2UseBankAccountsOverview()) {
+          if (hasLinkedBankAccounts()) {
             bankAccountsApi?.openPanel?.();
           }
         });
@@ -9281,6 +9354,9 @@
       openFromMenu: openIntro,
       closeAll,
       fillTwdBankDetails,
+      setOnHowContinue: (fn) => {
+        continueFromHow = typeof fn === "function" ? fn : () => {};
+      },
     };
   };
 
@@ -9332,6 +9408,7 @@
     custodianPanelApi,
     custodianApplySheetApi,
   );
+  baWizardApi.setOnHowContinue?.(() => linkTwdApi.continueToDetails?.());
   const linkUsdApi = initLinkUsdPanel(
     bankAccountsApi,
     bankAccountSuccessApi,

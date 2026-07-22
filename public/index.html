@@ -3665,11 +3665,81 @@
             </header>
             <div class="ba-wizard-intro__content">
                 <span class="ba-wizard-intro__badge">Set up</span>
-                <h2 class="ba-wizard-intro__title">Add a bank account</h2>
-                <p class="ba-wizard-intro__desc">Add a bank account you already have to easily deposit and withdraw Fiat money in XREX</p>
+                <h2 class="ba-wizard-intro__title">Link your bank account</h2>
+                <p class="ba-wizard-intro__desc">This is the bank account you&rsquo;ll use to move TWD or USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.</p>
             </div>
             <footer class="ba-wizard-intro__footer">
                 <button class="ba-wizard-intro__btn" type="button" data-ba-wizard-intro-continue>Continue</button>
+            </footer>
+        </section>
+
+        <section class="ba-wizard-how" data-ba-wizard-how hidden aria-label="How linking your bank account works">
+            <header class="ba-wizard-pageheader">
+                <button class="ba-wizard-pageheader__icon-btn" type="button" data-ba-wizard-how-back aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <button class="ba-wizard-pageheader__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+            <div class="ba-wizard-how__divider" aria-hidden="true"></div>
+            <div class="ba-wizard-how__body">
+                <div class="ba-wizard-how__onboarding">
+                    <p class="ba-wizard-how__step-label" data-ba-wizard-how-step-label>Step 1 of 3</p>
+                    <h2 class="ba-wizard-how__title" data-ba-wizard-how-title>How linking your TWD bank account works</h2>
+                </div>
+                <div class="ba-wizard-how__content">
+                    <div class="ba-wizard-explainer__steps-card">
+                        <div class="ba-wizard-explainer__step">
+                            <span class="ba-wizard-explainer__step-badge" aria-hidden="true">1</span>
+                            <div class="ba-wizard-explainer__step-copy">
+                                <div class="ba-wizard-explainer__step-title">Choose your bank</div>
+                                <p class="ba-wizard-explainer__step-desc">A Taiwan bank account in your name.</p>
+                            </div>
+                        </div>
+                        <div class="ba-wizard-explainer__step-divider" aria-hidden="true"></div>
+                        <div class="ba-wizard-explainer__step">
+                            <span class="ba-wizard-explainer__step-badge" aria-hidden="true">2</span>
+                            <div class="ba-wizard-explainer__step-copy">
+                                <div class="ba-wizard-explainer__step-title">Provide your bank details</div>
+                                <p class="ba-wizard-explainer__step-desc">Account number and holder name.</p>
+                            </div>
+                        </div>
+                        <div class="ba-wizard-explainer__step-divider" aria-hidden="true"></div>
+                        <div class="ba-wizard-explainer__step">
+                            <span class="ba-wizard-explainer__step-badge" aria-hidden="true">3</span>
+                            <div class="ba-wizard-explainer__step-copy">
+                                <div class="ba-wizard-explainer__step-title">We verify it</div>
+                                <p class="ba-wizard-explainer__step-desc">Takes 1-3 business days.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ba-wizard-how__custodian-card">
+                        <div class="ba-wizard-how__custodian-head">
+                            <div class="ba-wizard-how__custodian-copy">
+                                <p class="ba-wizard-how__custodian-heading">Where your TWD is held</p>
+                                <p class="ba-wizard-how__custodian-name" data-ba-wizard-how-custodian-name>Custodian: KGI bank</p>
+                            </div>
+                            <span class="ba-wizard-explainer__custodian-icons" aria-hidden="true">
+                                <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                    <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                                </span>
+                                <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                    <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="20" height="20" />
+                                </span>
+                            </span>
+                        </div>
+                        <p class="ba-wizard-how__custodian-desc" data-ba-wizard-how-custodian-desc>Your TWD isn&rsquo;t held by XREX, it&rsquo;s custodied (held in trust) at KGI Bank, separate from our funds. You don&rsquo;t need a KGI account.</p>
+                        <div class="ba-wizard-how__custodian-actions">
+                            <button class="ba-wizard-how__custodian-btn" type="button" data-ba-wizard-how-compare>Compare custodians or change</button>
+                            <button class="ba-wizard-how__custodian-btn" type="button" data-ba-wizard-how-learn-more>Learn more about custodians</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="ba-wizard-how__footer">
+                <button class="link-twd-panel__btn link-twd-panel__btn--secondary" type="button" data-ba-wizard-how-back-action>Back</button>
+                <button class="link-twd-panel__btn link-twd-panel__btn--primary" type="button" data-ba-wizard-how-continue>Ok, continue</button>
             </footer>
         </section>
 
