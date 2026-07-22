@@ -2698,6 +2698,24 @@ html[data-active-tab="wallet"] {
   background: #151718;
 }
 
+.ba-wizard-how .ba-wizard-explainer__steps-card--compact {
+  .ba-wizard-explainer__step {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ba-wizard-explainer__step-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .ba-wizard-explainer__step-copy {
+    gap: 0;
+    justify-content: center;
+  }
+}
+
 // Beat `.phone-container p` from _base.scss for hybrid setup "how it works" page.
 .ba-wizard-how {
   .ba-wizard-pageheader {

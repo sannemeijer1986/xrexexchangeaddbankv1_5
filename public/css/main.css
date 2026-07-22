@@ -2664,6 +2664,20 @@ html[data-active-tab=wallet] .app-header__top {
   background: #151718;
 }
 
+.ba-wizard-how .ba-wizard-explainer__steps-card--compact .ba-wizard-explainer__step {
+  align-items: flex-start;
+  gap: 12px;
+}
+.ba-wizard-how .ba-wizard-explainer__steps-card--compact .ba-wizard-explainer__step-badge {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+.ba-wizard-how .ba-wizard-explainer__steps-card--compact .ba-wizard-explainer__step-copy {
+  gap: 0;
+  justify-content: center;
+}
+
 .ba-wizard-how .ba-wizard-pageheader {
   padding: 56px 16px 0;
 }

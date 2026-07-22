@@ -8927,17 +8927,17 @@
       default: {
         title: "Link your bank account",
         desc:
-          "This is the bank account you'll use to move TWD or USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.",
+          "Use your own bank account to move TWD or USD in and out of XREX. It must be registered in your name.",
       },
       twd: {
         title: "Link your TWD bank account",
         desc:
-          "This is the bank account you'll use to move TWD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.",
+          "Use your own bank account to move TWD in and out of XREX. It must be registered in your name.",
       },
       usd: {
-        title: "Link your USD bank account",
+        title: "Link your USD bank account (KGI Bank only)",
         desc:
-          "This is the bank account you'll use to move USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.",
+          "Use your own KGI Bank account to move USD in and out of XREX. It must be registered in your name.",
       },
     };
 
