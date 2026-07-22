@@ -8920,7 +8920,7 @@
       }
       if (descEl) {
         descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian where any TWD you deposit to XREX is held in trust.";
+          "The bank below isn't the bank you're linking — it's the custodian where any TWD you deposit or have in XREX is held in trust.";
       }
     };
 
@@ -8984,7 +8984,7 @@
       }
       if (descEl) {
         descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian where any USD you deposit to XREX is held in trust.";
+          "The bank below isn't the bank you're linking — it's the custodian where any USD you deposit or have in XREX is held in trust.";
       }
     };
 
