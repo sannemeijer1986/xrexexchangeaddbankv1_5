@@ -2429,6 +2429,10 @@ html[data-active-tab=wallet] .app-header__top {
   color: #ffffff;
 }
 
+.ba-wizard-intro__title-accent {
+  color: #8fb8ff;
+}
+
 .ba-wizard-intro__desc {
   margin: 0;
   font-size: 16px;
@@ -2709,18 +2713,11 @@ html[data-active-tab=wallet] .app-header__top {
   line-height: normal;
   color: #ffffff;
 }
-.ba-wizard-how p.ba-wizard-how__custodian-name {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  color: #5ac47d;
-}
 .ba-wizard-how p.ba-wizard-how__custodian-desc {
   margin: 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: normal;
+  line-height: 20px;
   color: #9b9c9c;
 }
 .ba-wizard-how .ba-wizard-explainer__step-title {
@@ -2746,15 +2743,9 @@ html[data-active-tab=wallet] .app-header__top {
   gap: 12px;
 }
 
-.ba-wizard-how__custodian-copy {
+.ba-wizard-how__custodian-heading {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.ba-wizard-how__custodian-heading {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
@@ -2762,22 +2753,56 @@ html[data-active-tab=wallet] .app-header__top {
   color: #ffffff;
 }
 
-.ba-wizard-how__custodian-name {
-  margin: 0;
-  font-size: 14px;
+.ba-wizard-how__custodian-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.ba-wizard-how__custodian-selector-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #2F9752;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ba-wizard-how__custodian-selector-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.ba-wizard-how__custodian-selector-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ba-wizard-how__custodian-selector-label {
+  font-size: 12px;
   font-weight: 600;
   line-height: normal;
   color: #5ac47d;
 }
 
-.ba-wizard-how__custodian-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
+.ba-wizard-how__custodian-selector-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
 }
 
-.ba-wizard-how__custodian-btn {
+.ba-wizard-how__custodian-selector-btn {
+  flex-shrink: 0;
   border: 0;
   border-radius: 12px;
   min-height: 32px;
@@ -2791,20 +2816,26 @@ html[data-active-tab=wallet] .app-header__top {
   cursor: pointer;
 }
 
-.ba-wizard-how__custodian-icon-wrap {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #2d2f2f;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.ba-wizard-how__custodian-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
 }
 
-.ba-wizard-how__custodian-icon {
-  width: 20px;
-  height: 20px;
+.ba-wizard-how__custodian-link {
+  align-self: flex-start;
+  border: 0;
+  padding: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+  text-align: left;
 }
 
 .ba-wizard-how [data-ba-wizard-how-variant] {
@@ -3123,7 +3154,7 @@ html[data-active-tab=wallet] .app-header__top {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #2d2f2f;
+  background: #1B1D1D;
   display: inline-flex;
   align-items: center;
   justify-content: center;

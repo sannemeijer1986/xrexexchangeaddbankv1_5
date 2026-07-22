@@ -8916,10 +8916,10 @@
         '[data-ba-wizard-how-variant="twd"] [data-ba-wizard-how-custodian-desc]',
       );
       if (nameEl) {
-        nameEl.textContent = `Custodian: ${custodian.selectorName}`;
+        nameEl.textContent = custodian.listName;
       }
       if (descEl) {
-        descEl.textContent = `Your TWD isn't held by XREX, it's custodied (held in trust) at ${custodian.listName}, separate from our funds. You don't need a ${custodian.listName} account.`;
+        descEl.textContent = `Your TWD is not held by XREX, it's custodied (held in trust) at ${custodian.listName}. No ${custodian.listName} account needed.`;
       }
     };
 
@@ -8935,7 +8935,8 @@
           "Use your own bank account to move TWD in and out of XREX. It must be registered in your name.",
       },
       usd: {
-        title: "Link your USD bank account (KGI Bank only)",
+        title:
+          'Link your USD bank account <span class="ba-wizard-intro__title-accent">(KGI Bank only)</span>',
         desc:
           "Use your own KGI Bank account to move USD in and out of XREX. It must be registered in your name.",
       },
@@ -8950,7 +8951,7 @@
           : currency === "twd"
             ? BA_WIZARD_INTRO_COPY.twd
             : BA_WIZARD_INTRO_COPY.default;
-      if (titleEl) titleEl.textContent = copy.title;
+      if (titleEl) titleEl.innerHTML = copy.title;
       if (descEl) descEl.innerHTML = copy.desc;
     };
 
@@ -8977,16 +8978,12 @@
       const descEl = panels.how?.querySelector(
         "[data-ba-wizard-how-usd-custodian-desc]",
       );
-      const iconEl = panels.how?.querySelector(
-        "[data-ba-wizard-how-usd-custodian-icon]",
-      );
       if (nameEl) {
-        nameEl.textContent = `Custodian: ${custodian.selectorName}`;
+        nameEl.textContent = custodian.details.bankName;
       }
       if (descEl) {
-        descEl.textContent = `Your USD isn't held by XREX, it's custodied (held in trust) at ${custodian.details.bankName}, separate from our funds.`;
+        descEl.textContent = `Your USD is not held by XREX, it's custodied (held in trust) at ${custodian.details.bankName}.`;
       }
-      if (iconEl) iconEl.src = custodian.icon;
     };
 
     const syncBaWizardHowContent = () => {

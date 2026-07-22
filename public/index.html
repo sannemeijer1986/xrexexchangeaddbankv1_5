@@ -3695,7 +3695,7 @@
                         </span>
                         <span class="ba-wizard-currency__item-copy">
                             <span class="ba-wizard-currency__item-title">TWD bank account</span>
-                            <span class="ba-wizard-currency__item-desc">Move Taiwan dollars in and out from any Taiwan bank</span>
+                            <span class="ba-wizard-currency__item-desc">Deposit & withdraw Taiwan dollar</span>
                         </span>
                         <img class="ba-wizard-currency__item-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
                     </button>
@@ -3705,7 +3705,7 @@
                         </span>
                         <span class="ba-wizard-currency__item-copy">
                             <span class="ba-wizard-currency__item-title">USD bank account</span>
-                            <span class="ba-wizard-currency__item-desc">Move US dollars in and out</span>
+                            <span class="ba-wizard-currency__item-desc">Deposit & withdraw US dollar</span>
                             <span class="ba-wizard-currency__item-note">Only KGI bank supported</span>
                         </span>
                         <img class="ba-wizard-currency__item-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
@@ -3755,10 +3755,7 @@
                         </div>
                         <div class="ba-wizard-how__custodian-card">
                             <div class="ba-wizard-how__custodian-head">
-                                <div class="ba-wizard-how__custodian-copy">
-                                    <p class="ba-wizard-how__custodian-heading">Where your TWD will be held</p>
-                                    <p class="ba-wizard-how__custodian-name" data-ba-wizard-how-custodian-name>Custodian: KGI bank</p>
-                                </div>
+                                <p class="ba-wizard-how__custodian-heading">Where your TWD will be held</p>
                                 <span class="ba-wizard-explainer__custodian-icons" aria-hidden="true">
                                     <span class="ba-wizard-explainer__custodian-icon-wrap">
                                         <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
@@ -3768,11 +3765,18 @@
                                     </span>
                                 </span>
                             </div>
-                            <p class="ba-wizard-how__custodian-desc" data-ba-wizard-how-custodian-desc>Your TWD isn&rsquo;t held by XREX, it&rsquo;s custodied (held in trust) at KGI Bank, separate from our funds. You don&rsquo;t need a KGI account.</p>
-                            <div class="ba-wizard-how__custodian-actions">
-                                <button class="ba-wizard-how__custodian-btn" type="button" data-ba-wizard-how-compare>Compare custodians or change</button>
-                                <button class="ba-wizard-how__custodian-btn" type="button" data-ba-wizard-how-learn-more>Learn more about custodians</button>
+                            <div class="ba-wizard-how__custodian-selector">
+                                <span class="ba-wizard-how__custodian-selector-icon-wrap" aria-hidden="true">
+                                    <img class="ba-wizard-how__custodian-selector-icon" src="assets/icon_bankaccounts.svg" alt="" width="20" height="20" />
+                                </span>
+                                <div class="ba-wizard-how__custodian-selector-copy">
+                                    <span class="ba-wizard-how__custodian-selector-label">Custodian</span>
+                                    <span class="ba-wizard-how__custodian-selector-name" data-ba-wizard-how-custodian-name>KGI Bank</span>
+                                </div>
+                                <button class="ba-wizard-how__custodian-selector-btn" type="button" data-ba-wizard-how-compare>View options</button>
                             </div>
+                            <p class="ba-wizard-how__custodian-desc" data-ba-wizard-how-custodian-desc>Your TWD is not held by XREX, it&rsquo;s custodied (held in trust) at KGI Bank. No KGI Bank account needed.</p>
+                            <button class="ba-wizard-how__custodian-link" type="button" data-ba-wizard-how-learn-more>Learn more about Custodians</button>
                         </div>
                     </div>
                     <div data-ba-wizard-how-variant="usd" hidden>
@@ -3793,19 +3797,28 @@
                         </div>
                         <div class="ba-wizard-how__custodian-card">
                             <div class="ba-wizard-how__custodian-head">
-                                <div class="ba-wizard-how__custodian-copy">
-                                    <p class="ba-wizard-how__custodian-heading">Where your USD will be held</p>
-                                    <p class="ba-wizard-how__custodian-name" data-ba-wizard-how-usd-custodian-name>Custodian: KGI bank</p>
-                                </div>
-                                <span class="ba-wizard-how__custodian-icon-wrap" aria-hidden="true">
-                                    <img class="ba-wizard-how__custodian-icon" data-ba-wizard-how-usd-custodian-icon src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                                <p class="ba-wizard-how__custodian-heading">Where your USD will be held</p>
+                                <span class="ba-wizard-explainer__custodian-icons" aria-hidden="true">
+                                    <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                        <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_kgi.svg" alt="" width="20" height="20" />
+                                    </span>
+                                    <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                        <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="20" height="20" />
+                                    </span>
                                 </span>
                             </div>
-                            <p class="ba-wizard-how__custodian-desc" data-ba-wizard-how-usd-custodian-desc>Your USD isn&rsquo;t held by XREX, it&rsquo;s custodied (held in trust) at KGI Bank, separate from our funds.</p>
-                            <div class="ba-wizard-how__custodian-actions">
-                                <button class="ba-wizard-how__custodian-btn" type="button" data-ba-wizard-how-custodian-details>View custodian details</button>
-                                <button class="ba-wizard-how__custodian-btn" type="button" data-ba-wizard-how-usd-learn-more>Learn more about custodians</button>
+                            <div class="ba-wizard-how__custodian-selector">
+                                <span class="ba-wizard-how__custodian-selector-icon-wrap" aria-hidden="true">
+                                    <img class="ba-wizard-how__custodian-selector-icon" src="assets/icon_bankaccounts.svg" alt="" width="20" height="20" />
+                                </span>
+                                <div class="ba-wizard-how__custodian-selector-copy">
+                                    <span class="ba-wizard-how__custodian-selector-label">Custodian</span>
+                                    <span class="ba-wizard-how__custodian-selector-name" data-ba-wizard-how-usd-custodian-name>KGI Bank</span>
+                                </div>
+                                <button class="ba-wizard-how__custodian-selector-btn" type="button" data-ba-wizard-how-custodian-details>View details</button>
                             </div>
+                            <p class="ba-wizard-how__custodian-desc" data-ba-wizard-how-usd-custodian-desc>Your USD is not held by XREX, it&rsquo;s custodied (held in trust) at KGI Bank.</p>
+                            <button class="ba-wizard-how__custodian-link" type="button" data-ba-wizard-how-usd-learn-more>Learn more about Custodians</button>
                         </div>
                     </div>
                 </div>
