@@ -3759,7 +3759,7 @@
                         <div class="ba-wizard-how__custodian-card">
                             <div class="ba-wizard-how__custodian-head">
                                 <div class="ba-wizard-how__custodian-copy">
-                                    <p class="ba-wizard-how__custodian-heading">Where your TWD is held</p>
+                                    <p class="ba-wizard-how__custodian-heading">Where your TWD will be held</p>
                                     <p class="ba-wizard-how__custodian-name" data-ba-wizard-how-custodian-name>Custodian: KGI bank</p>
                                 </div>
                                 <span class="ba-wizard-explainer__custodian-icons" aria-hidden="true">
@@ -3799,7 +3799,7 @@
                         <div class="ba-wizard-how__custodian-card">
                             <div class="ba-wizard-how__custodian-head">
                                 <div class="ba-wizard-how__custodian-copy">
-                                    <p class="ba-wizard-how__custodian-heading">Where your USD is held</p>
+                                    <p class="ba-wizard-how__custodian-heading">Where your USD will be held</p>
                                     <p class="ba-wizard-how__custodian-name" data-ba-wizard-how-usd-custodian-name>Custodian: KGI bank</p>
                                 </div>
                                 <span class="ba-wizard-how__custodian-icon-wrap" aria-hidden="true">
@@ -4257,18 +4257,20 @@
             </div>
         </section>
 
-        <section class="twd-bank-details-panel" data-twd-bank-details-panel hidden aria-label="TWD bank account details">
-            <div class="twd-bank-details-panel__header">
-                <button class="twd-bank-details-panel__icon-btn" type="button" data-twd-bank-details-back aria-label="Back">
+        <section class="twd-bank-details-panel ba-wizard-details" data-twd-bank-details-panel hidden aria-label="TWD bank account details">
+            <header class="ba-wizard-pageheader">
+                <button class="ba-wizard-pageheader__icon-btn" type="button" data-twd-bank-details-back aria-label="Back">
                     <img src="assets/icon_back.svg" alt="" />
                 </button>
-                <div class="twd-bank-details-panel__title">TWD bank account details</div>
-                <button class="twd-bank-details-panel__icon-btn" type="button" aria-label="Support">
+                <button class="ba-wizard-pageheader__icon-btn" type="button" aria-label="Support">
                     <img src="assets/icon_intercom.svg" alt="" />
                 </button>
-            </div>
-            <div class="twd-bank-details-panel__divider" aria-hidden="true"></div>
+            </header>
             <div class="twd-bank-details-panel__body">
+                <div class="ba-wizard-details__onboarding">
+                    <p class="ba-wizard-how__step-label">Step 3 of 3</p>
+                    <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your TWD bank account details</h2>
+                </div>
                 <div class="twd-bank-details-panel__section">
                     <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
                     <button class="twd-bank-details-panel__selector" type="button" data-twd-bank-details-bank aria-label="Select bank">
@@ -4282,7 +4284,7 @@
                     <label class="twd-bank-details-panel__field">
                         <span class="twd-bank-details-panel__field-label">Account number</span>
                         <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-twd-bank-details-account-number placeholder="ex: 12345678999" />
+                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-twd-bank-details-account-number placeholder="ex: 12345678901234" />
                         </span>
                     </label>
                     <label class="twd-bank-details-panel__field">
@@ -4314,11 +4316,11 @@
                         <span class="twd-bank-details-panel__consent-copy">The provided bank account is lawfully owned by me, and all deposit and withdrawal funds come from legitimate sources, free of money laundering, fraud, or other illegal activity.</span>
                     </button>
                 </div>
-                <div class="twd-bank-details-panel__actions">
-                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-twd-bank-details-back>Back</button>
-                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-twd-bank-details-submit disabled>Submit</button>
-                </div>
             </div>
+            <footer class="ba-wizard-how__footer">
+                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-twd-bank-details-back>Back</button>
+                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-twd-bank-details-submit disabled>Submit</button>
+            </footer>
             <div class="twd-bank-details-panel__loader plan-submit-loader" data-twd-bank-details-loader hidden>
                 <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
                 <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">
@@ -4327,18 +4329,20 @@
             </div>
         </section>
 
-        <section class="twd-bank-details-panel usd-bank-details-panel" data-usd-bank-details-panel hidden aria-label="USD bank account details">
-            <div class="twd-bank-details-panel__header">
-                <button class="twd-bank-details-panel__icon-btn" type="button" data-usd-bank-details-back aria-label="Back">
+        <section class="twd-bank-details-panel usd-bank-details-panel ba-wizard-details" data-usd-bank-details-panel hidden aria-label="USD bank account details">
+            <header class="ba-wizard-pageheader">
+                <button class="ba-wizard-pageheader__icon-btn" type="button" data-usd-bank-details-back aria-label="Back">
                     <img src="assets/icon_back.svg" alt="" />
                 </button>
-                <div class="twd-bank-details-panel__title">USD bank account details</div>
-                <button class="twd-bank-details-panel__icon-btn" type="button" aria-label="Support">
+                <button class="ba-wizard-pageheader__icon-btn" type="button" aria-label="Support">
                     <img src="assets/icon_intercom.svg" alt="" />
                 </button>
-            </div>
-            <div class="twd-bank-details-panel__divider" aria-hidden="true"></div>
+            </header>
             <div class="twd-bank-details-panel__body">
+                <div class="ba-wizard-details__onboarding">
+                    <p class="ba-wizard-how__step-label">Step 3 of 3</p>
+                    <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your USD bank account details</h2>
+                </div>
                 <div class="twd-bank-details-panel__section">
                     <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
                     <div class="twd-bank-details-panel__selector twd-bank-details-panel__selector--locked" aria-disabled="true">
@@ -4383,11 +4387,11 @@
                         <span class="twd-bank-details-panel__consent-copy">I confirm that I am not a taxpayer in the US</span>
                     </button>
                 </div>
-                <div class="twd-bank-details-panel__actions">
-                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-usd-bank-details-back>Back</button>
-                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-usd-bank-details-submit disabled>Submit</button>
-                </div>
             </div>
+            <footer class="ba-wizard-how__footer">
+                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-usd-bank-details-back>Back</button>
+                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-usd-bank-details-submit disabled>Submit</button>
+            </footer>
             <div class="twd-bank-details-panel__loader plan-submit-loader" data-usd-bank-details-loader hidden>
                 <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
                 <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">

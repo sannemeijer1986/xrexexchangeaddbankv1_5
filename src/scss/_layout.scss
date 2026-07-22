@@ -2827,6 +2827,12 @@ html[data-active-tab="wallet"] {
   height: 20px;
 }
 
+.ba-wizard-how [data-ba-wizard-how-variant] {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .ba-wizard-how [data-ba-wizard-how-variant][hidden] {
   display: none !important;
 }
@@ -3803,6 +3809,53 @@ html[data-active-tab="wallet"] {
 .twd-bank-details-panel.is-open,
 .usd-bank-details-panel.is-open {
   transform: translateX(0);
+}
+
+.twd-bank-details-panel.ba-wizard-details,
+.usd-bank-details-panel.ba-wizard-details {
+  .ba-wizard-pageheader {
+    padding: 56px 16px 0;
+  }
+
+  .twd-bank-details-panel__body {
+    padding: 24px 16px 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+
+  .ba-wizard-details__onboarding {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 0;
+  }
+
+  p.ba-wizard-how__step-label {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    color: #8fb8ff;
+  }
+
+  h2.ba-wizard-how__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: normal;
+    color: #ffffff;
+  }
+
+  .ba-wizard-how__footer .twd-bank-details-panel__btn {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .twd-bank-details-panel__header {

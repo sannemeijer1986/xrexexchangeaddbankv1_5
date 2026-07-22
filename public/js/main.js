@@ -7687,6 +7687,8 @@
     );
     const submitBtn = panel.querySelector("[data-twd-bank-details-submit]");
     const loaderEl = panel.querySelector("[data-twd-bank-details-loader]");
+    const titleEl = panel.querySelector("[data-bank-details-setup-title]");
+    const DEFAULT_TITLE = "Provide your TWD bank account details";
     const consentButtons = Array.from(
       panel.querySelectorAll("[data-twd-bank-details-consent]"),
     );
@@ -7699,7 +7701,7 @@
     ];
     // Demo convenience: auto-fill each field on focus.
     const autofillValues = new Map([
-      [accountNumberInput, "12345678999"],
+      [accountNumberInput, "12345678901234"],
       [accountNicknameInput, "My CTBC bank"],
       [chineseNameInput, "王小明"],
       [englishNameInput, "XIAO MING WANG"],
@@ -7800,6 +7802,7 @@
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
+        if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
         resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
@@ -7888,8 +7891,9 @@
     });
 
     return {
-      open: () => setOpen(true),
+      open: (opts = {}) => setOpen(true, opts),
       close: (opts) => setOpen(false, opts),
+      fillAll,
     };
   };
 
@@ -7911,6 +7915,8 @@
     );
     const submitBtn = panel.querySelector("[data-usd-bank-details-submit]");
     const loaderEl = panel.querySelector("[data-usd-bank-details-loader]");
+    const titleEl = panel.querySelector("[data-bank-details-setup-title]");
+    const DEFAULT_TITLE = "Provide your USD bank account details";
     const consentButtons = Array.from(
       panel.querySelectorAll("[data-usd-bank-details-consent]"),
     );
@@ -7991,6 +7997,7 @@
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
+        if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
         resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
@@ -8057,8 +8064,9 @@
     });
 
     return {
-      open: () => setOpen(true),
+      open: (opts = {}) => setOpen(true, opts),
       close: (opts) => setOpen(false, opts),
+      fillAll,
     };
   };
 
