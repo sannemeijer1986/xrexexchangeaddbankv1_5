@@ -8919,7 +8919,8 @@
         nameEl.textContent = custodian.listName;
       }
       if (descEl) {
-        descEl.textContent = `Your TWD is not held by XREX, it's custodied (held in trust) at ${custodian.listName}. No ${custodian.listName} account needed.`;
+        descEl.textContent =
+          "The bank below isn't the bank you're linking — it's the custodian where any TWD you deposit to XREX is held in trust.";
       }
     };
 
@@ -8982,7 +8983,8 @@
         nameEl.textContent = custodian.details.bankName;
       }
       if (descEl) {
-        descEl.textContent = `Your USD is not held by XREX, it's custodied (held in trust) at ${custodian.details.bankName}.`;
+        descEl.textContent =
+          "The bank below isn't the bank you're linking — it's the custodian where any USD you deposit to XREX is held in trust.";
       }
     };
 

@@ -2783,6 +2783,13 @@ html[data-active-tab="wallet"] {
   background: #151718;
 }
 
+.ba-wizard-how__custodian-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 4px;
+}
+
 .ba-wizard-how__custodian-head {
   display: flex;
   align-items: center;
@@ -2810,8 +2817,8 @@ html[data-active-tab="wallet"] {
 }
 
 .ba-wizard-how__custodian-selector-icon-wrap {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #2F9752;
   display: inline-flex;
