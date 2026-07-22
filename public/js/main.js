@@ -8341,10 +8341,6 @@
       if (selectorIconEl) selectorIconEl.src = custodian.icon;
       if (selectorNameEl) {
         selectorNameEl.textContent = custodian.selectorName;
-        selectorNameEl.classList.toggle(
-          "custodian-panel__selector-name--positive",
-          custodian.key === "fareastern",
-        );
       }
       Object.entries(custodian.details).forEach(([field, value]) => {
         if (detailEls[field]) detailEls[field].textContent = value;
