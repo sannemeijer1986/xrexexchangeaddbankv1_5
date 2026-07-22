@@ -3273,6 +3273,14 @@ html[data-active-tab=wallet] .app-header__top {
   font-size: 14px;
 }
 
+.link-usd-panel .link-twd-panel__custodian-name--positive {
+  color: #5ac47d;
+}
+
+.link-usd-panel [data-link-usd-variant][hidden] {
+  display: none !important;
+}
+
 .link-usd-panel .link-twd-panel__custodian-icon-wrap {
   width: 34px;
   height: 34px;
@@ -4007,6 +4015,10 @@ html[data-active-tab=wallet] .app-header__top {
 
 .usd-custodian-panel .custodian-panel__selector-name {
   font-size: 14px;
+}
+
+.usd-custodian-panel .custodian-panel__selector-name--positive {
+  color: #5ac47d;
 }
 
 .custodian-panel__selector-lock {

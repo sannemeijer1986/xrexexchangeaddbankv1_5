@@ -79,16 +79,36 @@
       // querySelector('[data-prototype-twd-custodian]') matches <html> first.
       selectAttr: "data-prototype-twd-custodian",
       datasetKey: "prototypeTwdCustodianActive",
-      default: "kgi-active",
-      allowed: ["kgi-active", "feb-active"],
     },
     usd: {
       storageKey: "xrexexchange.prototypeUsdCustodian.v1",
       selectAttr: "data-prototype-usd-custodian",
       datasetKey: "prototypeUsdCustodianActive",
-      default: "kgi-active",
-      allowed: ["kgi-active"],
     },
+  };
+
+  const PROTOTYPE_CUSTODIAN_REGION_OPTIONS = {
+    taiwan: {
+      twd: { allowed: ["kgi-active", "feb-active"], default: "kgi-active" },
+      usd: { allowed: ["kgi-active"], default: "kgi-active" },
+    },
+    cayman: {
+      twd: { allowed: [], default: "kgi-active" },
+      usd: { allowed: ["feb-active"], default: "feb-active" },
+    },
+  };
+
+  const PROTOTYPE_CUSTODIAN_CONTROL_LABELS = {
+    "kgi-active": "KGI active",
+    "feb-active": "FEB active",
+  };
+
+  const getPrototypeCustodianRegionOptions = (key) => {
+    const region = getPrototypeRegion();
+    return (
+      PROTOTYPE_CUSTODIAN_REGION_OPTIONS[region]?.[key] ||
+      PROTOTYPE_CUSTODIAN_REGION_OPTIONS.taiwan[key]
+    );
   };
 
   const queryPrototypeCustodianSelect = (cfg) =>
@@ -210,6 +230,7 @@
       // ignore storage errors
     }
     syncPrototypeRegionToDocument();
+    syncPrototypeCustodianControlsRegionUi();
     document.dispatchEvent(new CustomEvent("prototype-region-change"));
   };
 
@@ -232,6 +253,7 @@
     sel.value = value;
     sel.addEventListener("change", () => setPrototypeRegion(sel.value));
     syncPrototypeRegionToDocument();
+    syncPrototypeCustodianControlsRegionUi();
     document.dispatchEvent(new CustomEvent("prototype-region-change"));
   };
 
@@ -439,7 +461,7 @@
     );
     if (usdCardDesc) {
       usdCardDesc.textContent = isCayman
-        ? "Add a foreign-currency bank account you already have."
+        ? "Add a USD bank account you already have: Most USD banks are supported."
         : "Add a KGI USD bank account you already have.";
     }
 
@@ -505,15 +527,58 @@
   };
 
   const syncPrototypeCustodiansToDocument = () => {
-    Object.values(PROTOTYPE_CUSTODIAN_CONFIGS).forEach((cfg) => {
+    Object.entries(PROTOTYPE_CUSTODIAN_CONFIGS).forEach(([key, cfg]) => {
+      const regionOpts = getPrototypeCustodianRegionOptions(key);
       const sel = queryPrototypeCustodianSelect(cfg);
-      const raw = String(sel?.value || cfg.default);
-      const value = cfg.allowed.includes(raw) ? raw : cfg.default;
+      const raw = String(sel?.value || regionOpts.default);
+      const value = regionOpts.allowed.includes(raw) ? raw : regionOpts.default;
       document.documentElement.dataset[cfg.datasetKey] = value;
       // Remove any legacy mirror attr that collided with the <select> attribute.
       document.documentElement.removeAttribute(cfg.selectAttr);
     });
     syncBankAccountsPanelUi();
+  };
+
+  const syncPrototypeCustodianSelectOptions = (key) => {
+    const cfg = PROTOTYPE_CUSTODIAN_CONFIGS[key];
+    const sel = queryPrototypeCustodianSelect(cfg);
+    if (!sel) return;
+    const { allowed, default: defaultVal } = getPrototypeCustodianRegionOptions(key);
+    const previous = String(sel.value || defaultVal);
+
+    sel.replaceChildren();
+    allowed.forEach((value) => {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent =
+        PROTOTYPE_CUSTODIAN_CONTROL_LABELS[value] ||
+        `${PROTOTYPE_CUSTODIAN_LABELS[value] || value} active`;
+      sel.appendChild(opt);
+    });
+
+    const next = allowed.includes(previous) ? previous : defaultVal;
+    if (allowed.length) sel.value = next;
+    sel.disabled = allowed.length <= 1;
+  };
+
+  const syncPrototypeCustodianControlsRegionUi = () => {
+    const isCayman = getPrototypeRegion() === "cayman";
+    const twdSection = document.querySelector(
+      '[data-prototype-custodian-section="twd"]',
+    );
+    if (twdSection) twdSection.hidden = isCayman;
+
+    Object.keys(PROTOTYPE_CUSTODIAN_CONFIGS).forEach((key) => {
+      syncPrototypeCustodianSelectOptions(key);
+      const regionOpts = getPrototypeCustodianRegionOptions(key);
+      if (!regionOpts.allowed.length) return;
+      const current = getPrototypeCustodian(key);
+      if (!regionOpts.allowed.includes(current)) {
+        setPrototypeCustodian(key, regionOpts.default);
+        return;
+      }
+    });
+    syncPrototypeCustodiansToDocument();
   };
 
   /** Set by initMyPlansPanel — refreshes plan cards when Flow progress changes */
@@ -8069,17 +8134,24 @@
 
     const closeButtons = panel.querySelectorAll("[data-link-usd-close]");
     const continueBtn = panel.querySelector("[data-link-usd-continue]");
-    const custodianDetailsBtn = panel.querySelector(
-      "[data-link-usd-custodian-details]",
-    );
-    const custodianNameEl = panel.querySelector("[data-link-usd-custodian-name]");
     const showSnackbar =
       bankAccountsApi?.showSnackbar ||
       (() => {
         /* noop */
       });
 
+    const syncRegionContent = () => {
+      const isCayman = getPrototypeRegion() === "cayman";
+      panel.querySelectorAll("[data-link-usd-variant]").forEach((el) => {
+        const variant = el.getAttribute("data-link-usd-variant");
+        el.hidden = isCayman ? variant !== "cayman" : variant !== "taiwan";
+      });
+    };
+
     const syncCustodian = () => {
+      const custodianNameEl = panel.querySelector(
+        '[data-link-usd-variant="taiwan"] [data-link-usd-custodian-name]',
+      );
       const proto =
         document.documentElement.dataset.prototypeUsdCustodianActive ||
         "kgi-active";
@@ -8091,6 +8163,7 @@
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
+        syncRegionContent();
         syncCustodian();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".link-twd-panel__body");
@@ -8130,11 +8203,12 @@
       openDetails();
     });
 
-    custodianDetailsBtn?.addEventListener("click", () =>
-      usdCustodianPanelApi?.open?.(),
-    );
+    panel.querySelectorAll("[data-link-usd-custodian-details]").forEach((btn) => {
+      btn.addEventListener("click", () => usdCustodianPanelApi?.open?.());
+    });
 
     document.addEventListener("prototype-usd-custodian-change", syncCustodian);
+    document.addEventListener("prototype-region-change", syncRegionContent);
 
     return {
       open: () => setOpen(true),
@@ -8189,23 +8263,56 @@
     },
   };
 
-  const USD_CUSTODIAN = {
-    selectorName: "KGI bank",
-    icon: "assets/icon_custodian_kgi.svg",
-    details: {
-      bankName: "KGI Bank",
-      bankCountry: "Taiwan",
-      accountName: "凱基受託鏈科信託財產專戶",
-      depositSingle: "1,500,000 USD",
-      depositDaily: "2,000,000 USD",
-      depositAnnually: "3,000,000 USD",
-      depositFee: "Free",
-      withdrawSingle: "1,000,000 USD",
-      withdrawDaily: "2,000,000 USD",
-      withdrawMonthly: "10,000,000 USD",
-      withdrawAnnually: "60,000,000 USD",
-      withdrawFee: "15 USD",
+  // Maps between custodian data keys and the prototype-control select values.
+  const CUSTODIAN_KEY_TO_PROTO = { kgi: "kgi-active", fareastern: "feb-active" };
+  const PROTO_TO_CUSTODIAN_KEY = { "kgi-active": "kgi", "feb-active": "fareastern" };
+
+  const USD_CUSTODIANS = {
+    kgi: {
+      key: "kgi",
+      selectorName: "KGI bank",
+      icon: "assets/icon_custodian_kgi.svg",
+      details: {
+        bankName: "KGI Bank",
+        bankCountry: "Taiwan",
+        accountName: "凱基受託鏈科信託財產專戶",
+        depositSingle: "1,500,000 USD",
+        depositDaily: "2,000,000 USD",
+        depositAnnually: "3,000,000 USD",
+        depositFee: "Free",
+        withdrawSingle: "1,000,000 USD",
+        withdrawDaily: "2,000,000 USD",
+        withdrawMonthly: "10,000,000 USD",
+        withdrawAnnually: "60,000,000 USD",
+        withdrawFee: "15 USD",
+      },
     },
+    fareastern: {
+      key: "fareastern",
+      selectorName: "Far Eastern Bank",
+      icon: "assets/icon_custodian_fareastern.svg",
+      details: {
+        bankName: "Far Eastern Bank",
+        bankCountry: "Taiwan",
+        accountName: "遠東受託鏈科信託財產專戶",
+        depositSingle: "1,500,000 USD",
+        depositDaily: "2,000,000 USD",
+        depositAnnually: "3,000,000 USD",
+        depositFee: "Free",
+        withdrawSingle: "1,000,000 USD",
+        withdrawDaily: "2,000,000 USD",
+        withdrawMonthly: "10,000,000 USD",
+        withdrawAnnually: "60,000,000 USD",
+        withdrawFee: "15 USD",
+      },
+    },
+  };
+
+  const getUsdCustodian = () => {
+    const proto =
+      document.documentElement.dataset.prototypeUsdCustodianActive || "kgi-active";
+    const key = PROTO_TO_CUSTODIAN_KEY[proto] || "kgi";
+    return USD_CUSTODIANS[key] || USD_CUSTODIANS.kgi;
   };
 
   const initUsdCustodianPanel = ({ showSnackbar }) => {
@@ -8213,6 +8320,7 @@
     if (!panel) return { open: () => {}, close: () => {} };
 
     const selectorNameEl = panel.querySelector("[data-usd-custodian-selector-name]");
+    const selectorIconEl = panel.querySelector(".custodian-panel__selector-icon");
     const detailEls = {
       bankName: panel.querySelector("[data-usd-custodian-bank-name]"),
       bankCountry: panel.querySelector("[data-usd-custodian-bank-country]"),
@@ -8229,8 +8337,16 @@
     };
 
     const applyContent = () => {
-      if (selectorNameEl) selectorNameEl.textContent = USD_CUSTODIAN.selectorName;
-      Object.entries(USD_CUSTODIAN.details).forEach(([field, value]) => {
+      const custodian = getUsdCustodian();
+      if (selectorIconEl) selectorIconEl.src = custodian.icon;
+      if (selectorNameEl) {
+        selectorNameEl.textContent = custodian.selectorName;
+        selectorNameEl.classList.toggle(
+          "custodian-panel__selector-name--positive",
+          custodian.key === "fareastern",
+        );
+      }
+      Object.entries(custodian.details).forEach(([field, value]) => {
         if (detailEls[field]) detailEls[field].textContent = value;
       });
     };
@@ -8271,16 +8387,14 @@
     });
 
     applyContent();
+    document.addEventListener("prototype-usd-custodian-change", applyContent);
+    document.addEventListener("prototype-region-change", applyContent);
 
     return {
       open: (opts) => setOpen(true, opts),
       close: () => setOpen(false),
     };
   };
-
-  // Maps between custodian data keys and the prototype-control select values.
-  const CUSTODIAN_KEY_TO_PROTO = { kgi: "kgi-active", fareastern: "feb-active" };
-  const PROTO_TO_CUSTODIAN_KEY = { "kgi-active": "kgi", "feb-active": "fareastern" };
 
   const initCustodianApplySheet = ({ custodianPanelApi }) => {
     const sheet = document.querySelector("[data-custodian-apply-sheet]");
@@ -8339,11 +8453,7 @@
       const currencyLabel = isTwd ? "TWD" : "USD";
       const custodian = isTwd
         ? getTwdCustodian()
-        : {
-            listName: USD_CUSTODIAN.details.bankName,
-            selectorName: USD_CUSTODIAN.selectorName,
-            details: USD_CUSTODIAN.details,
-          };
+        : getUsdCustodian();
       const { details } = custodian;
       const isTaiwan = getPrototypeRegion() === "taiwan";
 
@@ -8351,7 +8461,7 @@
       if (custodianNameEl) {
         custodianNameEl.textContent = isTwd
           ? custodian.listName
-          : USD_CUSTODIAN.details.bankName;
+          : custodian.details.bankName;
       }
       if (depositCurrencyEl) depositCurrencyEl.textContent = currencyLabel;
       if (withdrawCurrencyEl) withdrawCurrencyEl.textContent = currencyLabel;
@@ -10226,9 +10336,10 @@
   const getPrototypeCustodian = (key) => {
     const cfg = PROTOTYPE_CUSTODIAN_CONFIGS[key];
     if (!cfg) return "";
+    const regionOpts = getPrototypeCustodianRegionOptions(key);
     const sel = queryPrototypeCustodianSelect(cfg);
-    const raw = String(sel?.value || cfg.default);
-    return cfg.allowed.includes(raw) ? raw : cfg.default;
+    const raw = String(sel?.value || regionOpts.default);
+    return regionOpts.allowed.includes(raw) ? raw : regionOpts.default;
   };
 
   const notifyPrototypeCustodianChange = (key) => {
@@ -10243,9 +10354,12 @@
   const setPrototypeCustodian = (key, next) => {
     const cfg = PROTOTYPE_CUSTODIAN_CONFIGS[key];
     if (!cfg) return;
+    const regionOpts = getPrototypeCustodianRegionOptions(key);
     const sel = queryPrototypeCustodianSelect(cfg);
     if (!sel) return;
-    const value = cfg.allowed.includes(String(next)) ? String(next) : cfg.default;
+    const value = regionOpts.allowed.includes(String(next))
+      ? String(next)
+      : regionOpts.default;
     sel.value = value;
     try {
       if (window.localStorage) {
@@ -10262,19 +10376,23 @@
     Object.entries(PROTOTYPE_CUSTODIAN_CONFIGS).forEach(([key, cfg]) => {
       const sel = queryPrototypeCustodianSelect(cfg);
       if (!sel) return;
-      let value = cfg.default;
+      const regionOpts = getPrototypeCustodianRegionOptions(key);
+      let value = regionOpts.default;
       try {
         if (window.localStorage) {
-          value = window.localStorage.getItem(cfg.storageKey) || cfg.default;
+          value = window.localStorage.getItem(cfg.storageKey) || regionOpts.default;
         }
       } catch (_) {
         // ignore storage errors
       }
-      if (!cfg.allowed.includes(value)) value = cfg.default;
+      if (!regionOpts.allowed.includes(value)) value = regionOpts.default;
       sel.value = value;
       sel.addEventListener("change", () => {
-        const next = String(sel.value || cfg.default);
-        const safe = cfg.allowed.includes(next) ? next : cfg.default;
+        const regionOpts = getPrototypeCustodianRegionOptions(key);
+        const next = String(sel.value || regionOpts.default);
+        const safe = regionOpts.allowed.includes(next)
+          ? next
+          : regionOpts.default;
         sel.value = safe;
         try {
           if (window.localStorage) {
@@ -10287,7 +10405,7 @@
         notifyPrototypeCustodianChange(key);
       });
     });
-    syncPrototypeCustodiansToDocument();
+    syncPrototypeCustodianControlsRegionUi();
     notifyPrototypeCustodianChange("twd");
     notifyPrototypeCustodianChange("usd");
   };
@@ -10299,9 +10417,9 @@
       Object.keys(STATE_CONFIGS).forEach((group) => {
         setState(group, STATE_CONFIGS[group].min, { force: true });
       });
-      setPrototypeCustodian("twd", PROTOTYPE_CUSTODIAN_CONFIGS.twd.default);
-      setPrototypeCustodian("usd", PROTOTYPE_CUSTODIAN_CONFIGS.usd.default);
       setPrototypeRegion(PROTOTYPE_REGION_CONFIG.default);
+      setPrototypeCustodian("twd", "kgi-active");
+      setPrototypeCustodian("usd", "kgi-active");
       setPrototypeBankAccountsStyle(PROTOTYPE_BANK_ACCOUNTS_STYLE_CONFIG.default);
       const firstTimeApplyCustodian = document.querySelector(
         "[data-prototype-first-time-apply-custodian]",
@@ -26942,8 +27060,8 @@
   };
 
   initPrototypeReset();
-  initPrototypeCustodianControls();
   initPrototypeRegionControls();
+  initPrototypeCustodianControls();
   initPrototypeBankAccountsStyleControls();
   syncPrototypeFinanceCurrencySelectorVisible();
 
