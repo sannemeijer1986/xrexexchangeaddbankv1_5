@@ -7577,12 +7577,26 @@
       });
     });
     panel
-      .querySelectorAll(
-        "[data-bank-accounts-item], [data-bank-accounts-edit]",
-      )
+      .querySelectorAll("[data-bank-accounts-item]")
       .forEach((button) => {
         button.addEventListener("click", () => showSnackbar("Not in prototype"));
       });
+    panel.querySelectorAll("[data-bank-accounts-edit]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const currency = button.getAttribute("data-bank-accounts-edit");
+        if (currency === "twd") {
+          onLinkTwd();
+          return;
+        }
+        if (currency === "usd") {
+          if (getPrototypeBankAccountsStyle() === "concept") {
+            showSnackbar("Not in prototype");
+            return;
+          }
+          onLinkUsd();
+        }
+      });
+    });
     panel
       .querySelectorAll("[data-bank-accounts-custodian-wrap]")
       .forEach((wrap) => {
@@ -8816,6 +8830,8 @@
     }
 
     let selectedSetupCurrency = "twd";
+    let skipCurrencyStep = false;
+    let openedFromBankAccounts = false;
     let continueFromHow =
       typeof onHowContinue === "function" ? onHowContinue : () => {};
 
@@ -9121,7 +9137,7 @@
       }
     };
 
-    const closeAll = (opts = {}) => {
+    const closeWizardPanels = (opts = {}) => {
       submitGeneration += 1;
       if (loaderEl) loaderEl.hidden = true;
       if (panels.flow) setPanelOpen(panels.flow, false, opts);
@@ -9129,15 +9145,47 @@
       setPanelOpen(panels.currency, false, opts);
       setPanelOpen(panels.intro, false, opts);
       if (panels.flow) resetFlowSteps();
-      setPhoneShellOpen(false);
+    };
+
+    const closeAll = (opts = {}) => {
+      closeWizardPanels(opts);
+      if (!openedFromBankAccounts) {
+        setPhoneShellOpen(false);
+      }
+      skipCurrencyStep = false;
+      openedFromBankAccounts = false;
     };
 
     closeBaWizardFlow = closeAll;
 
     const openIntro = () => {
+      skipCurrencyStep = false;
+      openedFromBankAccounts = false;
       closeAll({ instant: true });
       setPanelOpen(panels.intro, true);
       setPhoneShellOpen(true);
+    };
+
+    const openForCurrency = (currency) => {
+      selectedSetupCurrency = currency === "usd" ? "usd" : "twd";
+      openedFromBankAccounts =
+        document
+          .querySelector("[data-bank-accounts-panel]")
+          ?.classList.contains("is-open") ?? false;
+      skipCurrencyStep = true;
+      closeWizardPanels({ instant: true });
+      setPanelOpen(panels.intro, true);
+      if (!openedFromBankAccounts) {
+        setPhoneShellOpen(true);
+      }
+    };
+
+    const continueFromIntro = () => {
+      if (skipCurrencyStep) {
+        openHow(selectedSetupCurrency);
+        return;
+      }
+      openCurrency();
     };
 
     const openCurrency = () => {
@@ -9269,7 +9317,7 @@
 
     panels.intro
       ?.querySelector("[data-ba-wizard-intro-continue]")
-      ?.addEventListener("click", openCurrency);
+      ?.addEventListener("click", continueFromIntro);
 
     panels.currency
       ?.querySelector("[data-ba-wizard-currency-back]")
@@ -9438,6 +9486,7 @@
 
     return {
       openFromMenu: openIntro,
+      openForCurrency,
       closeAll,
       fillTwdBankDetails,
       getSelectedCurrency: () => selectedSetupCurrency,
@@ -9509,8 +9558,16 @@
     }
     linkTwdApi.continueToDetails?.();
   });
-  bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
-  bankAccountsApi.setOnLinkUsd(linkUsdApi.open);
+  const openBankAccountLinkFlow = (currency) => {
+    if (getPrototypeRegion() === "taiwan") {
+      baWizardApi.openForCurrency?.(currency);
+      return;
+    }
+    if (currency === "usd") linkUsdApi.open();
+    else linkTwdApi.open();
+  };
+  bankAccountsApi.setOnLinkTwd(() => openBankAccountLinkFlow("twd"));
+  bankAccountsApi.setOnLinkUsd(() => openBankAccountLinkFlow("usd"));
   bankAccountsApi.setOnOpenTwdCustodian(() =>
     custodianPanelApi.open({ fromBankAccounts: true }),
   );

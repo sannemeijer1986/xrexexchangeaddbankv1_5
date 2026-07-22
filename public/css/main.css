@@ -2162,19 +2162,19 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .ba-wizard-intro {
-  z-index: 2100;
+  z-index: 2200;
 }
 
 .ba-wizard-currency {
-  z-index: 2112;
+  z-index: 2212;
 }
 
 .ba-wizard-how {
-  z-index: 2125;
+  z-index: 2225;
 }
 
 .ba-wizard-flow {
-  z-index: 2150;
+  z-index: 2238;
   --ba-wizard-motion-duration: 0.28s;
   --ba-wizard-motion-easing: ease;
   --ba-wizard-motion-distance: 20px;
