@@ -1897,6 +1897,7 @@ html[data-active-tab="wallet"] {
   align-items: center;
   gap: 4px;
   flex: 0 0 auto;
+  cursor: pointer;
 }
 
 .bank-accounts-panel__section-custodian-label {
@@ -1917,7 +1918,7 @@ html[data-active-tab="wallet"] {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  cursor: pointer;
+  pointer-events: none;
 }
 
 .bank-accounts-panel__section-custodian-btn img {

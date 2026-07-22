@@ -473,6 +473,35 @@
     if (!isCayman && (states.usdBankAccount ?? 1) === 6) {
       setState("usdBankAccount", 5, { force: true });
     }
+
+    syncBankAccountsPanelSectionOrder();
+  };
+
+  const syncBankAccountsPanelSectionOrder = () => {
+    const body = document.querySelector(".bank-accounts-panel__body");
+    const twdSection = document.querySelector(
+      '[data-bank-accounts-section="twd"]',
+    );
+    const usdSection = document.querySelector(
+      '[data-bank-accounts-section="usd"]',
+    );
+    if (!body || !twdSection || !usdSection) return;
+
+    const twdState = states.twdBankAccount ?? 1;
+    const usdState = states.usdBankAccount ?? 1;
+    const shouldUsdFirst =
+      getPrototypeRegion() === "taiwan" && usdState >= 2 && twdState < 2;
+
+    if (shouldUsdFirst) {
+      if (usdSection.nextElementSibling !== twdSection) {
+        body.insertBefore(usdSection, twdSection);
+      }
+      return;
+    }
+
+    if (twdSection.nextElementSibling !== usdSection) {
+      body.insertBefore(twdSection, usdSection);
+    }
   };
 
   const syncPrototypeCustodiansToDocument = () => {
@@ -7354,6 +7383,8 @@
         openPanel: () => {},
         setOnLinkTwd: () => {},
         setOnLinkUsd: () => {},
+        setOnOpenTwdCustodian: () => {},
+        setOnOpenUsdCustodian: () => {},
       };
     }
     const openButtons = document.querySelectorAll("[data-bank-accounts-open]");
@@ -7362,6 +7393,8 @@
     let snackbarTimeout = null;
     let onLinkTwd = () => {};
     let onLinkUsd = () => {};
+    let onOpenTwdCustodian = () => {};
+    let onOpenUsdCustodian = () => {};
 
     const showSnackbar = (message) => {
       const snackbar = container?.querySelector("[data-snackbar]");
@@ -7474,10 +7507,20 @@
     });
     panel
       .querySelectorAll(
-        "[data-bank-accounts-item], [data-bank-accounts-edit], [data-bank-accounts-custodian-edit]",
+        "[data-bank-accounts-item], [data-bank-accounts-edit]",
       )
       .forEach((button) => {
         button.addEventListener("click", () => showSnackbar("Not in prototype"));
+      });
+    panel
+      .querySelectorAll("[data-bank-accounts-custodian-wrap]")
+      .forEach((wrap) => {
+        wrap.addEventListener("click", () => {
+          const section = wrap.closest("[data-bank-accounts-section]");
+          const currency = section?.getAttribute("data-bank-accounts-section");
+          if (currency === "twd") onOpenTwdCustodian();
+          else if (currency === "usd") onOpenUsdCustodian();
+        });
       });
 
     syncBankAccountsPanelUi();
@@ -7497,6 +7540,12 @@
       },
       setOnLinkUsd: (fn) => {
         onLinkUsd = typeof fn === "function" ? fn : () => {};
+      },
+      setOnOpenTwdCustodian: (fn) => {
+        onOpenTwdCustodian = typeof fn === "function" ? fn : () => {};
+      },
+      setOnOpenUsdCustodian: (fn) => {
+        onOpenUsdCustodian = typeof fn === "function" ? fn : () => {};
       },
     };
   };
@@ -8186,14 +8235,19 @@
       });
     };
 
-    const setOpen = (nextOpen) => {
+    let blockSelectorSwitch = false;
+    const selectorEl = panel.querySelector(".custodian-panel__selector");
+
+    const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         applyContent();
+        blockSelectorSwitch = Boolean(opts.fromBankAccounts);
         panel.hidden = false;
         const scrollBody = panel.querySelector(".custodian-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         requestAnimationFrame(() => panel.classList.add("is-open"));
       } else {
+        blockSelectorSwitch = false;
         panel.classList.remove("is-open");
         const onEnd = () => {
           if (!panel.classList.contains("is-open")) panel.hidden = true;
@@ -8212,11 +8266,14 @@
     panel
       .querySelector("[data-usd-custodian-learn-more]")
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    selectorEl?.addEventListener("click", () => {
+      if (blockSelectorSwitch) showSnackbar("Not in prototype");
+    });
 
     applyContent();
 
     return {
-      open: () => setOpen(true),
+      open: (opts) => setOpen(true, opts),
       close: () => setOpen(false),
     };
   };
@@ -8529,8 +8586,11 @@
       applyPreview,
     });
 
-    const setOpen = (nextOpen) => {
+    let blockSelectorSwitch = false;
+
+    const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
+        blockSelectorSwitch = Boolean(opts.fromBankAccounts);
         state.previewKey = state.persistedKey;
         applyPreview();
         panel.hidden = false;
@@ -8538,6 +8598,7 @@
         if (scrollBody) scrollBody.scrollTop = 0;
         requestAnimationFrame(() => panel.classList.add("is-open"));
       } else {
+        blockSelectorSwitch = false;
         selectPanelApi.close();
         panel.classList.remove("is-open");
         const onEnd = () => {
@@ -8567,7 +8628,13 @@
       );
       setOpen(false);
     });
-    selectorBtn?.addEventListener("click", () => selectPanelApi.open());
+    selectorBtn?.addEventListener("click", () => {
+      if (blockSelectorSwitch) {
+        showSnackbar("Not in prototype");
+        return;
+      }
+      selectPanelApi.open();
+    });
     learnMoreBtn?.addEventListener("click", () =>
       showSnackbar("Not in prototype"),
     );
@@ -8593,7 +8660,7 @@
     applyPreview();
 
     return {
-      open: () => setOpen(true),
+      open: (opts) => setOpen(true, opts),
       close: () => setOpen(false),
     };
   };
@@ -9167,6 +9234,12 @@
   );
   bankAccountsApi.setOnLinkTwd(linkTwdApi.open);
   bankAccountsApi.setOnLinkUsd(linkUsdApi.open);
+  bankAccountsApi.setOnOpenTwdCustodian(() =>
+    custodianPanelApi.open({ fromBankAccounts: true }),
+  );
+  bankAccountsApi.setOnOpenUsdCustodian(() =>
+    usdCustodianPanelApi.open({ fromBankAccounts: true }),
+  );
 
   const initSettingsPage = () => {
     const page = document.querySelector("[data-settings-page]");
