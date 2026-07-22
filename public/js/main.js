@@ -316,6 +316,7 @@
   };
 
   let closeBaWizardFlow = () => {};
+  let syncBaWizardStepLabels = () => {};
 
   const setPrototypeBankAccountsStyle = (next) => {
     const value = normalizePrototypeBankAccountsStyle(next);
@@ -465,15 +466,6 @@
 
     if (twdSection) twdSection.hidden = isCayman;
 
-    const usdCardDesc = document.querySelector(
-      "[data-bank-accounts-usd-card-desc]",
-    );
-    if (usdCardDesc) {
-      usdCardDesc.textContent = isCayman
-        ? "Add a USD bank account you already have: Most USD banks are supported."
-        : "Add a KGI USD bank account you already have.";
-    }
-
     const setLinkBtnVariant = (cardBtn, variant) => {
       const btn = cardBtn?.querySelector(".bank-accounts-panel__btn");
       if (!btn) return;
@@ -488,11 +480,56 @@
       );
     };
 
+    const syncEmptyCardCopy = (currency, copy) => {
+      const card = document.querySelector(
+        `[data-bank-accounts-link="${currency}"]`,
+      );
+      if (!card) return;
+      const titleEl = card.querySelector(
+        `[data-bank-accounts-card-title="${currency}"]`,
+      );
+      const noteEl = card.querySelector(
+        `[data-bank-accounts-card-note="${currency}"]`,
+      );
+      const btnEl = card.querySelector(
+        `[data-bank-accounts-card-btn="${currency}"]`,
+      );
+      if (titleEl) titleEl.textContent = copy.title;
+      if (noteEl) {
+        noteEl.textContent = copy.note;
+        noteEl.classList.toggle(
+          "bank-accounts-panel__card-desc--highlight",
+          copy.noteHighlight,
+        );
+      }
+      if (btnEl) btnEl.textContent = copy.btn;
+      setLinkBtnVariant(card, copy.btnVariant);
+    };
+
     if (isCayman) {
-      setLinkBtnVariant(usdLinkBtn, "primary");
+      syncEmptyCardCopy("usd", {
+        title: "Deposit and withdraw USD",
+        note:
+          "Add a USD bank account you already have: Most USD banks are supported.",
+        btn: "Add USD bank account",
+        noteHighlight: false,
+        btnVariant: "primary",
+      });
     } else {
-      setLinkBtnVariant(twdLinkBtn, "primary");
-      setLinkBtnVariant(usdLinkBtn, "secondary");
+      syncEmptyCardCopy("twd", {
+        title: "Deposit and withdraw TWD",
+        note: "Most Taiwan banks supported",
+        btn: "Link TWD bank account",
+        noteHighlight: true,
+        btnVariant: "primary",
+      });
+      syncEmptyCardCopy("usd", {
+        title: "Deposit and withdraw USD",
+        note: "Only KGI bank supported",
+        btn: "Link USD bank account",
+        noteHighlight: true,
+        btnVariant: "secondary",
+      });
     }
 
     document
@@ -7491,9 +7528,20 @@
       }, 2200);
     };
 
-    const setOpen = (nextOpen) => {
+    const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         panel.hidden = false;
+        if (opts.instant) {
+          panel.classList.add("is-instant");
+          panel.classList.add("is-open");
+          if (container) {
+            container.classList.add("is-bank-accounts-fading");
+            container.classList.add("is-bank-accounts-open");
+          }
+          void panel.offsetWidth;
+          panel.classList.remove("is-instant");
+          return;
+        }
         if (container) {
           container.classList.remove("is-bank-accounts-open");
           container.classList.remove("is-bank-accounts-fading");
@@ -7612,12 +7660,13 @@
 
     return {
       showSnackbar,
-      openPanel: () => {
+      openPanel: (opts = {}) => {
+        const open = () => setOpen(true, opts);
         if (container && container.classList.contains("is-menu-open")) {
           container.classList.remove("is-menu-open");
-          setTimeout(() => setOpen(true), 220);
+          setTimeout(open, opts.instant ? 0 : 220);
         } else {
-          setOpen(true);
+          open();
         }
       },
       setOnLinkTwd: (fn) => {
@@ -7640,6 +7689,7 @@
     if (!panel) return { open: () => {}, close: () => {}, setOnDismiss: () => {} };
 
     let onDismiss = () => {};
+    let isDismissing = false;
 
     const closeButtons = panel.querySelectorAll(
       "[data-twd-bank-success-close], [data-twd-bank-success-done]",
@@ -7647,6 +7697,8 @@
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
+        isDismissing = false;
+        panel.classList.remove("is-closing-back", "is-instant");
         panel.hidden = false;
         requestAnimationFrame(() => panel.classList.add("is-open"));
       } else {
@@ -7661,8 +7713,30 @@
     };
 
     const dismiss = () => {
-      setOpen(false);
+      if (isDismissing || !panel.classList.contains("is-open")) return;
+      isDismissing = true;
       onDismiss();
+      panel.classList.add("is-closing-back");
+      panel.classList.remove("is-open");
+
+      let finished = false;
+      const finishClose = (event) => {
+        if (event && (event.target !== panel || event.propertyName !== "transform")) {
+          return;
+        }
+        if (finished) return;
+        finished = true;
+        panel.removeEventListener("transitionend", finishClose);
+        clearTimeout(finishTimer);
+        panel.classList.add("is-instant");
+        panel.classList.remove("is-closing-back");
+        panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
+        isDismissing = false;
+      };
+      const finishTimer = setTimeout(() => finishClose(), 380);
+      panel.addEventListener("transitionend", finishClose);
     };
 
     closeButtons.forEach((btn) => {
@@ -7808,15 +7882,12 @@
       syncSubmit();
     };
 
-    document
-      .querySelector("[data-prototype-fill-twd-bank]")
-      ?.addEventListener("click", fillAll);
-
     const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
         if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
+        syncBaWizardStepLabels();
         resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
@@ -7826,8 +7897,11 @@
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
         if (opts.instant) {
+          panel.classList.add("is-instant");
           panel.classList.remove("is-open");
           panel.hidden = true;
+          void panel.offsetWidth;
+          panel.classList.remove("is-instant");
           return;
         }
         panel.classList.remove("is-open");
@@ -8003,15 +8077,12 @@
       syncSubmit();
     };
 
-    document
-      .querySelector("[data-prototype-fill-usd-bank]")
-      ?.addEventListener("click", fillAll);
-
     const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
         if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
+        syncBaWizardStepLabels();
         resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
@@ -8021,8 +8092,11 @@
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
         if (opts.instant) {
+          panel.classList.add("is-instant");
           panel.classList.remove("is-open");
           panel.hidden = true;
+          void panel.offsetWidth;
+          panel.classList.remove("is-instant");
           return;
         }
         panel.classList.remove("is-open");
@@ -8128,13 +8202,9 @@
       showSnackbar,
       onSubmitComplete: () => {
         bankAccountSuccessApi.setOnDismiss(() => {
-          twdBankDetailsApi?.close({ instant: true });
-          setOpen(false);
-          closeBaWizardFlow({ instant: true });
-          if (hasLinkedBankAccounts()) {
-            bankAccountsApi?.openPanel?.();
-          }
+          finalizeBankAccountSuccessDismiss();
         });
+        hideBankLinkStackInstant();
         bankAccountSuccessApi.open();
       },
     });
@@ -8154,6 +8224,7 @@
       open: () => setOpen(true),
       close: () => setOpen(false),
       continueToDetails,
+      fillBankForm: () => twdBankDetailsApi?.fillAll?.(),
     };
   };
 
@@ -8222,13 +8293,9 @@
       showSnackbar,
       onSubmitComplete: () => {
         bankAccountSuccessApi.setOnDismiss(() => {
-          usdBankDetailsApi?.close({ instant: true });
-          setOpen(false);
-          closeBaWizardFlow({ instant: true });
-          if (hasLinkedBankAccounts()) {
-            bankAccountsApi?.openPanel?.();
-          }
+          finalizeBankAccountSuccessDismiss();
         });
+        hideBankLinkStackInstant();
         bankAccountSuccessApi.open();
       },
     });
@@ -8253,6 +8320,7 @@
       open: () => setOpen(true),
       close: () => setOpen(false),
       continueToDetails,
+      fillBankForm: () => usdBankDetailsApi?.fillAll?.(),
     };
   };
 
@@ -8855,6 +8923,52 @@
       }
     };
 
+    const BA_WIZARD_INTRO_COPY = {
+      default: {
+        title: "Link your bank account",
+        desc:
+          "This is the bank account you'll use to move TWD or USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.",
+      },
+      twd: {
+        title: "Link your TWD bank account",
+        desc:
+          "This is the bank account you'll use to move TWD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.",
+      },
+      usd: {
+        title: "Link your USD bank account",
+        desc:
+          "This is the bank account you'll use to move USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.",
+      },
+    };
+
+    const syncBaWizardIntroContent = (currency = null) => {
+      const titleEl = panels.intro?.querySelector("[data-ba-wizard-intro-title]");
+      const descEl = panels.intro?.querySelector("[data-ba-wizard-intro-desc]");
+      const copy =
+        currency === "usd"
+          ? BA_WIZARD_INTRO_COPY.usd
+          : currency === "twd"
+            ? BA_WIZARD_INTRO_COPY.twd
+            : BA_WIZARD_INTRO_COPY.default;
+      if (titleEl) titleEl.textContent = copy.title;
+      if (descEl) descEl.innerHTML = copy.desc;
+    };
+
+    syncBaWizardStepLabels = () => {
+      const totalSteps = skipCurrencyStep ? 2 : 3;
+      const howStep = skipCurrencyStep ? 1 : 2;
+      const detailsStep = skipCurrencyStep ? 2 : 3;
+      const howLabelEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-step-label]",
+      );
+      if (howLabelEl) {
+        howLabelEl.textContent = `Step ${howStep} of ${totalSteps}`;
+      }
+      document.querySelectorAll("[data-bank-details-step-label]").forEach((el) => {
+        el.textContent = `Step ${detailsStep} of ${totalSteps}`;
+      });
+    };
+
     const syncBaWizardHowUsdCustodian = () => {
       const custodian = getUsdCustodian();
       const nameEl = panels.how?.querySelector(
@@ -8889,6 +9003,7 @@
       });
       if (isTwd) syncBaWizardHowCustodian();
       else syncBaWizardHowUsdCustodian();
+      syncBaWizardStepLabels();
     };
 
     const progressEl = panels.flow?.querySelector("[data-ba-wizard-progress]");
@@ -9162,6 +9277,7 @@
       skipCurrencyStep = false;
       openedFromBankAccounts = false;
       closeAll({ instant: true });
+      syncBaWizardIntroContent();
       setPanelOpen(panels.intro, true);
       setPhoneShellOpen(true);
     };
@@ -9174,6 +9290,7 @@
           ?.classList.contains("is-open") ?? false;
       skipCurrencyStep = true;
       closeWizardPanels({ instant: true });
+      syncBaWizardIntroContent(selectedSetupCurrency);
       setPanelOpen(panels.intro, true);
       if (!openedFromBankAccounts) {
         setPhoneShellOpen(true);
@@ -9443,11 +9560,9 @@
         if (gen !== submitGeneration) return;
         if (loaderEl) loaderEl.hidden = true;
         bankAccountSuccessApi?.setOnDismiss?.(() => {
-          closeAll({ instant: true });
-          if (hasLinkedBankAccounts()) {
-            bankAccountsApi?.openPanel?.();
-          }
+          finalizeBankAccountSuccessDismiss();
         });
+        hideBankLinkStackInstant();
         bankAccountSuccessApi?.open?.();
       }, SUBMIT_LOADER_MS);
     });
@@ -9497,6 +9612,34 @@
   };
 
   const bankAccountsApi = initBankAccountsPanel();
+  const hidePanelInstant = (panel) => {
+    if (!panel) return;
+    panel.classList.add("is-instant");
+    panel.classList.remove("is-open");
+    panel.hidden = true;
+    void panel.offsetWidth;
+    panel.classList.remove("is-instant");
+  };
+  const hideBankLinkStackInstant = () => {
+    document
+      .querySelectorAll(
+        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel]",
+      )
+      .forEach(hidePanelInstant);
+  };
+  const finalizeBankAccountSuccessDismiss = () => {
+    hideBankLinkStackInstant();
+    closeBaWizardFlow({ instant: true });
+    const bankAccountsPanel = document.querySelector("[data-bank-accounts-panel]");
+    const alreadyOpen = bankAccountsPanel?.classList.contains("is-open");
+    if (hasLinkedBankAccounts()) {
+      if (alreadyOpen) {
+        syncBankAccountsPanelUi();
+      } else {
+        bankAccountsApi?.openPanel?.({ instant: true });
+      }
+    }
+  };
   const showSnackbar =
     bankAccountsApi?.showSnackbar ||
     (() => {
@@ -9534,11 +9677,6 @@
     bankAccountsApi,
   });
   openBaWizardFromMenu = baWizardApi.openFromMenu;
-  document
-    .querySelector("[data-prototype-fill-twd-bank]")
-    ?.addEventListener("click", () => {
-      baWizardApi.fillTwdBankDetails?.();
-    });
   const linkTwdApi = initLinkTwdPanel(
     bankAccountsApi,
     bankAccountSuccessApi,
@@ -9568,6 +9706,25 @@
   };
   bankAccountsApi.setOnLinkTwd(() => openBankAccountLinkFlow("twd"));
   bankAccountsApi.setOnLinkUsd(() => openBankAccountLinkFlow("usd"));
+  document
+    .querySelector("[data-prototype-fill-bank-form]")
+    ?.addEventListener("click", () => {
+      const usdPanel = document.querySelector("[data-usd-bank-details-panel]");
+      const twdPanel = document.querySelector("[data-twd-bank-details-panel]");
+      const legacyWizardStep = document.querySelector('[data-ba-wizard-step="3"]');
+
+      if (usdPanel?.classList.contains("is-open") && !usdPanel.hidden) {
+        linkUsdApi.fillBankForm?.();
+        return;
+      }
+      if (twdPanel?.classList.contains("is-open") && !twdPanel.hidden) {
+        linkTwdApi.fillBankForm?.();
+        return;
+      }
+      if (legacyWizardStep?.classList.contains("is-active")) {
+        baWizardApi.fillTwdBankDetails?.();
+      }
+    });
   bankAccountsApi.setOnOpenTwdCustodian(() =>
     custodianPanelApi.open({ fromBankAccounts: true }),
   );

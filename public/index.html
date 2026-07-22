@@ -3665,8 +3665,8 @@
             </header>
             <div class="ba-wizard-intro__content">
                 <span class="ba-wizard-intro__badge">Set up</span>
-                <h2 class="ba-wizard-intro__title">Link your bank account</h2>
-                <p class="ba-wizard-intro__desc">This is the bank account you&rsquo;ll use to move TWD or USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.</p>
+                <h2 class="ba-wizard-intro__title" data-ba-wizard-intro-title>Link your bank account</h2>
+                <p class="ba-wizard-intro__desc" data-ba-wizard-intro-desc>This is the bank account you&rsquo;ll use to move TWD or USD in and out of XREX.<br /><br />Link an account you already have: It must be registered in your name.</p>
             </div>
             <footer class="ba-wizard-intro__footer">
                 <button class="ba-wizard-intro__btn" type="button" data-ba-wizard-intro-continue>Continue</button>
@@ -4011,11 +4011,11 @@
                                 <img class="bank-accounts-panel__illu-img" src="assets/illu_bank_TWD.svg" alt="" />
                             </span>
                             <span class="bank-accounts-panel__card-copy">
-                                <span class="bank-accounts-panel__card-title">Deposit and withdraw TWD</span>
-                                <span class="bank-accounts-panel__card-desc">Add a bank account you already have: Most Taiwan banks are supported.</span>
+                                <span class="bank-accounts-panel__card-title" data-bank-accounts-card-title="twd">Deposit and withdraw TWD</span>
+                                <span class="bank-accounts-panel__card-desc bank-accounts-panel__card-desc--highlight" data-bank-accounts-card-note="twd">Most Taiwan banks supported</span>
                             </span>
                         </span>
-                        <span class="bank-accounts-panel__btn bank-accounts-panel__btn--primary">Add TWD bank account</span>
+                        <span class="bank-accounts-panel__btn bank-accounts-panel__btn--primary" data-bank-accounts-card-btn="twd">Link TWD bank account</span>
                     </button>
                     <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
                         <div class="bank-accounts-panel__list-card">
@@ -4054,11 +4054,11 @@
                                 <img class="bank-accounts-panel__illu-img" src="assets/illu_bank_USD.svg" alt="" />
                             </span>
                             <span class="bank-accounts-panel__card-copy">
-                                <span class="bank-accounts-panel__card-title">Deposit and withdraw USD</span>
-                                <span class="bank-accounts-panel__card-desc" data-bank-accounts-usd-card-desc>Add a KGI USD bank account you already have.</span>
+                                <span class="bank-accounts-panel__card-title" data-bank-accounts-card-title="usd">Deposit and withdraw USD</span>
+                                <span class="bank-accounts-panel__card-desc bank-accounts-panel__card-desc--highlight" data-bank-accounts-card-note="usd">Only KGI bank supported</span>
                             </span>
                         </span>
-                        <span class="bank-accounts-panel__btn bank-accounts-panel__btn--secondary">Add USD bank account</span>
+                        <span class="bank-accounts-panel__btn bank-accounts-panel__btn--secondary" data-bank-accounts-card-btn="usd">Link USD bank account</span>
                     </button>
                     <div class="bank-accounts-panel__linked" data-bank-accounts-linked hidden>
                         <div class="bank-accounts-panel__list-stack">
@@ -4268,7 +4268,7 @@
             </header>
             <div class="twd-bank-details-panel__body">
                 <div class="ba-wizard-details__onboarding">
-                    <p class="ba-wizard-how__step-label">Step 3 of 3</p>
+                    <p class="ba-wizard-how__step-label" data-bank-details-step-label>Step 3 of 3</p>
                     <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your TWD bank account details</h2>
                 </div>
                 <div class="twd-bank-details-panel__section">
@@ -4340,7 +4340,7 @@
             </header>
             <div class="twd-bank-details-panel__body">
                 <div class="ba-wizard-details__onboarding">
-                    <p class="ba-wizard-how__step-label">Step 3 of 3</p>
+                    <p class="ba-wizard-how__step-label" data-bank-details-step-label>Step 3 of 3</p>
                     <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your USD bank account details</h2>
                 </div>
                 <div class="twd-bank-details-panel__section">
@@ -8042,8 +8042,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                     </select>
                 </div>
             </div>
-            <button class="build-badge__reset" type="button" data-prototype-fill-twd-bank>Fill TWD bank details</button>
-            <button class="build-badge__reset" type="button" data-prototype-fill-usd-bank>Fill USD bank details</button>
+            <button class="build-badge__reset" type="button" data-prototype-fill-bank-form>Fill bank form</button>
             <div class="build-badge__checkbox-stack" role="group" aria-label="Prototype display toggles">
                 <div class="build-badge__section-row">
                     <label class="build-badge__checkbox">

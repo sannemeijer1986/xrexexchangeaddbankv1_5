@@ -1791,6 +1791,10 @@ html[data-active-tab=wallet] .app-header__top {
   transform: translateX(0);
 }
 
+.bank-accounts-panel.is-instant {
+  transition: none !important;
+}
+
 .limits-panel__header,
 .bank-accounts-panel__header {
   display: flex;
@@ -2114,6 +2118,12 @@ html[data-active-tab=wallet] .app-header__top {
   color: #9b9c9c;
 }
 
+.bank-accounts-panel__card-desc--highlight {
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
 .bank-accounts-panel__btn {
   width: 100%;
   height: 40px;
@@ -2413,7 +2423,7 @@ html[data-active-tab=wallet] .app-header__top {
 
 .ba-wizard-intro__title {
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   line-height: normal;
   color: #ffffff;
@@ -3465,6 +3475,11 @@ html[data-active-tab=wallet] .app-header__top {
   transform: translateX(0);
 }
 
+.link-twd-panel.is-instant,
+.link-usd-panel.is-instant {
+  transition: none !important;
+}
+
 .link-twd-panel__header {
   display: flex;
   align-items: center;
@@ -3740,6 +3755,11 @@ html[data-active-tab=wallet] .app-header__top {
 .twd-bank-details-panel.is-open,
 .usd-bank-details-panel.is-open {
   transform: translateX(0);
+}
+
+.twd-bank-details-panel.is-instant,
+.usd-bank-details-panel.is-instant {
+  transition: none !important;
 }
 
 .twd-bank-details-panel.ba-wizard-details .ba-wizard-pageheader,
@@ -4126,6 +4146,15 @@ html[data-active-tab=wallet] .app-header__top {
 .twd-bank-success-panel.is-open {
   transform: translateX(0);
   pointer-events: auto;
+}
+
+.twd-bank-success-panel.is-closing-back {
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.twd-bank-success-panel.is-instant {
+  transition: none !important;
 }
 
 .twd-bank-success-panel__header {
