@@ -5995,6 +5995,91 @@
     });
   };
 
+  const initAddSendPanel = () => {
+    const panel = document.querySelector("[data-add-send-panel]");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const titleEl = panel.querySelector("[data-add-send-title]");
+    const closeButtons = panel.querySelectorAll("[data-add-send-close]");
+    const container = document.querySelector(".phone-container");
+    let snackbarTimeout = null;
+
+    const showSnackbar = (message) => {
+      const snackbar = container?.querySelector("[data-snackbar]");
+      if (!snackbar) return;
+      const text = snackbar.querySelector("[data-snackbar-text]");
+      if (text) text.textContent = message;
+      if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+        snackbarTimeout = null;
+      }
+      snackbar.hidden = false;
+      snackbar.classList.remove("is-visible");
+      void snackbar.offsetWidth;
+      requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+      snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove("is-visible");
+        snackbarTimeout = setTimeout(() => {
+          if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+        }, 320);
+      }, 2200);
+    };
+
+    const setOpen = (nextOpen, mode = "add", opts = {}) => {
+      if (nextOpen) {
+        const normalizedMode = mode === "send" ? "send" : "add";
+        if (titleEl) titleEl.textContent = normalizedMode === "send" ? "Send" : "Add";
+        panel.dataset.addSendMode = normalizedMode;
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".add-send-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+        return;
+      }
+
+      if (opts.instant) {
+        panel.classList.add("is-instant");
+        panel.classList.remove("is-open");
+        panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
+        return;
+      }
+
+      panel.classList.remove("is-open");
+      const onEnd = () => {
+        if (!panel.classList.contains("is-open")) panel.hidden = true;
+        panel.removeEventListener("transitionend", onEnd);
+      };
+      panel.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 400);
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+
+    panel.querySelectorAll("[data-add-send-asset]").forEach((btn) => {
+      btn.addEventListener("click", () => showSnackbar("Not in prototype"));
+    });
+
+    panel.querySelector(".add-send-panel__search")?.addEventListener("click", () => {
+      showSnackbar("Not in prototype");
+    });
+
+    document.querySelectorAll("[data-open-add-send]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const mode = el.getAttribute("data-open-add-send") || "add";
+        setOpen(true, mode);
+      });
+    });
+
+    return {
+      open: (mode = "add") => setOpen(true, mode),
+      close: (opts) => setOpen(false, "add", opts),
+    };
+  };
+
   const initWalletPage = () => {
     const walletPage = document.querySelector(".wallet-page");
     const nav = walletPage?.querySelector("[data-wallet-section-nav]");
@@ -13688,6 +13773,7 @@
   const tradeHeaderApi = initTradeHeaderTabs();
   const marketsPageApi = initMarketsPage();
   initWalletPage();
+  initAddSendPanel();
   initFinanceEarnPage();
   initEarnRewardsLearnPage();
   initEarnStakingPage();

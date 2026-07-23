@@ -2160,6 +2160,229 @@ html[data-active-tab="wallet"] {
   background: #2d2f2f;
 }
 
+// Figma 7825:40092 Add / 7825:38418 Send — asset picker (deposit / withdraw entry)
+.add-send-panel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: #0d0e0f;
+  z-index: 2150;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+
+.add-send-panel.is-open {
+  transform: translateX(0);
+}
+
+.add-send-panel.is-instant {
+  transition: none !important;
+}
+
+.add-send-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 56px 16px 16px;
+  flex-shrink: 0;
+}
+
+.add-send-panel__header-left {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.add-send-panel__icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+.add-send-panel__title {
+  min-width: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.add-send-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+.add-send-panel__search-wrap {
+  padding: 0 16px;
+}
+
+.add-send-panel__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #1b1d1d;
+  box-sizing: border-box;
+}
+
+.add-send-panel__search-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.add-send-panel__search-placeholder {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #58595a;
+}
+
+.add-send-panel__section-label {
+  margin: 0;
+  padding: 16px 16px 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.add-send-panel__list {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.add-send-panel__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+}
+
+.add-send-panel__item-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.add-send-panel__item-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.add-send-panel__item-ticker {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.add-send-panel__item-name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.add-send-panel__item-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.add-send-panel__item-balance {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.add-send-panel__item-usd {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+// Beat `.phone-container h1` / `.phone-container p` from _base.scss
+.phone-container h1.add-send-panel__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.phone-container p.add-send-panel__section-label {
+  margin: 0;
+  padding: 16px 16px 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
 // Figma 7693:23042 — Style 2 bank accounts wizard (independent from Style 1)
 .ba-wizard-intro,
 .ba-wizard-currency,

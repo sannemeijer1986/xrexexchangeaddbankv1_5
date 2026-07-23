@@ -166,7 +166,7 @@
                     </div>
                     <div class="asset-card__value">14,580.00 USD</div>
                     <div class="asset-card__actions">
-                        <button class="asset-btn asset-btn--primary" type="button">Go deposit</button>
+                        <button class="asset-btn asset-btn--primary" type="button" data-open-add-send="add">Go deposit</button>
                         <button class="asset-btn asset-btn--secondary" type="button" data-open-trade-page="convert">Convert</button>
                     </div>
                 </section>
@@ -1868,13 +1868,13 @@
 
                         <div class="wallet-page__actions" aria-label="Wallet actions">
                             <div class="wallet-page__actions-row">
-                                <button class="wallet-page__action" type="button" data-wallet-not-in-prototype>
+                                <button class="wallet-page__action" type="button" data-open-add-send="add">
                                     <span class="wallet-page__action-icon wallet-page__action-icon--primary">
                                         <img src="assets/icon_deposit.svg" alt="" width="24" height="24" />
                                     </span>
                                     <span class="wallet-page__action-label">Deposit</span>
                                 </button>
-                                <button class="wallet-page__action" type="button" data-wallet-not-in-prototype>
+                                <button class="wallet-page__action" type="button" data-open-add-send="send">
                                     <span class="wallet-page__action-icon">
                                         <img src="assets/icon_menu/icon_menu_withdraw.svg" alt="" width="24" height="24" />
                                     </span>
@@ -4018,6 +4018,116 @@
                 <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
                 <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">
                     <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
+                </div>
+            </div>
+        </section>
+
+        <section class="add-send-panel" data-add-send-panel hidden aria-label="Add or send assets">
+            <div class="add-send-panel__header">
+                <div class="add-send-panel__header-left">
+                    <button class="add-send-panel__icon-btn" type="button" data-add-send-close aria-label="Back">
+                        <img src="assets/icon_back.svg" alt="" width="24" height="24" />
+                    </button>
+                    <h1 class="add-send-panel__title" data-add-send-title>Add</h1>
+                </div>
+                <button class="add-send-panel__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" width="24" height="24" />
+                </button>
+            </div>
+            <div class="add-send-panel__body">
+                <div class="add-send-panel__search-wrap">
+                    <div class="add-send-panel__search" role="search">
+                        <img class="add-send-panel__search-icon" src="assets/icon_search_gray.svg" alt="" width="20" height="20" aria-hidden="true" />
+                        <span class="add-send-panel__search-placeholder">Search</span>
+                    </div>
+                </div>
+
+                <div class="add-send-panel__section">
+                    <p class="add-send-panel__section-label">Fiat &amp; Stablecoin</p>
+                    <div class="add-send-panel__list">
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="usd">
+                            <img class="add-send-panel__item-icon" src="assets/USD.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">USD</span>
+                                <span class="add-send-panel__item-name">US Dollar</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                            </span>
+                        </button>
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="twd">
+                            <img class="add-send-panel__item-icon" src="assets/TWD.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">TWD</span>
+                                <span class="add-send-panel__item-name">New Taiwan Dollar</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                                <span class="add-send-panel__item-usd">≈ 0.00 USD</span>
+                            </span>
+                        </button>
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="usdt">
+                            <img class="add-send-panel__item-icon" src="assets/USDT.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">USDT</span>
+                                <span class="add-send-panel__item-name">US Dollar</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                                <span class="add-send-panel__item-usd">≈ 0.00 USD</span>
+                            </span>
+                        </button>
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="usdc">
+                            <img class="add-send-panel__item-icon" src="assets/USDC.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">USDC</span>
+                                <span class="add-send-panel__item-name">USD Coin</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                                <span class="add-send-panel__item-usd">≈ 0.00 USD</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="add-send-panel__section">
+                    <p class="add-send-panel__section-label">Crypto</p>
+                    <div class="add-send-panel__list">
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="btc">
+                            <img class="add-send-panel__item-icon" src="assets/BTC.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">BTC</span>
+                                <span class="add-send-panel__item-name">Bitcoin</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                                <span class="add-send-panel__item-usd">≈ 0.00 USD</span>
+                            </span>
+                        </button>
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="eth">
+                            <img class="add-send-panel__item-icon" src="assets/ETH.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">ETH</span>
+                                <span class="add-send-panel__item-name">Ethereum</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                                <span class="add-send-panel__item-usd">≈ 0.00 USD</span>
+                            </span>
+                        </button>
+                        <button class="add-send-panel__item" type="button" data-add-send-asset="xaut">
+                            <img class="add-send-panel__item-icon" src="assets/XAUT.svg" alt="" width="32" height="32" />
+                            <span class="add-send-panel__item-copy">
+                                <span class="add-send-panel__item-ticker">XAUT</span>
+                                <span class="add-send-panel__item-name">Tether Gold</span>
+                            </span>
+                            <span class="add-send-panel__item-amounts">
+                                <span class="add-send-panel__item-balance">0.00</span>
+                                <span class="add-send-panel__item-usd">≈ 0.00 USD</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
