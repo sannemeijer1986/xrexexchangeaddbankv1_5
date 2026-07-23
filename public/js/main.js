@@ -533,7 +533,7 @@
         title: "Deposit and withdraw USD",
         note:
           "Add a USD bank account you already have: Most USD banks are supported.",
-        btn: "Add USD bank account",
+        btn: "Link USD bank account",
         noteHighlight: false,
         btnVariant: "primary",
       });
@@ -9037,11 +9037,11 @@
     const descHighlightEl = sheet.querySelector(
       "[data-custodian-apply-desc-highlight]",
     );
-    const depositCurrencyEl = sheet.querySelector(
-      "[data-custodian-apply-limits-currency-deposit]",
+    const depositColEl = sheet.querySelector(
+      "[data-custodian-apply-deposit-col-label]",
     );
-    const withdrawCurrencyEl = sheet.querySelector(
-      "[data-custodian-apply-limits-currency-withdraw]",
+    const withdrawColEl = sheet.querySelector(
+      "[data-custodian-apply-withdraw-col-label]",
     );
     const compareBtn = sheet.querySelector("[data-custodian-apply-compare]");
     const limitEls = {
@@ -9090,16 +9090,27 @@
           ? custodian.listName
           : custodian.details.bankName;
       }
-      if (depositCurrencyEl) depositCurrencyEl.textContent = currencyLabel;
-      if (withdrawCurrencyEl) withdrawCurrencyEl.textContent = currencyLabel;
+      if (depositColEl) {
+        depositColEl.textContent = `Deposit ${currencyLabel}`;
+      }
+      if (withdrawColEl) {
+        withdrawColEl.textContent = `Withdraw ${currencyLabel}`;
+      }
 
+      const bankName = isTwd ? custodian.listName : custodian.details.bankName;
       if (descBodyEl) {
-        descBodyEl.textContent = `This custodian holds your ${currencyLabel}. Deposits & withdrawals will go through it, with the limits below.`;
+        if (isTaiwan && isTwd) {
+          descBodyEl.textContent = `${bankName} isn't the bank you're linking, it's the custodian holding your ${currencyLabel} — `;
+        } else if (isTaiwan) {
+          descBodyEl.textContent = `${bankName} is the custodian holding your ${currencyLabel}.`;
+        } else {
+          descBodyEl.textContent = `This custodian holds your ${currencyLabel}. Deposits & withdrawals will go through it, with the limits below.`;
+        }
       }
       if (descHighlightEl) {
         if (isTaiwan && isTwd) {
           descHighlightEl.hidden = false;
-          descHighlightEl.textContent = ` Link any Taiwan bank account you prefer — no ${custodian.listName} account needed.`;
+          descHighlightEl.textContent = "You can link most Taiwan bank accounts";
         } else {
           descHighlightEl.hidden = true;
           descHighlightEl.textContent = "";
@@ -9144,7 +9155,7 @@
       }
 
       if (compareBtn) {
-        compareBtn.hidden = !(isTaiwan && isTwd);
+        compareBtn.hidden = true;
       }
     };
 

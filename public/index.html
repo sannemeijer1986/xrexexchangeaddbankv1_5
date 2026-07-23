@@ -4951,36 +4951,25 @@
                 <div class="currency-sheet__body custodian-apply-sheet__body">
                     <h2 class="custodian-apply-sheet__title">
                         Your <span data-custodian-apply-currency-label>TWD</span> will be held in trust at<br />
-                        <span data-custodian-apply-custodian-name>KGI Bank</span>
+                        custodian: <span class="custodian-apply-sheet__title-accent" data-custodian-apply-custodian-name>KGI Bank</span>
                     </h2>
                     <div class="custodian-apply-sheet__content">
                         <p class="custodian-apply-sheet__desc">
-                            <span data-custodian-apply-desc-body>This custodian holds your TWD. Deposits &amp; withdrawals will go through it, with the limits below.</span><span class="custodian-apply-sheet__desc-highlight" data-custodian-apply-desc-highlight hidden> Link any Taiwan bank account you prefer — no KGI Bank account needed.</span>
+                            <span data-custodian-apply-desc-body>KGI Bank isn&rsquo;t the bank you&rsquo;re linking, it&rsquo;s the custodian holding your TWD &mdash; </span><span class="custodian-apply-sheet__desc-highlight" data-custodian-apply-desc-highlight hidden>You can link most Taiwan bank accounts</span>
                         </p>
                         <div class="custodian-apply-sheet__details">
-                            <div class="custodian-apply-sheet__alert" role="note">
-                                <img class="custodian-apply-sheet__alert-icon" src="assets/icon_info_circle_blue.svg" alt="" width="16" height="16" aria-hidden="true" />
-                                <p class="custodian-apply-sheet__alert-copy">
-                                    These are your starting limits and apply for your first 31 days
-                                </p>
-                            </div>
+                            <p class="custodian-apply-sheet__limits-heading">Starting limits &middot; 31 days</p>
                             <div class="custodian-apply-sheet__limits-card">
                                 <div class="custodian-apply-sheet__limits-head">
-                                    <span class="custodian-apply-sheet__limits-head-label">Limits</span>
-                                    <span class="custodian-apply-sheet__limits-col-head">
-                                        <span class="custodian-apply-sheet__limits-col-title">Deposit</span>
-                                        <span class="custodian-apply-sheet__limits-col-currency" data-custodian-apply-limits-currency-deposit>TWD</span>
-                                    </span>
-                                    <span class="custodian-apply-sheet__limits-col-head">
-                                        <span class="custodian-apply-sheet__limits-col-title">Withdrawal</span>
-                                        <span class="custodian-apply-sheet__limits-col-currency" data-custodian-apply-limits-currency-withdraw>TWD</span>
-                                    </span>
+                                    <span class="custodian-apply-sheet__limits-head-spacer" aria-hidden="true">in TWD</span>
+                                    <span class="custodian-apply-sheet__limits-col-head" data-custodian-apply-deposit-col-label>Deposit TWD</span>
+                                    <span class="custodian-apply-sheet__limits-col-head" data-custodian-apply-withdraw-col-label>Withdraw TWD</span>
                                 </div>
                                 <div class="custodian-apply-sheet__limits-rows">
                                     <div class="custodian-apply-sheet__limits-row">
                                         <span class="custodian-apply-sheet__limits-label">Per transaction</span>
-                                        <span class="custodian-apply-sheet__limits-value" data-custodian-apply-deposit-single>1,500,000</span>
-                                        <span class="custodian-apply-sheet__limits-value" data-custodian-apply-withdraw-single>1,000,000</span>
+                                        <span class="custodian-apply-sheet__limits-value" data-custodian-apply-deposit-single>999,999</span>
+                                        <span class="custodian-apply-sheet__limits-value" data-custodian-apply-withdraw-single>999,999</span>
                                     </div>
                                     <div class="custodian-apply-sheet__limits-row">
                                         <span class="custodian-apply-sheet__limits-label">Per day</span>
@@ -4993,8 +4982,10 @@
                                         <span class="custodian-apply-sheet__limits-value" data-custodian-apply-withdraw-monthly>10,000,000</span>
                                     </div>
                                 </div>
+                                <div class="custodian-apply-sheet__limits-divider" aria-hidden="true"></div>
+                                <p class="custodian-apply-sheet__limits-footnote">Standard limits apply after 31 days</p>
                             </div>
-                            <button class="custodian-apply-sheet__compare-link" type="button" data-custodian-apply-compare>Compare custodians or change</button>
+                            <button class="custodian-apply-sheet__compare-link" type="button" data-custodian-apply-compare hidden>Compare custodians or change</button>
                         </div>
                     </div>
                 </div>
