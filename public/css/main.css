@@ -2326,6 +2326,9 @@ html[data-active-tab=wallet] .app-header__top {
   color: inherit;
   font-family: inherit;
 }
+.add-send-panel__item[hidden] {
+  display: none !important;
+}
 
 .add-send-panel__item-icon {
   width: 32px;
