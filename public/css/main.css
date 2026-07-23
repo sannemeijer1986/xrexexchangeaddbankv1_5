@@ -1937,6 +1937,7 @@ html[data-active-tab=wallet] .app-header__top {
 
 .bank-accounts-panel__card[hidden],
 .bank-accounts-panel__linked[hidden],
+.bank-accounts-panel__linked-hint[hidden],
 .bank-accounts-panel__section[hidden],
 .bank-accounts-panel__section-custodian[hidden],
 .bank-accounts-panel__edit-link[hidden] {
@@ -1948,6 +1949,25 @@ html[data-active-tab=wallet] .app-header__top {
   flex-direction: column;
   gap: 12px;
   padding: 12px 16px 16px;
+}
+
+.bank-accounts-panel__linked-hint {
+  margin: -4px 0 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #58595a;
+  text-align: right;
+}
+
+.phone-container p.bank-accounts-panel__linked-hint {
+  margin: -4px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #58595a;
+  text-align: right;
 }
 
 .bank-accounts-panel__list-stack {

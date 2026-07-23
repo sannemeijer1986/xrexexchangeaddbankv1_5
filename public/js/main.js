@@ -392,15 +392,18 @@
         "[data-bank-accounts-custodian-label]",
       );
       const statusEl = section.querySelector("[data-bank-accounts-status]");
+      const hintEl = section.querySelector("[data-bank-accounts-linked-hint]");
       const isUsdMultiple =
         currency === "usd" &&
         state === 6 &&
         getPrototypeRegion() === "cayman";
 
       const isLinked = state >= 2;
+      const isTaiwan = getPrototypeRegion() === "taiwan";
       if (emptyEl) emptyEl.hidden = isLinked;
       if (linkedEl) linkedEl.hidden = !isLinked;
       if (custodianWrap) custodianWrap.hidden = !isLinked;
+      if (hintEl) hintEl.hidden = !isLinked || !isTaiwan;
 
       if (currency === "usd") {
         const isCayman = getPrototypeRegion() === "cayman";
