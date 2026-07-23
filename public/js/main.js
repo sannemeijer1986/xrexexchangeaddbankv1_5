@@ -6001,8 +6001,14 @@
 
     const titleEl = panel.querySelector("[data-add-send-title]");
     const closeButtons = panel.querySelectorAll("[data-add-send-close]");
+    const twdAssetBtn = panel.querySelector('[data-add-send-asset="twd"]');
     const container = document.querySelector(".phone-container");
     let snackbarTimeout = null;
+
+    const syncAddSendRegionUi = () => {
+      const isCayman = getPrototypeRegion() === "cayman";
+      if (twdAssetBtn) twdAssetBtn.hidden = isCayman;
+    };
 
     const showSnackbar = (message) => {
       const snackbar = container?.querySelector("[data-snackbar]");
@@ -6073,6 +6079,9 @@
         setOpen(true, mode);
       });
     });
+
+    document.addEventListener("prototype-region-change", syncAddSendRegionUi);
+    syncAddSendRegionUi();
 
     return {
       open: (mode = "add") => setOpen(true, mode),
