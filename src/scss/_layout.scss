@@ -2400,6 +2400,264 @@ html[data-active-tab="wallet"] {
   color: #9b9c9c;
 }
 
+// Figma 7825:43489 — TWD deposit setup (no bank linked)
+.twd-deposit-setup {
+  z-index: 2160;
+}
+
+// Figma 7825:43184 — TWD deposit bank picker (bank linked)
+.twd-deposit-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: #0d0e0f;
+  z-index: 2160;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+
+.twd-deposit-select.is-open {
+  transform: translateX(0);
+}
+
+.twd-deposit-select.is-instant {
+  transition: none !important;
+}
+
+.twd-deposit-select__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 56px 16px 16px;
+  flex-shrink: 0;
+}
+
+.twd-deposit-select__header-left {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.twd-deposit-select__icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+.twd-deposit-select__currency-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-deposit-select__title {
+  min-width: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.twd-deposit-select__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+
+  &--inset {
+    margin: 0 16px;
+  }
+}
+
+.twd-deposit-select__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-top: 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+.twd-deposit-select__lead {
+  margin: 0;
+  padding: 0 16px 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.twd-deposit-select__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 16px;
+}
+
+.twd-deposit-select__card {
+  background: #1b1d1d;
+  border-radius: 16px;
+}
+
+.twd-deposit-select__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.twd-deposit-select__item-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-deposit-select__item-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.twd-deposit-select__item-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.twd-deposit-select__item-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: #9b9c9c;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.twd-deposit-select__item-status {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+
+  &--submitted {
+    color: #8fb8ff;
+  }
+
+  &--verified {
+    color: #5ac47d;
+  }
+
+  &--issues {
+    color: #ffb020;
+  }
+
+  &--rejected {
+    color: #ff6b6b;
+  }
+}
+
+.twd-deposit-select__item-chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.twd-deposit-select__footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+}
+
+.twd-deposit-select__footnote-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.twd-deposit-select__footnote-text {
+  margin: 0;
+  flex: 1;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.phone-container h1.twd-deposit-select__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+// Beat `.phone-container p` from _base.scss (16px / white / margin).
+.phone-container p.twd-deposit-select__lead {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.phone-container p.twd-deposit-select__footnote-text {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
 // Figma 7693:23042 — Style 2 bank accounts wizard (independent from Style 1)
 .ba-wizard-intro,
 .ba-wizard-currency,

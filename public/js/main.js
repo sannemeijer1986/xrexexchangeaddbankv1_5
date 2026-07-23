@@ -6043,6 +6043,8 @@
         return;
       }
 
+      if (!nextOpen) twdDepositApi?.clearEntrySource?.();
+
       if (opts.instant) {
         panel.classList.add("is-instant");
         panel.classList.remove("is-open");
@@ -6066,7 +6068,15 @@
     });
 
     panel.querySelectorAll("[data-add-send-asset]").forEach((btn) => {
-      btn.addEventListener("click", () => showSnackbar("Not in prototype"));
+      btn.addEventListener("click", () => {
+        const asset = btn.getAttribute("data-add-send-asset");
+        if (asset === "twd" && getPrototypeRegion() !== "cayman") {
+          const mode = panel.dataset.addSendMode === "send" ? "send" : "add";
+          onAddSendTwdSelected(mode);
+          return;
+        }
+        showSnackbar("Not in prototype");
+      });
     });
 
     panel.querySelector(".add-send-panel__search")?.addEventListener("click", () => {
@@ -6086,6 +6096,157 @@
     return {
       open: (mode = "add") => setOpen(true, mode),
       close: (opts) => setOpen(false, "add", opts),
+    };
+  };
+
+  const initTwdDepositFlow = ({ baWizardApi, showSnackbar = () => {} } = {}) => {
+    const setupPanel = document.querySelector("[data-twd-deposit-setup]");
+    const selectPanel = document.querySelector("[data-twd-deposit-select]");
+    if (!setupPanel && !selectPanel) {
+      return {
+        openFromAddSend: () => {},
+        openSelect: () => {},
+        closeAll: () => {},
+        closeSetup: () => {},
+        getEntrySource: () => null,
+        clearEntrySource: () => {},
+        syncSelectPanelUi: () => {},
+      };
+    }
+
+    const TWD_FIAT_SELECT_COPY = {
+      add: {
+        title: "TWD deposit",
+        lead: "Choose a bank account to deposit TWD from",
+        ariaLabel: "TWD deposit",
+      },
+      send: {
+        title: "TWD withdrawal",
+        lead: "Choose a bank account to withdraw TWD to",
+        ariaLabel: "TWD withdrawal",
+      },
+    };
+
+    let entrySource = null;
+    const hasTwdBank = () => (states.twdBankAccount ?? 1) >= 2;
+
+    const setPanelOpen = (panel, nextOpen, opts = {}) => {
+      if (!panel) return;
+      if (nextOpen) {
+        panel.hidden = false;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+        return;
+      }
+      if (opts.instant) {
+        panel.classList.add("is-instant");
+        panel.classList.remove("is-open");
+        panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
+        return;
+      }
+      panel.classList.remove("is-open");
+      const onEnd = () => {
+        if (!panel.classList.contains("is-open")) panel.hidden = true;
+        panel.removeEventListener("transitionend", onEnd);
+      };
+      panel.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 400);
+    };
+
+    const syncSelectPanelCopy = (mode = "add") => {
+      const copy = TWD_FIAT_SELECT_COPY[mode] || TWD_FIAT_SELECT_COPY.add;
+      const titleEl = selectPanel?.querySelector("[data-twd-fiat-select-title]");
+      const leadEl = selectPanel?.querySelector("[data-twd-fiat-select-lead]");
+      if (titleEl) titleEl.textContent = copy.title;
+      if (leadEl) leadEl.textContent = copy.lead;
+      if (selectPanel) selectPanel.setAttribute("aria-label", copy.ariaLabel);
+    };
+
+    const syncSelectPanelUi = () => {
+      const statusEl = selectPanel?.querySelector("[data-twd-deposit-status]");
+      if (!statusEl) return;
+      const twdState = states.twdBankAccount ?? 1;
+      const cfg =
+        BANK_ACCOUNT_LINKED_STATUS[twdState] || BANK_ACCOUNT_LINKED_STATUS[3];
+      statusEl.textContent = cfg.label;
+      statusEl.classList.remove(
+        "twd-deposit-select__item-status--submitted",
+        "twd-deposit-select__item-status--verified",
+        "twd-deposit-select__item-status--issues",
+        "twd-deposit-select__item-status--rejected",
+      );
+      statusEl.classList.add(
+        `twd-deposit-select__item-status--${cfg.modifier}`,
+      );
+    };
+
+    const closeAll = (opts = {}) => {
+      setPanelOpen(setupPanel, false, opts);
+      setPanelOpen(selectPanel, false, opts);
+    };
+
+    const closeSetup = (opts = {}) => setPanelOpen(setupPanel, false, opts);
+
+    const openSelect = ({ mode } = {}) => {
+      const resolvedMode =
+        mode === "send" || mode === "add"
+          ? mode
+          : entrySource === "send"
+            ? "send"
+            : "add";
+      syncSelectPanelUi();
+      syncSelectPanelCopy(resolvedMode);
+      setPanelOpen(selectPanel, true);
+    };
+
+    const openFromAddSend = (mode = "add") => {
+      if (getPrototypeRegion() === "cayman") return;
+      entrySource = mode === "send" ? "send" : "add";
+      if (hasTwdBank()) {
+        openSelect({ mode: entrySource });
+        return;
+      }
+      setPanelOpen(setupPanel, true);
+    };
+
+    const clearEntrySource = () => {
+      entrySource = null;
+    };
+
+    setupPanel
+      ?.querySelector("[data-twd-deposit-setup-close]")
+      ?.addEventListener("click", () => {
+        clearEntrySource();
+        setPanelOpen(setupPanel, false);
+      });
+    setupPanel
+      ?.querySelector("[data-twd-deposit-setup-continue]")
+      ?.addEventListener("click", () => {
+        baWizardApi?.openTwdHowFromDeposit?.();
+      });
+
+    selectPanel
+      ?.querySelector("[data-twd-deposit-select-close]")
+      ?.addEventListener("click", () => setPanelOpen(selectPanel, false));
+    selectPanel
+      ?.querySelector("[data-twd-deposit-bank]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    [setupPanel, selectPanel].forEach((panel) => {
+      panel
+        ?.querySelector('[aria-label="Support"]')
+        ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    });
+
+    return {
+      openFromAddSend,
+      openSelect,
+      closeAll,
+      closeSetup,
+      syncSelectPanelUi,
+      getEntrySource: () => entrySource,
+      clearEntrySource,
     };
   };
 
@@ -7604,6 +7765,8 @@
   };
 
   let openBaWizardFromMenu = () => {};
+  let onAddSendTwdSelected = (_mode) => {};
+  let twdDepositApi = { closeAll: () => {}, clearEntrySource: () => {} };
 
   const initBankAccountsPanel = () => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
@@ -9726,6 +9889,16 @@
       if (scrollBody) scrollBody.scrollTop = 0;
     };
 
+    const openTwdHowFromDeposit = () => {
+      selectedSetupCurrency = "twd";
+      skipCurrencyStep = true;
+      openedFromBankAccounts = false;
+      syncBaWizardHowContent();
+      setPanelOpen(panels.how, true);
+      const scrollBody = panels.how.querySelector(".ba-wizard-how__body");
+      if (scrollBody) scrollBody.scrollTop = 0;
+    };
+
     const backFromHow = () => {
       setPanelOpen(panels.how, false);
     };
@@ -10013,6 +10186,7 @@
     return {
       openFromMenu: openIntro,
       openForCurrency,
+      openTwdHowFromDeposit,
       closeAll,
       fillTwdBankDetails,
       getSelectedCurrency: () => selectedSetupCurrency,
@@ -10034,14 +10208,30 @@
   const hideBankLinkStackInstant = () => {
     document
       .querySelectorAll(
-        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel]",
+        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select]",
       )
       .forEach(hidePanelInstant);
   };
   const finalizeBankAccountSuccessDismiss = () => {
     hideBankLinkStackInstant();
     closeBaWizardFlow({ instant: true });
+
+    const entrySource = twdDepositApi?.getEntrySource?.();
+    const container = document.querySelector(".phone-container");
     const bankAccountsPanel = document.querySelector("[data-bank-accounts-panel]");
+
+    if (entrySource === "add" || entrySource === "send") {
+      if (bankAccountsPanel) hidePanelInstant(bankAccountsPanel);
+      if (container) {
+        container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
+      }
+      twdDepositApi?.closeSetup?.({ instant: true });
+      twdDepositApi?.openSelect?.({ mode: entrySource });
+      return;
+    }
+
+    twdDepositApi?.closeAll?.({ instant: true });
+    twdDepositApi?.clearEntrySource?.();
     const alreadyOpen = bankAccountsPanel?.classList.contains("is-open");
     if (hasLinkedBankAccounts()) {
       if (alreadyOpen) {
@@ -10087,7 +10277,15 @@
     bankAccountSuccessApi,
     bankAccountsApi,
   });
-  openBaWizardFromMenu = baWizardApi.openFromMenu;
+  twdDepositApi = initTwdDepositFlow({
+    baWizardApi,
+    showSnackbar,
+  });
+  onAddSendTwdSelected = (mode) => twdDepositApi.openFromAddSend(mode);
+  openBaWizardFromMenu = () => {
+    twdDepositApi?.clearEntrySource?.();
+    baWizardApi.openFromMenu();
+  };
   const linkTwdApi = initLinkTwdPanel(
     bankAccountsApi,
     bankAccountSuccessApi,
@@ -10108,6 +10306,7 @@
     linkTwdApi.continueToDetails?.();
   });
   const openBankAccountLinkFlow = (currency) => {
+    twdDepositApi?.clearEntrySource?.();
     const region = getPrototypeRegion();
     if (region === "taiwan" || region === "cayman") {
       baWizardApi.openForCurrency?.(currency === "usd" ? "usd" : "twd");

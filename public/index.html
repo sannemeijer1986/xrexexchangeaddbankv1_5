@@ -4122,6 +4122,69 @@
             </div>
         </section>
 
+        <section class="ba-wizard-intro twd-deposit-setup" data-twd-deposit-setup hidden aria-label="Link TWD bank account">
+            <div class="ba-wizard-intro__hero" aria-hidden="true">
+                <img class="ba-wizard-intro__hero-img" src="assets/illu_ba_wizard_intro.svg" alt="" />
+            </div>
+            <header class="ba-wizard-intro__header">
+                <button class="ba-wizard-intro__icon-btn" type="button" data-twd-deposit-setup-close aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="ba-wizard-intro__header-spacer" aria-hidden="true"></div>
+                <button class="ba-wizard-intro__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+            <div class="ba-wizard-intro__content">
+                <span class="ba-wizard-intro__badge">Set up</span>
+                <h2 class="ba-wizard-intro__title">Link your TWD bank account</h2>
+                <p class="ba-wizard-intro__desc">Use your own bank account to move TWD in and out of XREX. It must be registered in your name.</p>
+            </div>
+            <footer class="ba-wizard-intro__footer">
+                <button class="ba-wizard-intro__btn" type="button" data-twd-deposit-setup-continue>Continue</button>
+            </footer>
+        </section>
+
+        <section class="twd-deposit-select" data-twd-deposit-select hidden aria-label="TWD deposit">
+            <header class="twd-deposit-select__header">
+                <div class="twd-deposit-select__header-left">
+                    <button class="twd-deposit-select__icon-btn" type="button" data-twd-deposit-select-close aria-label="Back">
+                        <img src="assets/icon_back.svg" alt="" width="24" height="24" />
+                    </button>
+                    <img class="twd-deposit-select__currency-icon" src="assets/TWD.svg" alt="" width="24" height="24" aria-hidden="true" />
+                    <h1 class="twd-deposit-select__title" data-twd-fiat-select-title>TWD deposit</h1>
+                </div>
+                <button class="twd-deposit-select__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" width="24" height="24" />
+                </button>
+            </header>
+            <div class="twd-deposit-select__divider" aria-hidden="true"></div>
+            <div class="twd-deposit-select__body">
+                <p class="twd-deposit-select__lead" data-twd-fiat-select-lead>Choose a bank account to deposit TWD from</p>
+                <div class="twd-deposit-select__list">
+                    <div class="twd-deposit-select__card">
+                        <button class="twd-deposit-select__item" type="button" data-twd-deposit-bank>
+                            <img class="twd-deposit-select__item-icon" src="assets/TWD.svg" alt="" width="32" height="32" />
+                            <span class="twd-deposit-select__item-copy">
+                                <span class="twd-deposit-select__item-title">My CTBC bank</span>
+                                <span class="twd-deposit-select__item-meta">
+                                    <span>Bank Name : CTBC Bank</span>
+                                    <span>Account number : 12345678999</span>
+                                </span>
+                                <span class="twd-deposit-select__item-status twd-deposit-select__item-status--verified" data-twd-deposit-status>Verified</span>
+                            </span>
+                            <img class="twd-deposit-select__item-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+                <div class="twd-deposit-select__divider twd-deposit-select__divider--inset" aria-hidden="true"></div>
+                <div class="twd-deposit-select__footnote">
+                    <img class="twd-deposit-select__footnote-icon" src="assets/icon_info_circle_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
+                    <p class="twd-deposit-select__footnote-text">Manage your linked bank accounts in the homepage side menu under &rsquo;Bank accounts&rsquo;</p>
+                </div>
+            </div>
+        </section>
+
         <section class="bank-accounts-panel" data-bank-accounts-panel hidden aria-label="Bank accounts">
             <div class="bank-accounts-panel__header">
                 <button class="bank-accounts-panel__icon-btn" type="button" data-bank-accounts-close aria-label="Back">
