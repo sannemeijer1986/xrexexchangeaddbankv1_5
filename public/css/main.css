@@ -4720,6 +4720,7 @@ html[data-active-tab=wallet] .app-header__top {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 16px;
 }
 
 .custodian-panel__field-label {
