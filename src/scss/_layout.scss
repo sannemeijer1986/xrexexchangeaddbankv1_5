@@ -2426,12 +2426,14 @@ html[data-active-tab="wallet"] {
 }
 
 // Figma 7825:43489 — TWD deposit setup (no bank linked)
-.twd-deposit-setup {
+.twd-deposit-setup,
+.usd-deposit-setup {
   z-index: 2160;
 }
 
 // Figma 7825:43184 — TWD deposit bank picker (bank linked)
-.twd-deposit-select {
+.twd-deposit-select,
+.usd-deposit-select {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -2445,11 +2447,13 @@ html[data-active-tab="wallet"] {
   transition: transform 0.35s ease;
 }
 
-.twd-deposit-select.is-open {
+.twd-deposit-select.is-open,
+.usd-deposit-select.is-open {
   transform: translateX(0);
 }
 
-.twd-deposit-select.is-instant {
+.twd-deposit-select.is-instant,
+.usd-deposit-select.is-instant {
   transition: none !important;
 }
 
@@ -2547,6 +2551,22 @@ html[data-active-tab="wallet"] {
   flex-direction: column;
   gap: 10px;
   padding: 20px 16px;
+}
+
+.twd-deposit-select__add-link {
+  align-self: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+
+  &[hidden] {
+    display: none !important;
+  }
 }
 
 .twd-deposit-select__card {
@@ -20394,6 +20414,11 @@ div.currency-sheet__item-icon {
   justify-content: space-between;
   gap: 8px;
   margin-top: 4px;
+}
+
+.build-badge__section-row--version,
+.build-badge__section-row--language {
+  display: none !important;
 }
 
 .build-badge__checkbox {

@@ -4185,6 +4185,70 @@
             </div>
         </section>
 
+        <section class="ba-wizard-intro twd-deposit-setup usd-deposit-setup" data-usd-deposit-setup hidden aria-label="Link USD bank account">
+            <div class="ba-wizard-intro__hero" aria-hidden="true">
+                <img class="ba-wizard-intro__hero-img" src="assets/illu_ba_wizard_intro.svg" alt="" />
+            </div>
+            <header class="ba-wizard-intro__header">
+                <button class="ba-wizard-intro__icon-btn" type="button" data-usd-deposit-setup-close aria-label="Back">
+                    <img src="assets/icon_back.svg" alt="" />
+                </button>
+                <div class="ba-wizard-intro__header-spacer" aria-hidden="true"></div>
+                <button class="ba-wizard-intro__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+            <div class="ba-wizard-intro__content">
+                <span class="ba-wizard-intro__badge">Set up</span>
+                <h2 class="ba-wizard-intro__title">Link your USD bank account</h2>
+                <p class="ba-wizard-intro__desc">Use your own bank account to move USD in and out of XREX. It must be registered in your name.</p>
+            </div>
+            <footer class="ba-wizard-intro__footer">
+                <button class="ba-wizard-intro__btn" type="button" data-usd-deposit-setup-continue>Continue</button>
+            </footer>
+        </section>
+
+        <section class="twd-deposit-select usd-deposit-select" data-usd-deposit-select hidden aria-label="USD deposit">
+            <header class="twd-deposit-select__header">
+                <div class="twd-deposit-select__header-left">
+                    <button class="twd-deposit-select__icon-btn" type="button" data-usd-deposit-select-close aria-label="Back">
+                        <img src="assets/icon_back.svg" alt="" width="24" height="24" />
+                    </button>
+                    <img class="twd-deposit-select__currency-icon" src="assets/USD.svg" alt="" width="24" height="24" aria-hidden="true" />
+                    <h1 class="twd-deposit-select__title" data-usd-fiat-select-title>USD deposit</h1>
+                </div>
+                <button class="twd-deposit-select__icon-btn" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" width="24" height="24" />
+                </button>
+            </header>
+            <div class="twd-deposit-select__divider" aria-hidden="true"></div>
+            <div class="twd-deposit-select__body">
+                <p class="twd-deposit-select__lead" data-usd-fiat-select-lead>Choose which of your linked bank accounts you&rsquo;ll deposit USD from</p>
+                <div class="twd-deposit-select__list">
+                    <div class="twd-deposit-select__card">
+                        <button class="twd-deposit-select__item" type="button" data-usd-deposit-bank>
+                            <img class="twd-deposit-select__item-icon" src="assets/USD.svg" alt="" width="32" height="32" />
+                            <span class="twd-deposit-select__item-copy">
+                                <span class="twd-deposit-select__item-title" data-usd-deposit-bank-title>My KGI Bank</span>
+                                <span class="twd-deposit-select__item-meta">
+                                    <span data-usd-deposit-bank-name>Bank Name : KGI Bank</span>
+                                    <span>Account number : 12345678999</span>
+                                </span>
+                                <span class="twd-deposit-select__item-status twd-deposit-select__item-status--verified" data-usd-deposit-status>Verified</span>
+                            </span>
+                            <img class="twd-deposit-select__item-chevron" src="assets/icon_chevron-right-rounded_gray.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <button class="twd-deposit-select__add-link" type="button" data-usd-deposit-add-bank hidden>Add USD bank account</button>
+                </div>
+                <div class="twd-deposit-select__divider twd-deposit-select__divider--inset" aria-hidden="true"></div>
+                <div class="twd-deposit-select__footnote">
+                    <img class="twd-deposit-select__footnote-icon" src="assets/icon_info_circle_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
+                    <p class="twd-deposit-select__footnote-text">Manage your linked bank accounts in the homepage side menu under &rsquo;Bank accounts&rsquo;</p>
+                </div>
+            </div>
+        </section>
+
         <section class="bank-accounts-panel" data-bank-accounts-panel hidden aria-label="Bank accounts">
             <div class="bank-accounts-panel__header">
                 <button class="bank-accounts-panel__icon-btn" type="button" data-bank-accounts-close aria-label="Back">
@@ -8301,7 +8365,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
 
         <div class="build-badge__body" id="prototypeStatesBody">
             <button class="build-badge__reset" type="button" data-prototype-reset>Reset states</button>
-            <div class="build-badge__section-row">
+            <div class="build-badge__section-row build-badge__section-row--version">
                 <div class="build-badge__section-title">Version</div>
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" id="prototype-bank-accounts-style" data-prototype-bank-accounts-style aria-label="Bank accounts version">
@@ -8327,7 +8391,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                     </label>
                 </div>
             </div>
-            <div class="build-badge__section-row">
+            <div class="build-badge__section-row build-badge__section-row--language">
                 <div class="build-badge__section-title">Language</div>
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" id="prototype-language" data-prototype-language

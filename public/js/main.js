@@ -1041,6 +1041,8 @@
     }
     if (group === "twdBankAccount" || group === "usdBankAccount") {
       syncPrototypeBankAccountStatesToDocument();
+      twdDepositApi?.refreshSelectPanelIfOpen?.();
+      usdDepositApi?.refreshSelectPanelIfOpen?.();
     }
     return clamped;
   };
@@ -6046,7 +6048,24 @@
         return;
       }
 
-      if (!nextOpen) twdDepositApi?.clearEntrySource?.();
+      if (!nextOpen) {
+        const isFiatFlowPanelOpen = (selector) => {
+          const el = document.querySelector(selector);
+          return Boolean(el?.classList.contains("is-open") && !el.hidden);
+        };
+        if (
+          !isFiatFlowPanelOpen("[data-twd-deposit-setup]") &&
+          !isFiatFlowPanelOpen("[data-twd-deposit-select]")
+        ) {
+          twdDepositApi?.clearEntrySource?.();
+        }
+        if (
+          !isFiatFlowPanelOpen("[data-usd-deposit-setup]") &&
+          !isFiatFlowPanelOpen("[data-usd-deposit-select]")
+        ) {
+          usdDepositApi?.clearEntrySource?.();
+        }
+      }
 
       if (opts.instant) {
         panel.classList.add("is-instant");
@@ -6076,6 +6095,11 @@
         if (asset === "twd" && getPrototypeRegion() !== "cayman") {
           const mode = panel.dataset.addSendMode === "send" ? "send" : "add";
           onAddSendTwdSelected(mode);
+          return;
+        }
+        if (asset === "usd" && getPrototypeRegion() === "cayman") {
+          const mode = panel.dataset.addSendMode === "send" ? "send" : "add";
+          onAddSendUsdSelected(mode);
           return;
         }
         showSnackbar("Not in prototype");
@@ -6248,6 +6272,205 @@
       closeAll,
       closeSetup,
       syncSelectPanelUi,
+      getEntrySource: () => entrySource,
+      clearEntrySource,
+    };
+  };
+
+  const initUsdDepositFlow = ({
+    baWizardApi,
+    showSnackbar = () => {},
+  } = {}) => {
+    const setupPanel = document.querySelector("[data-usd-deposit-setup]");
+    const selectPanel = document.querySelector("[data-usd-deposit-select]");
+    if (!setupPanel && !selectPanel) {
+      return {
+        openFromAddSend: () => {},
+        openSelect: () => {},
+        closeAll: () => {},
+        closeSetup: () => {},
+        getEntrySource: () => null,
+        clearEntrySource: () => {},
+        syncSelectPanelUi: () => {},
+        refreshSelectPanelIfOpen: () => {},
+      };
+    }
+
+    const USD_FIAT_SELECT_COPY = {
+      add: {
+        title: "USD deposit",
+        lead: "Choose which of your linked bank accounts you'll deposit USD from",
+        ariaLabel: "USD deposit",
+      },
+      send: {
+        title: "USD withdrawal",
+        lead: "Choose a bank account to withdraw USD to",
+        ariaLabel: "USD withdrawal",
+      },
+    };
+
+    let entrySource = null;
+    let selectPanelMode = "add";
+    const hasUsdBank = () => (states.usdBankAccount ?? 1) >= 2;
+
+    const canShowAddUsdBankLink = (mode = selectPanelMode) => {
+      if (mode !== "add") return false;
+      if (getPrototypeRegion() !== "cayman") return false;
+      return (states.usdBankAccount ?? 1) < getUsdBankAccountMaxState();
+    };
+
+    const resolveSelectMode = (mode) => {
+      if (mode === "send" || mode === "add") return mode;
+      if (selectPanel?.dataset.fiatSelectMode === "send") return "send";
+      if (selectPanel?.dataset.fiatSelectMode === "add") return "add";
+      if (entrySource === "send") return "send";
+      return "add";
+    };
+
+    const setPanelOpen = (panel, nextOpen, opts = {}) => {
+      if (!panel) return;
+      if (nextOpen) {
+        panel.hidden = false;
+        requestAnimationFrame(() => {
+          panel.classList.add("is-open");
+          if (panel === selectPanel) {
+            syncSelectPanelUi();
+            syncSelectPanelCopy(selectPanelMode);
+          }
+        });
+        return;
+      }
+      if (opts.instant) {
+        panel.classList.add("is-instant");
+        panel.classList.remove("is-open");
+        panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
+        return;
+      }
+      panel.classList.remove("is-open");
+      const onEnd = () => {
+        if (!panel.classList.contains("is-open")) panel.hidden = true;
+        panel.removeEventListener("transitionend", onEnd);
+      };
+      panel.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 400);
+    };
+
+    const syncSelectPanelCopy = (mode = selectPanelMode) => {
+      const resolvedMode = resolveSelectMode(mode);
+      selectPanelMode = resolvedMode;
+      if (selectPanel) selectPanel.dataset.fiatSelectMode = resolvedMode;
+      const copy = USD_FIAT_SELECT_COPY[resolvedMode] || USD_FIAT_SELECT_COPY.add;
+      const titleEl = selectPanel?.querySelector("[data-usd-fiat-select-title]");
+      const leadEl = selectPanel?.querySelector("[data-usd-fiat-select-lead]");
+      const addLinkEl = selectPanel?.querySelector("[data-usd-deposit-add-bank]");
+      if (titleEl) titleEl.textContent = copy.title;
+      if (leadEl) leadEl.textContent = copy.lead;
+      if (selectPanel) selectPanel.setAttribute("aria-label", copy.ariaLabel);
+      if (addLinkEl) addLinkEl.hidden = !canShowAddUsdBankLink(resolvedMode);
+    };
+
+    const syncSelectPanelUi = () => {
+      const statusEl = selectPanel?.querySelector("[data-usd-deposit-status]");
+      const titleEl = selectPanel?.querySelector("[data-usd-deposit-bank-title]");
+      const bankNameEl = selectPanel?.querySelector("[data-usd-deposit-bank-name]");
+      const usdState = states.usdBankAccount ?? 1;
+      const isUsdMultiple = usdState === 6 && getPrototypeRegion() === "cayman";
+
+      if (titleEl) {
+        titleEl.textContent = isUsdMultiple ? "My KGI Bank 1" : "My KGI Bank";
+      }
+      if (bankNameEl) {
+        bankNameEl.textContent = "Bank Name : KGI Bank";
+      }
+      if (!statusEl) return;
+      const cfg =
+        BANK_ACCOUNT_LINKED_STATUS[usdState] || BANK_ACCOUNT_LINKED_STATUS[3];
+      statusEl.textContent = cfg.label;
+      statusEl.classList.remove(
+        "twd-deposit-select__item-status--submitted",
+        "twd-deposit-select__item-status--verified",
+        "twd-deposit-select__item-status--issues",
+        "twd-deposit-select__item-status--rejected",
+      );
+      statusEl.classList.add(
+        `twd-deposit-select__item-status--${cfg.modifier}`,
+      );
+    };
+
+    const closeAll = (opts = {}) => {
+      setPanelOpen(setupPanel, false, opts);
+      setPanelOpen(selectPanel, false, opts);
+    };
+
+    const closeSetup = (opts = {}) => setPanelOpen(setupPanel, false, opts);
+
+    const openSelect = ({ mode } = {}) => {
+      const resolvedMode = resolveSelectMode(mode);
+      selectPanelMode = resolvedMode;
+      syncSelectPanelUi();
+      syncSelectPanelCopy(resolvedMode);
+      setPanelOpen(selectPanel, true);
+    };
+
+    const refreshSelectPanelIfOpen = () => {
+      if (!selectPanel?.classList.contains("is-open") || selectPanel.hidden) return;
+      syncSelectPanelUi();
+      syncSelectPanelCopy(selectPanelMode);
+    };
+
+    const openFromAddSend = (mode = "add") => {
+      if (getPrototypeRegion() !== "cayman") return;
+      entrySource = mode === "send" ? "send" : "add";
+      if (hasUsdBank()) {
+        openSelect({ mode: entrySource });
+        return;
+      }
+      setPanelOpen(setupPanel, true);
+    };
+
+    const clearEntrySource = () => {
+      entrySource = null;
+    };
+
+    setupPanel
+      ?.querySelector("[data-usd-deposit-setup-close]")
+      ?.addEventListener("click", () => {
+        clearEntrySource();
+        setPanelOpen(setupPanel, false);
+      });
+    setupPanel
+      ?.querySelector("[data-usd-deposit-setup-continue]")
+      ?.addEventListener("click", () => {
+        baWizardApi?.openUsdHowFromDeposit?.();
+      });
+
+    selectPanel
+      ?.querySelector("[data-usd-deposit-select-close]")
+      ?.addEventListener("click", () => {
+        setPanelOpen(selectPanel, false);
+      });
+    selectPanel
+      ?.querySelector("[data-usd-deposit-bank]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    selectPanel
+      ?.querySelector("[data-usd-deposit-add-bank]")
+      ?.addEventListener("click", () => baWizardApi?.openForCurrency?.("usd"));
+
+    [setupPanel, selectPanel].forEach((panel) => {
+      panel
+        ?.querySelector('[aria-label="Support"]')
+        ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    });
+
+    return {
+      openFromAddSend,
+      openSelect,
+      closeAll,
+      closeSetup,
+      syncSelectPanelUi,
+      refreshSelectPanelIfOpen,
       getEntrySource: () => entrySource,
       clearEntrySource,
     };
@@ -7769,7 +7992,17 @@
 
   let openBaWizardFromMenu = () => {};
   let onAddSendTwdSelected = (_mode) => {};
-  let twdDepositApi = { closeAll: () => {}, clearEntrySource: () => {} };
+  let onAddSendUsdSelected = (_mode) => {};
+  let twdDepositApi = {
+    closeAll: () => {},
+    clearEntrySource: () => {},
+    refreshSelectPanelIfOpen: () => {},
+  };
+  let usdDepositApi = {
+    closeAll: () => {},
+    clearEntrySource: () => {},
+    refreshSelectPanelIfOpen: () => {},
+  };
 
   const initBankAccountsPanel = () => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
@@ -9913,6 +10146,16 @@
       if (scrollBody) scrollBody.scrollTop = 0;
     };
 
+    const openUsdHowFromDeposit = () => {
+      selectedSetupCurrency = "usd";
+      skipCurrencyStep = true;
+      openedFromBankAccounts = false;
+      syncBaWizardHowContent();
+      setPanelOpen(panels.how, true);
+      const scrollBody = panels.how.querySelector(".ba-wizard-how__body");
+      if (scrollBody) scrollBody.scrollTop = 0;
+    };
+
     const backFromHow = () => {
       setPanelOpen(panels.how, false);
     };
@@ -10201,6 +10444,7 @@
       openFromMenu: openIntro,
       openForCurrency,
       openTwdHowFromDeposit,
+      openUsdHowFromDeposit,
       closeAll,
       fillTwdBankDetails,
       getSelectedCurrency: () => selectedSetupCurrency,
@@ -10222,7 +10466,7 @@
   const hideBankLinkStackInstant = () => {
     document
       .querySelectorAll(
-        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select]",
+        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-usd-deposit-setup], [data-usd-deposit-select]",
       )
       .forEach(hidePanelInstant);
   };
@@ -10230,22 +10474,35 @@
     hideBankLinkStackInstant();
     closeBaWizardFlow({ instant: true });
 
-    const entrySource = twdDepositApi?.getEntrySource?.();
+    const twdEntry = twdDepositApi?.getEntrySource?.();
+    const usdEntry = usdDepositApi?.getEntrySource?.();
     const container = document.querySelector(".phone-container");
     const bankAccountsPanel = document.querySelector("[data-bank-accounts-panel]");
 
-    if (entrySource === "add" || entrySource === "send") {
+    if (twdEntry === "add" || twdEntry === "send") {
       if (bankAccountsPanel) hidePanelInstant(bankAccountsPanel);
       if (container) {
         container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
       }
       twdDepositApi?.closeSetup?.({ instant: true });
-      twdDepositApi?.openSelect?.({ mode: entrySource });
+      twdDepositApi?.openSelect?.({ mode: twdEntry });
+      return;
+    }
+
+    if (usdEntry === "add" || usdEntry === "send") {
+      if (bankAccountsPanel) hidePanelInstant(bankAccountsPanel);
+      if (container) {
+        container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
+      }
+      usdDepositApi?.closeSetup?.({ instant: true });
+      usdDepositApi?.openSelect?.({ mode: usdEntry });
       return;
     }
 
     twdDepositApi?.closeAll?.({ instant: true });
     twdDepositApi?.clearEntrySource?.();
+    usdDepositApi?.closeAll?.({ instant: true });
+    usdDepositApi?.clearEntrySource?.();
     const alreadyOpen = bankAccountsPanel?.classList.contains("is-open");
     if (hasLinkedBankAccounts()) {
       if (alreadyOpen) {
@@ -10295,9 +10552,15 @@
     baWizardApi,
     showSnackbar,
   });
+  usdDepositApi = initUsdDepositFlow({
+    baWizardApi,
+    showSnackbar,
+  });
   onAddSendTwdSelected = (mode) => twdDepositApi.openFromAddSend(mode);
+  onAddSendUsdSelected = (mode) => usdDepositApi.openFromAddSend(mode);
   openBaWizardFromMenu = () => {
     twdDepositApi?.clearEntrySource?.();
+    usdDepositApi?.clearEntrySource?.();
     baWizardApi.openFromMenu();
   };
   const linkTwdApi = initLinkTwdPanel(
@@ -10321,6 +10584,7 @@
   });
   const openBankAccountLinkFlow = (currency) => {
     twdDepositApi?.clearEntrySource?.();
+    usdDepositApi?.clearEntrySource?.();
     const region = getPrototypeRegion();
     if (region === "taiwan" || region === "cayman") {
       baWizardApi.openForCurrency?.(currency === "usd" ? "usd" : "twd");
