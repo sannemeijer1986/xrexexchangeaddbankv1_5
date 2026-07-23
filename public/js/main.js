@@ -8174,6 +8174,7 @@
       }
       if (caymanHolderIcon) {
         caymanHolderIcon.src = "assets/icon_chat_add_circle.svg";
+        caymanHolderIcon.classList.remove("is-chevron");
       }
 
       if (caymanAddressAddBtn) caymanAddressAddBtn.hidden = false;
@@ -8242,6 +8243,7 @@
       }
       if (caymanHolderIcon) {
         caymanHolderIcon.src = "assets/icon_chevron_down_white.svg";
+        caymanHolderIcon.classList.add("is-chevron");
       }
 
       if (caymanAddressAddBtn) caymanAddressAddBtn.hidden = true;
@@ -8347,6 +8349,7 @@
       caymanHolderAddBtn.classList.add("is-filled");
       if (caymanHolderIcon) {
         caymanHolderIcon.src = "assets/icon_chevron_down_white.svg";
+        caymanHolderIcon.classList.add("is-chevron");
       }
       syncSubmit();
     });
@@ -8409,6 +8412,7 @@
     });
 
     document.addEventListener("prototype-region-change", syncRegionVariant);
+    syncRegionVariant();
 
     return {
       open: (opts = {}) => setOpen(true, opts),

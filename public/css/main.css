@@ -1888,7 +1888,7 @@ html[data-active-tab=wallet] .app-header__top {
 .bank-accounts-panel__section-custodian {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex: 0 0 auto;
   cursor: pointer;
 }
@@ -3871,16 +3871,18 @@ html[data-active-tab=wallet] .app-header__top {
 .usd-bank-details-panel.ba-wizard-details .ba-wizard-details__onboarding {
   padding: 6px 0 0;
 }
-.twd-bank-details-panel.ba-wizard-details [data-usd-bank-details-variant=cayman],
-.usd-bank-details-panel.ba-wizard-details [data-usd-bank-details-variant=cayman] {
-  width: 100%;
-}
+.twd-bank-details-panel.ba-wizard-details [data-usd-bank-details-variant=taiwan],
 .twd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__cayman-form,
+.usd-bank-details-panel.ba-wizard-details [data-usd-bank-details-variant=taiwan],
 .usd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__cayman-form {
   display: flex;
   flex-direction: column;
   gap: 32px;
   width: 100%;
+}
+.twd-bank-details-panel.ba-wizard-details [data-usd-bank-details-variant][hidden],
+.usd-bank-details-panel.ba-wizard-details [data-usd-bank-details-variant][hidden] {
+  display: none !important;
 }
 .twd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__section,
 .usd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__section {
@@ -4285,11 +4287,28 @@ html[data-active-tab=wallet] .app-header__top {
 .usd-bank-details-panel__picker-add,
 .usd-bank-details-panel__picker-chevron,
 .usd-bank-details-panel__bank-summary-edit {
-  width: 24px;
-  height: 24px;
   flex-shrink: 0;
   display: block;
   object-fit: contain;
+}
+
+.usd-bank-details-panel__picker-add {
+  width: 24px;
+  height: 24px;
+}
+
+.usd-bank-details-panel__picker-add.is-chevron,
+.usd-bank-details-panel__picker-chevron {
+  width: 16px;
+  height: 16px;
+  opacity: 0.9;
+}
+
+.usd-bank-details-panel__bank-summary-edit {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .usd-bank-details-panel__field-stack {
