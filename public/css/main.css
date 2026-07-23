@@ -5641,7 +5641,7 @@ html[data-active-tab=wallet] .app-header__top {
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  padding-top: 12px;
+  padding-top: 4px;
 }
 
 .custodian-apply-sheet__limits-col-head {
