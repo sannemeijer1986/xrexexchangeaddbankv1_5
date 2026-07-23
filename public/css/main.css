@@ -3323,6 +3323,10 @@ html[data-active-tab=wallet] .app-header__top {
   color: #ffffff;
 }
 
+.ba-wizard-details__section-head .ba-wizard-details__section-title {
+  margin: 0;
+}
+
 .ba-wizard-details__section-divider {
   height: 1px;
   width: 100%;
@@ -3882,10 +3886,6 @@ html[data-active-tab=wallet] .app-header__top {
 .usd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__section {
   gap: 16px;
 }
-.twd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__field-stack .twd-bank-details-panel__field-label,
-.usd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__field-stack .twd-bank-details-panel__field-label {
-  color: #abacac;
-}
 .twd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__consent-block--cayman,
 .usd-bank-details-panel.ba-wizard-details .usd-bank-details-panel__consent-block--cayman {
   padding-bottom: 0;
@@ -3971,6 +3971,24 @@ html[data-active-tab=wallet] .app-header__top {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.twd-bank-details-panel__section-head,
+.ba-wizard-details__section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.twd-bank-details-panel__section-note,
+.ba-wizard-details__section-note {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .twd-bank-details-panel__section-title {
@@ -4232,22 +4250,6 @@ html[data-active-tab=wallet] .app-header__top {
   display: none !important;
 }
 
-.usd-bank-details-panel__section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.usd-bank-details-panel__section-note {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: normal;
-  color: #fcd536;
-  text-align: right;
-  flex-shrink: 0;
-}
-
 .usd-bank-details-panel__picker {
   width: 100%;
   height: 52px;
@@ -4311,11 +4313,15 @@ html[data-active-tab=wallet] .app-header__top {
 .usd-bank-details-panel__address-summary-copy {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
 }
 
 .usd-bank-details-panel__bank-summary-title,
 .usd-bank-details-panel__address-summary-title {
-  margin: 0 0 2px;
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
   line-height: normal;
@@ -4323,17 +4329,14 @@ html[data-active-tab=wallet] .app-header__top {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
 }
 
 .usd-bank-details-panel__bank-summary-meta {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: #9b9c9c;
-}
-.usd-bank-details-panel__bank-summary-meta p {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
 }
 
 .usd-bank-details-panel__address-summary-text {
@@ -4342,6 +4345,7 @@ html[data-active-tab=wallet] .app-header__top {
   font-weight: 400;
   line-height: 20px;
   color: #9b9c9c;
+  width: 100%;
 }
 
 .usd-bank-details-panel__upload {
@@ -4371,7 +4375,6 @@ html[data-active-tab=wallet] .app-header__top {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 4px;
 }
 
 .usd-bank-details-panel__upload-tooltip {
@@ -4449,6 +4452,42 @@ html[data-active-tab=wallet] .app-header__top {
   color: #3f78ff;
   cursor: pointer;
   text-align: right;
+}
+
+.phone-container p.usd-bank-details-panel__bank-summary-title,
+.phone-container p.usd-bank-details-panel__address-summary-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.phone-container p.usd-bank-details-panel__summary-line,
+.phone-container p.usd-bank-details-panel__address-summary-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+
+.phone-container p.usd-bank-details-panel__upload-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
+.phone-container p.usd-bank-details-panel__upload-note {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+  text-align: center;
 }
 
 .twd-bank-success-panel {

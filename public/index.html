@@ -3957,7 +3957,10 @@
                 <div class="ba-wizard-flow__step" data-ba-wizard-step="3">
                     <div class="ba-wizard-details__body">
                         <div class="ba-wizard-details__section">
-                            <h3 class="ba-wizard-details__section-title">Your bank account</h3>
+                            <div class="ba-wizard-details__section-head">
+                                <h3 class="ba-wizard-details__section-title">Your bank account</h3>
+                                <span class="ba-wizard-details__section-note">Must be in your name</span>
+                            </div>
                             <button class="ba-wizard-details__selector" type="button" data-ba-wizard-details-bank aria-label="Select bank">
                                 <span class="ba-wizard-details__selector-value is-placeholder" data-ba-wizard-details-bank-value>Select bank</span>
                                 <img class="ba-wizard-details__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
@@ -4292,7 +4295,10 @@
                     <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your TWD bank account details</h2>
                 </div>
                 <div class="twd-bank-details-panel__section">
-                    <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                    <div class="twd-bank-details-panel__section-head">
+                        <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                        <span class="twd-bank-details-panel__section-note">Must be in your name</span>
+                    </div>
                     <button class="twd-bank-details-panel__selector" type="button" data-twd-bank-details-bank aria-label="Select bank">
                         <span class="twd-bank-details-panel__selector-value is-placeholder" data-twd-bank-details-bank-value>Select bank</span>
                         <img class="twd-bank-details-panel__selector-chevron" src="assets/icon_chevron_down_white.svg" alt="" />
@@ -4365,7 +4371,10 @@
                 </div>
                 <div data-usd-bank-details-variant="taiwan">
                     <div class="twd-bank-details-panel__section">
-                        <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                        <div class="twd-bank-details-panel__section-head">
+                            <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                            <span class="twd-bank-details-panel__section-note">Must be in your name</span>
+                        </div>
                         <div class="twd-bank-details-panel__selector twd-bank-details-panel__selector--locked" aria-disabled="true">
                             <span class="usd-bank-details-panel__bank-icon-wrap" aria-hidden="true">
                                 <img class="usd-bank-details-panel__bank-icon" src="assets/icon_custodian_kgi.svg" alt="" width="32" height="32" />
@@ -4412,9 +4421,9 @@
                 <div data-usd-bank-details-variant="cayman" hidden>
                     <div class="usd-bank-details-panel__cayman-form">
                         <div class="twd-bank-details-panel__section usd-bank-details-panel__section">
-                            <div class="usd-bank-details-panel__section-head">
+                            <div class="twd-bank-details-panel__section-head">
                                 <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
-                                <span class="usd-bank-details-panel__section-note">Must be in your name</span>
+                                <span class="twd-bank-details-panel__section-note">Must be in your name</span>
                             </div>
                             <button class="usd-bank-details-panel__picker" type="button" data-usd-cayman-bank-add aria-label="Add bank details">
                                 <span class="usd-bank-details-panel__picker-value is-placeholder" data-usd-cayman-bank-picker-value>Add bank details</span>
@@ -4424,11 +4433,11 @@
                                 <div class="usd-bank-details-panel__bank-summary-copy">
                                     <p class="usd-bank-details-panel__bank-summary-title" data-usd-cayman-bank-nickname>My USD bank 1</p>
                                     <div class="usd-bank-details-panel__bank-summary-meta">
-                                        <p>Bank name : CTBC Bank</p>
-                                        <p>Country : Taiwan</p>
-                                        <p>City : Taipei</p>
-                                        <p>SWIFT / BIC code : BKTWTWTP111</p>
-                                        <p>Number : 202607221200</p>
+                                        <p class="usd-bank-details-panel__summary-line">Bank name : CTBC Bank</p>
+                                        <p class="usd-bank-details-panel__summary-line">Country : Taiwan</p>
+                                        <p class="usd-bank-details-panel__summary-line">City : Taipei</p>
+                                        <p class="usd-bank-details-panel__summary-line">SWIFT / BIC code : BKTWTWTP111</p>
+                                        <p class="usd-bank-details-panel__summary-line">Number : 202607221200</p>
                                     </div>
                                 </div>
                                 <img class="usd-bank-details-panel__bank-summary-edit" src="assets/icon_edit_white.svg" alt="" width="24" height="24" aria-hidden="true" />
