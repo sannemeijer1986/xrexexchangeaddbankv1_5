@@ -8173,7 +8173,7 @@
         caymanHolderValueEl.classList.add("is-placeholder");
       }
       if (caymanHolderIcon) {
-        caymanHolderIcon.src = "assets/icon_chat_add_circle.svg";
+        caymanHolderIcon.src = "assets/icon_n_add.svg";
         caymanHolderIcon.classList.remove("is-chevron");
       }
 
@@ -8242,7 +8242,7 @@
         caymanHolderValueEl.classList.remove("is-placeholder");
       }
       if (caymanHolderIcon) {
-        caymanHolderIcon.src = "assets/icon_chevron_down_white.svg";
+        caymanHolderIcon.src = "assets/icon_n_chevron_down.svg";
         caymanHolderIcon.classList.add("is-chevron");
       }
 
@@ -8348,7 +8348,7 @@
       }
       caymanHolderAddBtn.classList.add("is-filled");
       if (caymanHolderIcon) {
-        caymanHolderIcon.src = "assets/icon_chevron_down_white.svg";
+        caymanHolderIcon.src = "assets/icon_n_chevron_down.svg";
         caymanHolderIcon.classList.add("is-chevron");
       }
       syncSubmit();

@@ -4299,16 +4299,14 @@ html[data-active-tab=wallet] .app-header__top {
 
 .usd-bank-details-panel__picker-add.is-chevron,
 .usd-bank-details-panel__picker-chevron {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   opacity: 0.9;
 }
 
 .usd-bank-details-panel__bank-summary-edit {
   width: 24px;
   height: 24px;
-  padding: 4px;
-  box-sizing: border-box;
 }
 
 .usd-bank-details-panel__field-stack {
