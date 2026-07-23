@@ -3816,6 +3816,47 @@
                             <button class="ba-wizard-how__custodian-link" type="button" data-ba-wizard-how-usd-learn-more>Learn more about Custodians</button>
                         </div>
                     </div>
+                    <div data-ba-wizard-how-variant="usd-cayman" hidden>
+                        <div class="ba-wizard-explainer__steps-card ba-wizard-explainer__steps-card--compact">
+                            <div class="ba-wizard-explainer__step">
+                                <span class="ba-wizard-explainer__step-badge" aria-hidden="true">1</span>
+                                <div class="ba-wizard-explainer__step-copy">
+                                    <div class="ba-wizard-explainer__step-title">Choose your bank</div>
+                                </div>
+                            </div>
+                            <div class="ba-wizard-explainer__step-divider" aria-hidden="true"></div>
+                            <div class="ba-wizard-explainer__step">
+                                <span class="ba-wizard-explainer__step-badge" aria-hidden="true">2</span>
+                                <div class="ba-wizard-explainer__step-copy">
+                                    <div class="ba-wizard-explainer__step-title">Provide your bank account details and document proof</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ba-wizard-how__custodian-card">
+                            <div class="ba-wizard-how__custodian-intro">
+                                <div class="ba-wizard-how__custodian-head">
+                                    <p class="ba-wizard-how__custodian-heading">Where your USD will be held</p>
+                                    <span class="ba-wizard-explainer__custodian-icons" aria-hidden="true">
+                                        <span class="ba-wizard-explainer__custodian-icon-wrap">
+                                            <img class="ba-wizard-explainer__custodian-icon" src="assets/icon_custodian_fareastern.svg" alt="" width="20" height="20" />
+                                        </span>
+                                    </span>
+                                </div>
+                                <p class="ba-wizard-how__custodian-desc" data-ba-wizard-how-cayman-custodian-desc>The bank below isn&rsquo;t the bank you&rsquo;re linking &mdash; it&rsquo;s the custodian where any USD you deposit or have in XREX is held in trust.</p>
+                            </div>
+                            <button class="ba-wizard-how__custodian-selector" type="button" data-ba-wizard-how-custodian-details aria-label="View custodian details">
+                                <span class="ba-wizard-how__custodian-selector-icon-wrap" aria-hidden="true">
+                                    <img class="ba-wizard-how__custodian-selector-icon" src="assets/icon_custodian_shield.svg" alt="" width="24" height="24" />
+                                </span>
+                                <span class="ba-wizard-how__custodian-selector-copy">
+                                    <span class="ba-wizard-how__custodian-selector-label">Custodian</span>
+                                    <span class="ba-wizard-how__custodian-selector-name" data-ba-wizard-how-cayman-custodian-name>Far Eastern Bank</span>
+                                </span>
+                                <span class="ba-wizard-how__custodian-selector-btn" aria-hidden="true">View details</span>
+                            </button>
+                            <button class="ba-wizard-how__custodian-link" type="button" data-ba-wizard-how-cayman-learn-more>Learn more about Custodians</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <footer class="ba-wizard-how__footer">
@@ -4322,49 +4363,124 @@
                     <p class="ba-wizard-how__step-label" data-bank-details-step-label>Step 3 of 3</p>
                     <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your USD bank account details</h2>
                 </div>
-                <div class="twd-bank-details-panel__section">
-                    <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
-                    <div class="twd-bank-details-panel__selector twd-bank-details-panel__selector--locked" aria-disabled="true">
-                        <span class="usd-bank-details-panel__bank-icon-wrap" aria-hidden="true">
-                            <img class="usd-bank-details-panel__bank-icon" src="assets/icon_custodian_kgi.svg" alt="" width="32" height="32" />
-                        </span>
-                        <span class="twd-bank-details-panel__selector-value">KGI Bank</span>
-                        <img class="usd-bank-details-panel__selector-lock" src="assets/icon_lock.svg" alt="" width="24" height="24" aria-hidden="true" />
+                <div data-usd-bank-details-variant="taiwan">
+                    <div class="twd-bank-details-panel__section">
+                        <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                        <div class="twd-bank-details-panel__selector twd-bank-details-panel__selector--locked" aria-disabled="true">
+                            <span class="usd-bank-details-panel__bank-icon-wrap" aria-hidden="true">
+                                <img class="usd-bank-details-panel__bank-icon" src="assets/icon_custodian_kgi.svg" alt="" width="32" height="32" />
+                            </span>
+                            <span class="twd-bank-details-panel__selector-value">KGI Bank</span>
+                            <img class="usd-bank-details-panel__selector-lock" src="assets/icon_lock.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </div>
+                        <label class="twd-bank-details-panel__field">
+                            <span class="twd-bank-details-panel__field-label">Account number</span>
+                            <span class="twd-bank-details-panel__input-wrap">
+                                <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-usd-bank-details-account-number placeholder="ex: 12345678901234" />
+                            </span>
+                        </label>
+                        <label class="twd-bank-details-panel__field">
+                            <span class="twd-bank-details-panel__field-label">Account nickname</span>
+                            <span class="twd-bank-details-panel__input-wrap">
+                                <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-account-nickname placeholder="ex: My KGI Bank" value="My KGI Bank" />
+                            </span>
+                        </label>
                     </div>
-                    <label class="twd-bank-details-panel__field">
-                        <span class="twd-bank-details-panel__field-label">Account number</span>
-                        <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" inputmode="numeric" data-usd-bank-details-account-number placeholder="ex: 12345678901234" />
-                        </span>
-                    </label>
-                    <label class="twd-bank-details-panel__field">
-                        <span class="twd-bank-details-panel__field-label">Account nickname</span>
-                        <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-account-nickname placeholder="ex: My KGI Bank" value="My KGI Bank" />
-                        </span>
-                    </label>
+                    <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
+                    <div class="twd-bank-details-panel__section">
+                        <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                        <label class="twd-bank-details-panel__field">
+                            <span class="twd-bank-details-panel__field-label">Holder&rsquo;s Chinese name</span>
+                            <span class="twd-bank-details-panel__input-wrap">
+                                <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-chinese-name placeholder="ex: 王小明" />
+                            </span>
+                        </label>
+                        <label class="twd-bank-details-panel__field">
+                            <span class="twd-bank-details-panel__field-label">Holder&rsquo;s English name</span>
+                            <span class="twd-bank-details-panel__input-wrap">
+                                <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-english-name placeholder="ex: XIAO MING WANG" />
+                            </span>
+                        </label>
+                    </div>
+                    <div class="usd-bank-details-panel__consent-block">
+                        <button class="twd-bank-details-panel__consent" type="button" data-usd-bank-details-consent="not-us-taxpayer" aria-pressed="false">
+                            <img class="twd-bank-details-panel__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                            <span class="twd-bank-details-panel__consent-copy">I confirm that I am not a taxpayer in the US</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
-                <div class="twd-bank-details-panel__section">
-                    <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
-                    <label class="twd-bank-details-panel__field">
-                        <span class="twd-bank-details-panel__field-label">Holder&rsquo;s Chinese name</span>
-                        <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-chinese-name placeholder="ex: 王小明" />
-                        </span>
-                    </label>
-                    <label class="twd-bank-details-panel__field">
-                        <span class="twd-bank-details-panel__field-label">Holder&rsquo;s English name</span>
-                        <span class="twd-bank-details-panel__input-wrap">
-                            <input class="twd-bank-details-panel__input" type="text" data-usd-bank-details-english-name placeholder="ex: XIAO MING WANG" />
-                        </span>
-                    </label>
-                </div>
-                <div class="usd-bank-details-panel__consent-block">
-                    <button class="twd-bank-details-panel__consent" type="button" data-usd-bank-details-consent="not-us-taxpayer" aria-pressed="false">
-                        <img class="twd-bank-details-panel__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
-                        <span class="twd-bank-details-panel__consent-copy">I confirm that I am not a taxpayer in the US</span>
-                    </button>
+                <div data-usd-bank-details-variant="cayman" hidden>
+                    <div class="usd-bank-details-panel__cayman-form">
+                        <div class="twd-bank-details-panel__section usd-bank-details-panel__section">
+                            <div class="usd-bank-details-panel__section-head">
+                                <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                                <span class="usd-bank-details-panel__section-note">Must be in your name</span>
+                            </div>
+                            <button class="usd-bank-details-panel__picker" type="button" data-usd-cayman-bank-add aria-label="Add bank details">
+                                <span class="usd-bank-details-panel__picker-value is-placeholder" data-usd-cayman-bank-picker-value>Add bank details</span>
+                                <img class="usd-bank-details-panel__picker-add" src="assets/icon_chat_add_circle.svg" alt="" width="24" height="24" aria-hidden="true" />
+                            </button>
+                            <div class="usd-bank-details-panel__bank-summary" data-usd-cayman-bank-summary hidden>
+                                <div class="usd-bank-details-panel__bank-summary-copy">
+                                    <p class="usd-bank-details-panel__bank-summary-title" data-usd-cayman-bank-nickname>My USD bank 1</p>
+                                    <div class="usd-bank-details-panel__bank-summary-meta">
+                                        <p>Bank name : CTBC Bank</p>
+                                        <p>Country : Taiwan</p>
+                                        <p>City : Taipei</p>
+                                        <p>SWIFT / BIC code : BKTWTWTP111</p>
+                                        <p>Number : 202607221200</p>
+                                    </div>
+                                </div>
+                                <img class="usd-bank-details-panel__bank-summary-edit" src="assets/icon_edit_white.svg" alt="" width="24" height="24" aria-hidden="true" />
+                            </div>
+                        </div>
+                        <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
+                        <div class="twd-bank-details-panel__section usd-bank-details-panel__section">
+                            <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                            <div class="usd-bank-details-panel__field-stack">
+                                <span class="twd-bank-details-panel__field-label">Bank account holder name</span>
+                                <button class="usd-bank-details-panel__picker" type="button" data-usd-cayman-holder-add aria-label="Add bank account holder name">
+                                    <span class="usd-bank-details-panel__picker-value is-placeholder" data-usd-cayman-holder-value>Add name</span>
+                                    <img class="usd-bank-details-panel__picker-add" src="assets/icon_chat_add_circle.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div class="usd-bank-details-panel__field-stack">
+                                <span class="twd-bank-details-panel__field-label">Billing address</span>
+                                <button class="usd-bank-details-panel__picker" type="button" data-usd-cayman-address-add aria-label="Add billing address">
+                                    <span class="usd-bank-details-panel__picker-value is-placeholder" data-usd-cayman-address-value>Add name</span>
+                                    <img class="usd-bank-details-panel__picker-add" src="assets/icon_chat_add_circle.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                </button>
+                                <div class="usd-bank-details-panel__address-summary" data-usd-cayman-address-summary hidden>
+                                    <div class="usd-bank-details-panel__address-summary-copy">
+                                        <p class="usd-bank-details-panel__address-summary-title">Address</p>
+                                        <p class="usd-bank-details-panel__address-summary-text">Rm. 2, 6F., No. 1, Sec. 4, Zhongziao E. Rd., Da an Dist, Taipei, 106, TW</p>
+                                    </div>
+                                    <img class="usd-bank-details-panel__picker-chevron" src="assets/icon_chevron_down_white.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="twd-bank-details-panel__section usd-bank-details-panel__section">
+                            <h3 class="twd-bank-details-panel__section-title">Bank account document proof</h3>
+                            <div class="usd-bank-details-panel__upload" data-usd-cayman-upload>
+                                <div class="usd-bank-details-panel__upload-dropzone" data-usd-cayman-upload-empty>
+                                    <span class="usd-bank-details-panel__upload-tooltip-wrap">
+                                        <span class="usd-bank-details-panel__upload-tooltip">Tap here</span>
+                                    </span>
+                                    <img class="usd-bank-details-panel__upload-icon" src="assets/icon_file_upload.svg" alt="" width="46" height="46" aria-hidden="true" />
+                                    <p class="usd-bank-details-panel__upload-title"><span class="usd-bank-details-panel__upload-title-u">U</span>pload your document</p>
+                                    <p class="usd-bank-details-panel__upload-note">(jpg, png under 50 MB)</p>
+                                </div>
+                                <div class="usd-bank-details-panel__upload-preview" data-usd-cayman-upload-filled hidden></div>
+                            </div>
+                            <button class="usd-bank-details-panel__upload-again" type="button" data-usd-cayman-upload-again hidden>Upload again</button>
+                        </div>
+                        <div class="usd-bank-details-panel__consent-block usd-bank-details-panel__consent-block--cayman">
+                            <button class="twd-bank-details-panel__consent" type="button" data-usd-cayman-consent="not-us-taxpayer" aria-pressed="false">
+                                <img class="twd-bank-details-panel__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="20" height="20" aria-hidden="true" />
+                                <span class="twd-bank-details-panel__consent-copy">I confirm that I am not a taxpayer in the US</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <footer class="ba-wizard-how__footer">

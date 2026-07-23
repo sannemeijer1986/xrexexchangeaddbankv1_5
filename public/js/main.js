@@ -298,8 +298,12 @@
     return twdState >= 2 || usdState >= 2;
   };
 
-  const shouldOpenSetupFlowFromMenu = () =>
-    getPrototypeRegion() === "taiwan" && !hasLinkedBankAccounts();
+  const shouldOpenSetupFlowFromMenu = () => {
+    const region = getPrototypeRegion();
+    if (region === "taiwan" && !hasLinkedBankAccounts()) return true;
+    if (region === "cayman" && (states.usdBankAccount ?? 1) < 2) return true;
+    return false;
+  };
 
   const queryPrototypeBankAccountsStyleSelect = () =>
     document.querySelector("select[data-prototype-bank-accounts-style]");
@@ -399,6 +403,7 @@
       if (custodianWrap) custodianWrap.hidden = !isLinked;
 
       if (currency === "usd") {
+        const isCayman = getPrototypeRegion() === "cayman";
         const usdListItems = section.querySelectorAll(
           "[data-bank-accounts-item='usd']",
         );
@@ -409,9 +414,23 @@
         usdListItems.forEach((item, index) => {
           const titleEl = item.querySelector(".bank-accounts-panel__list-title");
           if (titleEl) {
-            titleEl.textContent = isUsdMultiple
-              ? `My KGI bank ${index + 1}`
-              : "My KGI bank";
+            if (isCayman) {
+              titleEl.textContent = isUsdMultiple
+                ? `My USD bank ${index + 1}`
+                : "My USD bank";
+            } else {
+              titleEl.textContent = isUsdMultiple
+                ? `My KGI bank ${index + 1}`
+                : "My KGI bank";
+            }
+          }
+          const metaEls = item.querySelectorAll(
+            ".bank-accounts-panel__list-meta span",
+          );
+          if (metaEls[0]) {
+            metaEls[0].textContent = isCayman
+              ? "Bank Name : CTBC Bank"
+              : "Bank Name : KGI bank";
           }
           const itemStatusEl = item.querySelector("[data-bank-accounts-status]");
           if (itemStatusEl) {
@@ -537,6 +556,13 @@
       .forEach((btn) => {
         btn.hidden = !isCayman;
       });
+
+    const usdEditLink = document.querySelector('[data-bank-accounts-edit="usd"]');
+    if (usdEditLink) {
+      usdEditLink.textContent = isCayman
+        ? "Add USD bank account"
+        : "Add USD account";
+    }
 
     if (!isCayman && (states.usdBankAccount ?? 1) === 6) {
       setState("usdBankAccount", 5, { force: true });
@@ -7661,6 +7687,10 @@
     return {
       showSnackbar,
       openPanel: (opts = {}) => {
+        if (shouldOpenSetupFlowFromMenu()) {
+          openBaWizardFromMenu();
+          return;
+        }
         const open = () => setOpen(true, opts);
         if (container && container.classList.contains("is-menu-open")) {
           container.classList.remove("is-menu-open");
@@ -7989,6 +8019,12 @@
     const panel = document.querySelector("[data-usd-bank-details-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
 
+    const taiwanVariant = panel.querySelector(
+      '[data-usd-bank-details-variant="taiwan"]',
+    );
+    const caymanVariant = panel.querySelector(
+      '[data-usd-bank-details-variant="cayman"]',
+    );
     const accountNumberInput = panel.querySelector(
       "[data-usd-bank-details-account-number]",
     );
@@ -8005,17 +8041,17 @@
     const loaderEl = panel.querySelector("[data-usd-bank-details-loader]");
     const titleEl = panel.querySelector("[data-bank-details-setup-title]");
     const DEFAULT_TITLE = "Provide your USD bank account details";
-    const consentButtons = Array.from(
+    const taiwanConsentButtons = Array.from(
       panel.querySelectorAll("[data-usd-bank-details-consent]"),
     );
     const backButtons = panel.querySelectorAll("[data-usd-bank-details-back]");
-    const textInputs = [
+    const taiwanTextInputs = [
       accountNumberInput,
       accountNicknameInput,
       chineseNameInput,
       englishNameInput,
     ];
-    const autofillValues = new Map([
+    const taiwanAutofillValues = new Map([
       [accountNumberInput, "12345678901234"],
       [accountNicknameInput, "My KGI Bank"],
       [chineseNameInput, "王小明"],
@@ -8023,7 +8059,40 @@
     ]);
     const DEFAULT_NICKNAME = "My KGI Bank";
 
-    const state = {
+    const caymanBankAddBtn = panel.querySelector("[data-usd-cayman-bank-add]");
+    const caymanBankSummary = panel.querySelector("[data-usd-cayman-bank-summary]");
+    const caymanBankNicknameEl = panel.querySelector(
+      "[data-usd-cayman-bank-nickname]",
+    );
+    const caymanHolderAddBtn = panel.querySelector("[data-usd-cayman-holder-add]");
+    const caymanHolderValueEl = panel.querySelector("[data-usd-cayman-holder-value]");
+    const caymanAddressAddBtn = panel.querySelector("[data-usd-cayman-address-add]");
+    const caymanAddressValueEl = panel.querySelector(
+      "[data-usd-cayman-address-value]",
+    );
+    const caymanAddressSummary = panel.querySelector(
+      "[data-usd-cayman-address-summary]",
+    );
+    const caymanUploadEmpty = panel.querySelector("[data-usd-cayman-upload-empty]");
+    const caymanUploadFilled = panel.querySelector("[data-usd-cayman-upload-filled]");
+    const caymanUploadAgainBtn = panel.querySelector("[data-usd-cayman-upload-again]");
+    const caymanConsentButtons = Array.from(
+      panel.querySelectorAll("[data-usd-cayman-consent]"),
+    );
+    const caymanHolderIcon = caymanHolderAddBtn?.querySelector(
+      ".usd-bank-details-panel__picker-add",
+    );
+
+    const taiwanState = {
+      consents: {
+        "not-us-taxpayer": false,
+      },
+    };
+    const caymanState = {
+      bankAdded: false,
+      holderName: false,
+      billingAddress: false,
+      documentUploaded: false,
       consents: {
         "not-us-taxpayer": false,
       },
@@ -8031,44 +8100,116 @@
     let submitGeneration = 0;
     const SUBMIT_LOADER_MS = 1600;
 
-    const syncSubmit = () => {
+    const isCaymanRegion = () => getPrototypeRegion() === "cayman";
+
+    const syncRegionVariant = () => {
+      const isCayman = isCaymanRegion();
+      if (taiwanVariant) taiwanVariant.hidden = isCayman;
+      if (caymanVariant) caymanVariant.hidden = !isCayman;
+    };
+
+    const syncTaiwanSubmit = () => {
       const isValid =
         accountNumberInput?.value.trim() &&
         accountNicknameInput?.value.trim() &&
         chineseNameInput?.value.trim() &&
         englishNameInput?.value.trim() &&
-        state.consents["not-us-taxpayer"];
+        taiwanState.consents["not-us-taxpayer"];
       if (submitBtn) submitBtn.disabled = !isValid;
     };
 
-    const resetForm = () => {
-      state.consents["not-us-taxpayer"] = false;
+    const syncCaymanSubmit = () => {
+      const isValid =
+        caymanState.bankAdded &&
+        caymanState.holderName &&
+        caymanState.billingAddress &&
+        caymanState.documentUploaded &&
+        caymanState.consents["not-us-taxpayer"];
+      if (submitBtn) submitBtn.disabled = !isValid;
+    };
 
-      textInputs.forEach((input) => {
+    const syncSubmit = () => {
+      if (isCaymanRegion()) syncCaymanSubmit();
+      else syncTaiwanSubmit();
+    };
+
+    const resetTaiwanForm = () => {
+      taiwanState.consents["not-us-taxpayer"] = false;
+
+      taiwanTextInputs.forEach((input) => {
         if (!input) return;
         input.value =
           input === accountNicknameInput ? DEFAULT_NICKNAME : "";
       });
 
-      consentButtons.forEach((btn) => {
+      taiwanConsentButtons.forEach((btn) => {
         const key = btn.getAttribute("data-usd-bank-details-consent");
-        if (key) state.consents[key] = false;
+        if (key) taiwanState.consents[key] = false;
         btn.setAttribute("aria-pressed", "false");
         const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
         if (icon) icon.src = "assets/icon_checkbox_off.svg";
       });
+    };
 
+    const resetCaymanForm = () => {
+      caymanState.bankAdded = false;
+      caymanState.holderName = false;
+      caymanState.billingAddress = false;
+      caymanState.documentUploaded = false;
+      caymanState.consents["not-us-taxpayer"] = false;
+
+      if (caymanBankAddBtn) caymanBankAddBtn.hidden = false;
+      if (caymanBankSummary) caymanBankSummary.hidden = true;
+      if (caymanBankNicknameEl) {
+        caymanBankNicknameEl.textContent = "My USD bank 1";
+      }
+
+      if (caymanHolderAddBtn) {
+        caymanHolderAddBtn.hidden = false;
+        caymanHolderAddBtn.classList.remove("is-filled");
+      }
+      if (caymanHolderValueEl) {
+        caymanHolderValueEl.textContent = "Add name";
+        caymanHolderValueEl.classList.add("is-placeholder");
+      }
+      if (caymanHolderIcon) {
+        caymanHolderIcon.src = "assets/icon_chat_add_circle.svg";
+      }
+
+      if (caymanAddressAddBtn) caymanAddressAddBtn.hidden = false;
+      if (caymanAddressSummary) caymanAddressSummary.hidden = true;
+      if (caymanAddressValueEl) {
+        caymanAddressValueEl.textContent = "Add name";
+        caymanAddressValueEl.classList.add("is-placeholder");
+      }
+
+      if (caymanUploadEmpty) caymanUploadEmpty.hidden = false;
+      if (caymanUploadFilled) caymanUploadFilled.hidden = true;
+      if (caymanUploadAgainBtn) caymanUploadAgainBtn.hidden = true;
+
+      caymanConsentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-usd-cayman-consent");
+        if (key) caymanState.consents[key] = false;
+        btn.setAttribute("aria-pressed", "false");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_off.svg";
+      });
+    };
+
+    const resetForm = () => {
+      resetTaiwanForm();
+      resetCaymanForm();
       syncSubmit();
     };
 
-    const fillAll = () => {
-      textInputs.forEach((input) => {
-        if (input) input.value = autofillValues.get(input) || "";
+    const fillTaiwanAll = () => {
+      taiwanTextInputs.forEach((input) => {
+        if (input) input.value = taiwanAutofillValues.get(input) || "";
       });
 
-      consentButtons.forEach((btn) => {
+      taiwanConsentButtons.forEach((btn) => {
         const key = btn.getAttribute("data-usd-bank-details-consent");
-        if (key) state.consents[key] = true;
+        if (key) taiwanState.consents[key] = true;
         btn.setAttribute("aria-pressed", "true");
         const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
         if (icon) icon.src = "assets/icon_checkbox_on.svg";
@@ -8077,11 +8218,61 @@
       syncSubmit();
     };
 
+    const fillCaymanAll = () => {
+      const currentUsdState = states.usdBankAccount ?? 1;
+      caymanState.bankAdded = true;
+      caymanState.holderName = true;
+      caymanState.billingAddress = true;
+      caymanState.documentUploaded = true;
+
+      if (caymanBankAddBtn) caymanBankAddBtn.hidden = true;
+      if (caymanBankSummary) caymanBankSummary.hidden = false;
+      if (caymanBankNicknameEl) {
+        caymanBankNicknameEl.textContent =
+          currentUsdState >= 2 ? "My USD bank 2" : "My USD bank 1";
+      }
+
+      if (caymanHolderAddBtn) {
+        caymanHolderAddBtn.hidden = false;
+        caymanHolderAddBtn.classList.add("is-filled");
+      }
+      if (caymanHolderValueEl) {
+        caymanHolderValueEl.textContent = "John Doe";
+        caymanHolderValueEl.classList.remove("is-placeholder");
+      }
+      if (caymanHolderIcon) {
+        caymanHolderIcon.src = "assets/icon_chevron_down_white.svg";
+      }
+
+      if (caymanAddressAddBtn) caymanAddressAddBtn.hidden = true;
+      if (caymanAddressSummary) caymanAddressSummary.hidden = false;
+
+      if (caymanUploadEmpty) caymanUploadEmpty.hidden = true;
+      if (caymanUploadFilled) caymanUploadFilled.hidden = false;
+      if (caymanUploadAgainBtn) caymanUploadAgainBtn.hidden = false;
+
+      caymanConsentButtons.forEach((btn) => {
+        const key = btn.getAttribute("data-usd-cayman-consent");
+        if (key) caymanState.consents[key] = true;
+        btn.setAttribute("aria-pressed", "true");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) icon.src = "assets/icon_checkbox_on.svg";
+      });
+
+      syncSubmit();
+    };
+
+    const fillAll = () => {
+      if (isCaymanRegion()) fillCaymanAll();
+      else fillTaiwanAll();
+    };
+
     const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
         if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
+        syncRegionVariant();
         syncBaWizardStepLabels();
         resetForm();
         panel.hidden = false;
@@ -8109,21 +8300,84 @@
       }
     };
 
-    textInputs.forEach((input) => {
+    taiwanTextInputs.forEach((input) => {
       input?.addEventListener("input", syncSubmit);
       input?.addEventListener("focus", () => {
         if (input.value.trim()) return;
-        input.value = autofillValues.get(input) || "";
+        input.value = taiwanAutofillValues.get(input) || "";
         syncSubmit();
       });
     });
 
-    consentButtons.forEach((btn) => {
+    taiwanConsentButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const key = btn.getAttribute("data-usd-bank-details-consent");
         if (!key) return;
-        const nextChecked = !state.consents[key];
-        state.consents[key] = nextChecked;
+        const nextChecked = !taiwanState.consents[key];
+        taiwanState.consents[key] = nextChecked;
+        btn.setAttribute("aria-pressed", nextChecked ? "true" : "false");
+        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+        if (icon) {
+          icon.src = nextChecked
+            ? "assets/icon_checkbox_on.svg"
+            : "assets/icon_checkbox_off.svg";
+        }
+        syncSubmit();
+      });
+    });
+
+    caymanBankAddBtn?.addEventListener("click", () => {
+      caymanState.bankAdded = true;
+      if (caymanBankAddBtn) caymanBankAddBtn.hidden = true;
+      if (caymanBankSummary) caymanBankSummary.hidden = false;
+      if (caymanBankNicknameEl) {
+        const currentUsdState = states.usdBankAccount ?? 1;
+        caymanBankNicknameEl.textContent =
+          currentUsdState >= 2 ? "My USD bank 2" : "My USD bank 1";
+      }
+      syncSubmit();
+    });
+
+    caymanHolderAddBtn?.addEventListener("click", () => {
+      caymanState.holderName = true;
+      if (caymanHolderValueEl) {
+        caymanHolderValueEl.textContent = "John Doe";
+        caymanHolderValueEl.classList.remove("is-placeholder");
+      }
+      caymanHolderAddBtn.classList.add("is-filled");
+      if (caymanHolderIcon) {
+        caymanHolderIcon.src = "assets/icon_chevron_down_white.svg";
+      }
+      syncSubmit();
+    });
+
+    caymanAddressAddBtn?.addEventListener("click", () => {
+      caymanState.billingAddress = true;
+      if (caymanAddressAddBtn) caymanAddressAddBtn.hidden = true;
+      if (caymanAddressSummary) caymanAddressSummary.hidden = false;
+      syncSubmit();
+    });
+
+    const setCaymanDocumentUploaded = (uploaded) => {
+      caymanState.documentUploaded = uploaded;
+      if (caymanUploadEmpty) caymanUploadEmpty.hidden = uploaded;
+      if (caymanUploadFilled) caymanUploadFilled.hidden = !uploaded;
+      if (caymanUploadAgainBtn) caymanUploadAgainBtn.hidden = !uploaded;
+      syncSubmit();
+    };
+
+    caymanUploadEmpty?.addEventListener("click", () => setCaymanDocumentUploaded(true));
+    caymanUploadAgainBtn?.addEventListener("click", () => {
+      setCaymanDocumentUploaded(false);
+      setCaymanDocumentUploaded(true);
+    });
+
+    caymanConsentButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-usd-cayman-consent");
+        if (!key) return;
+        const nextChecked = !caymanState.consents[key];
+        caymanState.consents[key] = nextChecked;
         btn.setAttribute("aria-pressed", nextChecked ? "true" : "false");
         const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
         if (icon) {
@@ -8141,7 +8395,10 @@
 
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
-      setState("usdBankAccount", 2, { force: true });
+      const currentUsdState = states.usdBankAccount ?? 1;
+      const nextUsdState =
+        isCaymanRegion() && currentUsdState >= 2 ? 6 : 2;
+      setState("usdBankAccount", nextUsdState, { force: true });
       const gen = (submitGeneration += 1);
       if (loaderEl) loaderEl.hidden = false;
       window.setTimeout(() => {
@@ -8150,6 +8407,8 @@
         onSubmitComplete?.();
       }, SUBMIT_LOADER_MS);
     });
+
+    document.addEventListener("prototype-region-change", syncRegionVariant);
 
     return {
       open: (opts = {}) => setOpen(true, opts),
@@ -8900,6 +9159,8 @@
     let selectedSetupCurrency = "twd";
     let skipCurrencyStep = false;
     let openedFromBankAccounts = false;
+    const shouldSkipCurrencyStep = () =>
+      skipCurrencyStep || getPrototypeRegion() === "cayman";
     let continueFromHow =
       typeof onHowContinue === "function" ? onHowContinue : () => {};
 
@@ -8941,25 +9202,43 @@
         desc:
           "Use your own KGI Bank account to move USD in and out of XREX. It must be registered in your name.",
       },
+      caymanMenu: {
+        title: "Link your bank account",
+        desc:
+          "This is the bank account you'll use to move USD in and out of XREX. Link an account you already have: It must be registered in your name.",
+      },
+      caymanUsd: {
+        title: "Link your USD bank account",
+        desc:
+          "Use your own bank account to move USD in and out of XREX. It must be registered in your name.",
+      },
     };
 
     const syncBaWizardIntroContent = (currency = null) => {
       const titleEl = panels.intro?.querySelector("[data-ba-wizard-intro-title]");
       const descEl = panels.intro?.querySelector("[data-ba-wizard-intro-desc]");
-      const copy =
-        currency === "usd"
-          ? BA_WIZARD_INTRO_COPY.usd
-          : currency === "twd"
-            ? BA_WIZARD_INTRO_COPY.twd
-            : BA_WIZARD_INTRO_COPY.default;
+      const isCayman = getPrototypeRegion() === "cayman";
+      let copy;
+      if (isCayman) {
+        copy =
+          currency === "usd"
+            ? BA_WIZARD_INTRO_COPY.caymanUsd
+            : BA_WIZARD_INTRO_COPY.caymanMenu;
+      } else if (currency === "usd") {
+        copy = BA_WIZARD_INTRO_COPY.usd;
+      } else if (currency === "twd") {
+        copy = BA_WIZARD_INTRO_COPY.twd;
+      } else {
+        copy = BA_WIZARD_INTRO_COPY.default;
+      }
       if (titleEl) titleEl.innerHTML = copy.title;
       if (descEl) descEl.innerHTML = copy.desc;
     };
 
     syncBaWizardStepLabels = () => {
-      const totalSteps = skipCurrencyStep ? 2 : 3;
-      const howStep = skipCurrencyStep ? 1 : 2;
-      const detailsStep = skipCurrencyStep ? 2 : 3;
+      const totalSteps = shouldSkipCurrencyStep() ? 2 : 3;
+      const howStep = shouldSkipCurrencyStep() ? 1 : 2;
+      const detailsStep = shouldSkipCurrencyStep() ? 2 : 3;
       const howLabelEl = panels.how?.querySelector(
         "[data-ba-wizard-how-step-label]",
       );
@@ -8988,8 +9267,27 @@
       }
     };
 
+    const syncBaWizardHowCaymanCustodian = () => {
+      const custodian = getUsdCustodian();
+      const nameEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-cayman-custodian-name]",
+      );
+      const descEl = panels.how?.querySelector(
+        "[data-ba-wizard-how-cayman-custodian-desc]",
+      );
+      if (nameEl) {
+        nameEl.textContent = custodian.details.bankName;
+      }
+      if (descEl) {
+        descEl.textContent =
+          "The bank below isn't the bank you're linking — it's the custodian where any USD you deposit or have in XREX is held in trust.";
+      }
+    };
+
     const syncBaWizardHowContent = () => {
-      const isTwd = selectedSetupCurrency === "twd";
+      const isCayman = getPrototypeRegion() === "cayman";
+      const isTwd = !isCayman && selectedSetupCurrency === "twd";
+      const howVariant = isCayman ? "usd-cayman" : selectedSetupCurrency;
       const titleEl = panels.how?.querySelector("[data-ba-wizard-how-title]");
       if (titleEl) {
         titleEl.textContent = isTwd
@@ -8998,9 +9296,10 @@
       }
       panels.how?.querySelectorAll("[data-ba-wizard-how-variant]").forEach((el) => {
         const variant = el.getAttribute("data-ba-wizard-how-variant");
-        el.hidden = variant !== selectedSetupCurrency;
+        el.hidden = variant !== howVariant;
       });
-      if (isTwd) syncBaWizardHowCustodian();
+      if (isCayman) syncBaWizardHowCaymanCustodian();
+      else if (isTwd) syncBaWizardHowCustodian();
       else syncBaWizardHowUsdCustodian();
       syncBaWizardStepLabels();
     };
@@ -9273,9 +9572,14 @@
     closeBaWizardFlow = closeAll;
 
     const openIntro = () => {
-      skipCurrencyStep = false;
       openedFromBankAccounts = false;
       closeAll({ instant: true });
+      if (getPrototypeRegion() === "cayman") {
+        selectedSetupCurrency = "usd";
+        skipCurrencyStep = true;
+      } else {
+        skipCurrencyStep = false;
+      }
       syncBaWizardIntroContent();
       setPanelOpen(panels.intro, true);
       setPhoneShellOpen(true);
@@ -9297,7 +9601,8 @@
     };
 
     const continueFromIntro = () => {
-      if (skipCurrencyStep) {
+      if (shouldSkipCurrencyStep()) {
+        if (getPrototypeRegion() === "cayman") selectedSetupCurrency = "usd";
         openHow(selectedSetupCurrency);
         return;
       }
@@ -9458,20 +9763,29 @@
       ?.addEventListener("click", () => custodianPanelApi?.open?.());
     panels.how
       ?.querySelectorAll(
-        "[data-ba-wizard-how-learn-more], [data-ba-wizard-how-usd-learn-more]",
+        "[data-ba-wizard-how-learn-more], [data-ba-wizard-how-usd-learn-more], [data-ba-wizard-how-cayman-learn-more]",
       )
       .forEach((btn) => {
         btn.addEventListener("click", () => showSnackbar("Not in prototype"));
       });
     panels.how
-      ?.querySelector("[data-ba-wizard-how-custodian-details]")
-      ?.addEventListener("click", () => usdCustodianPanelApi?.open?.());
+      ?.querySelectorAll("[data-ba-wizard-how-custodian-details]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => usdCustodianPanelApi?.open?.());
+      });
 
     document.addEventListener("prototype-twd-custodian-change", () => {
       if (selectedSetupCurrency === "twd") syncBaWizardHowCustodian();
     });
     document.addEventListener("prototype-usd-custodian-change", () => {
-      if (selectedSetupCurrency === "usd") syncBaWizardHowUsdCustodian();
+      if (getPrototypeRegion() === "cayman") syncBaWizardHowCaymanCustodian();
+      else if (selectedSetupCurrency === "usd") syncBaWizardHowUsdCustodian();
+    });
+    document.addEventListener("prototype-region-change", () => {
+      syncBaWizardIntroContent(
+        skipCurrencyStep ? selectedSetupCurrency : null,
+      );
+      if (panels.how?.classList.contains("is-open")) syncBaWizardHowContent();
     });
     syncBaWizardHowContent();
 
@@ -9696,8 +10010,9 @@
     linkTwdApi.continueToDetails?.();
   });
   const openBankAccountLinkFlow = (currency) => {
-    if (getPrototypeRegion() === "taiwan") {
-      baWizardApi.openForCurrency?.(currency);
+    const region = getPrototypeRegion();
+    if (region === "taiwan" || region === "cayman") {
+      baWizardApi.openForCurrency?.(currency === "usd" ? "usd" : "twd");
       return;
     }
     if (currency === "usd") linkUsdApi.open();

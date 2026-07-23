@@ -3936,6 +3936,44 @@ html[data-active-tab="wallet"] {
     flex: 1;
     min-width: 0;
   }
+
+  .ba-wizard-details__onboarding {
+    padding: 6px 0 0;
+  }
+
+  [data-usd-bank-details-variant="cayman"] {
+    width: 100%;
+  }
+
+  .usd-bank-details-panel__cayman-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .usd-bank-details-panel__section {
+    gap: 16px;
+  }
+
+  .usd-bank-details-panel__field-stack .twd-bank-details-panel__field-label {
+    color: #abacac;
+  }
+
+  .usd-bank-details-panel__consent-block--cayman {
+    padding-bottom: 0;
+  }
+
+  .usd-bank-details-panel__consent-block--cayman .twd-bank-details-panel__consent {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .usd-bank-details-panel__consent-block--cayman .twd-bank-details-panel__consent-copy {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
 }
 
 .twd-bank-details-panel__header {
@@ -4261,6 +4299,236 @@ html[data-active-tab="wallet"] {
 
 .usd-bank-details-panel__consent-block {
   padding-bottom: 16px;
+}
+
+.usd-bank-details-panel__picker[hidden],
+.usd-bank-details-panel__bank-summary[hidden],
+.usd-bank-details-panel__address-summary[hidden],
+.usd-bank-details-panel__upload-dropzone[hidden],
+.usd-bank-details-panel__upload-preview[hidden],
+.usd-bank-details-panel__upload-again[hidden] {
+  display: none !important;
+}
+
+.usd-bank-details-panel__section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.usd-bank-details-panel__section-note {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fcd536;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.usd-bank-details-panel__picker {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 0;
+  border-radius: 14px;
+  background: #1b1d1d;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.usd-bank-details-panel__picker-value {
+  flex: 1;
+  min-width: 0;
+  min-height: 19px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usd-bank-details-panel__picker-value.is-placeholder {
+  color: #9b9c9c;
+}
+
+.usd-bank-details-panel__picker-add,
+.usd-bank-details-panel__picker-chevron,
+.usd-bank-details-panel__bank-summary-edit {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+}
+
+.usd-bank-details-panel__field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usd-bank-details-panel__bank-summary,
+.usd-bank-details-panel__address-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #1b1d1d;
+  box-sizing: border-box;
+}
+
+.usd-bank-details-panel__bank-summary-copy,
+.usd-bank-details-panel__address-summary-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.usd-bank-details-panel__bank-summary-title,
+.usd-bank-details-panel__address-summary-title {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usd-bank-details-panel__bank-summary-meta {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+
+  p {
+    margin: 0;
+  }
+}
+
+.usd-bank-details-panel__address-summary-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+
+.usd-bank-details-panel__upload {
+  height: 240px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #1b1d1d;
+  box-sizing: border-box;
+}
+
+.usd-bank-details-panel__upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border: 1px dashed #ffffff3d;
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.usd-bank-details-panel__upload-tooltip-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.usd-bank-details-panel__upload-tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #1f4caf;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  white-space: nowrap;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #1f4caf;
+  }
+}
+
+.usd-bank-details-panel__upload-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+}
+
+.usd-bank-details-panel__upload-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
+.usd-bank-details-panel__upload-title-u {
+  font-weight: 700;
+}
+
+.usd-bank-details-panel__upload-note {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+  text-align: center;
+}
+
+.usd-bank-details-panel__upload-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background: #58595a;
+}
+
+.usd-bank-details-panel__upload-again {
+  align-self: flex-end;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+  text-align: right;
 }
 
 // Figma 7655:10288 / 7663:45410 — TWD bank account submitted success
