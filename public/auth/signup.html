@@ -17,17 +17,6 @@
 
 <body>
     <div class="phone-container phone-container--auth-signup">
-        <div class="top-chrome">
-            <div class="status-bar safe-area-top">
-                <div class="status-bar__left">
-                    <span>9:41</span>
-                </div>
-                <div class="status-bar__right">
-                    <img class="status-bar__icons" src="../assets/icons_statusbar.svg" alt="Status icons" />
-                </div>
-            </div>
-        </div>
-
         <main class="auth-signup" aria-label="Sign up to XREX">
             <header class="auth-signup__header">
                 <button class="auth-signup__icon-btn" type="button" data-auth-signup-back aria-label="Back">
@@ -124,6 +113,15 @@
 
         <div class="snackbar" data-snackbar hidden role="status" aria-live="polite">
             <div class="snackbar__text" data-snackbar-text>Not in prototype</div>
+        </div>
+
+        <div class="status-bar safe-area-top phone-container__status-bar" aria-hidden="true">
+            <div class="status-bar__left">
+                <span>9:41</span>
+            </div>
+            <div class="status-bar__right">
+                <img class="status-bar__icons" src="../assets/icons_statusbar.svg" alt="" />
+            </div>
         </div>
     </div>
 

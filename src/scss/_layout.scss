@@ -661,6 +661,7 @@
   z-index: 6;
   display: flex;
   flex-direction: column;
+  padding-top: calc(#{$status-bar-height} + env(safe-area-inset-top, 0px));
   background-color: rgba(13, 14, 15, 0);
   transition: background-color 0.083s ease;
   will-change: background-color;
@@ -705,6 +706,22 @@
       display: block;
       align-self: center;
     }
+  }
+}
+
+// Always-on overlay above slide-in panels (z-index 2100–2400); below snackbar (3000).
+.phone-container__status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2500;
+  pointer-events: none;
+  transition: background-color 0.083s ease;
+  will-change: background-color;
+
+  &.is-scrolled {
+    background-color: #0d0e0f;
   }
 }
 

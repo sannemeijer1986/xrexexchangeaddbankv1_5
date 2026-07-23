@@ -27900,6 +27900,7 @@
   const initHeaderScrollSwap = () => {
     const header = document.querySelector(".app-header");
     const topChrome = document.querySelector(".top-chrome");
+    const statusBar = document.querySelector(".phone-container__status-bar");
     const scroller = document.querySelector(".content");
     if (!header || !scroller) return;
 
@@ -27913,6 +27914,7 @@
         isScrolled = shouldBeScrolled;
         header.classList.toggle("is-scrolled", isScrolled);
         if (topChrome) topChrome.classList.toggle("is-scrolled", isScrolled);
+        if (statusBar) statusBar.classList.toggle("is-scrolled", isScrolled);
       }
       ticking = false;
     };

@@ -22,16 +22,6 @@
 <body>
     <div class="phone-container">
         <div class="top-chrome">
-            <!-- iOS 17 Status bar -->
-            <div class="status-bar safe-area-top">
-                <div class="status-bar__left">
-                    <span>9:41</span>
-                </div>
-                <div class="status-bar__right">
-                    <img class="status-bar__icons" src="assets/icons_statusbar.svg" alt="Status icons" />
-                </div>
-            </div>
-
             <header class="app-header">
                 <div class="app-header__top">
                     <div class="app-header__left">
@@ -8230,6 +8220,16 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                 <img src="assets/icon_info_circle_blue.svg" alt="" />
             </div>
             <div class="snackbar__text" data-snackbar-text>Not in prototype</div>
+        </div>
+
+        <!-- Persistent iOS status bar — overlays every screen including slide-in panels -->
+        <div class="status-bar safe-area-top phone-container__status-bar" aria-hidden="true">
+            <div class="status-bar__left">
+                <span>9:41</span>
+            </div>
+            <div class="status-bar__right">
+                <img class="status-bar__icons" src="assets/icons_statusbar.svg" alt="" />
+            </div>
         </div>
     </div>
 
