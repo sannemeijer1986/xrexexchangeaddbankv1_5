@@ -3234,7 +3234,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 .ba-wizard-how p.ba-wizard-explainer__step-subtitle {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: normal;
   color: #8fb8ff;
@@ -3652,7 +3652,7 @@ html[data-active-tab=wallet] .app-header__top {
 
 .ba-wizard-explainer__step-subtitle {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: normal;
   color: #8fb8ff;
