@@ -3261,6 +3261,10 @@ html[data-active-tab="wallet"] {
     gap: 0;
     justify-content: center;
   }
+
+  .ba-wizard-explainer__step-copy:has(.ba-wizard-explainer__step-subtitle) {
+    gap: 2px;
+  }
 }
 
 // Beat `.phone-container p` from _base.scss for hybrid setup "how it works" page.
@@ -3291,6 +3295,14 @@ html[data-active-tab="wallet"] {
     font-weight: 400;
     line-height: 20px;
     color: #9b9c9c;
+  }
+
+  p.ba-wizard-explainer__step-subtitle {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+    color: #8fb8ff;
   }
 
   p.ba-wizard-how__custodian-heading {
@@ -3715,6 +3727,14 @@ html[data-active-tab="wallet"] {
   font-weight: 400;
   line-height: 20px;
   color: #9b9c9c;
+}
+
+.ba-wizard-explainer__step-subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
 }
 
 .ba-wizard-explainer__step-divider {
@@ -20416,8 +20436,7 @@ div.currency-sheet__item-icon {
   margin-top: 4px;
 }
 
-.build-badge__section-row--version,
-.build-badge__section-row--language {
+.build-badge__section-row--version {
   display: none !important;
 }
 

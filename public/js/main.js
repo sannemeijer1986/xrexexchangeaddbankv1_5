@@ -181,6 +181,9 @@
     return PROTOTYPE_REGION_CONFIG.default;
   };
 
+  const tr = (source, params) =>
+    window.I18N?.t ? window.I18N.t(source, params) : source;
+
   const getPrototypeFirstTimeApplyCustodian = () => {
     const input = document.querySelector(
       "[data-prototype-first-time-apply-custodian]",
@@ -457,7 +460,9 @@
         const name =
           PROTOTYPE_CUSTODIAN_LABELS[custodian] ||
           PROTOTYPE_CUSTODIAN_LABELS["kgi-active"];
-        custodianLabel.textContent = `Custodian: ${name}`;
+        custodianLabel.textContent = tr("Custodian: {name}", {
+          name: tr(name),
+        });
       }
 
       if (statusEl && currency !== "usd") {
@@ -8176,6 +8181,9 @@
       });
 
     syncBankAccountsPanelUi();
+    document.addEventListener("prototype-locale-changed", syncBankAccountsPanelUi);
+    document.addEventListener("prototype-twd-custodian-change", syncBankAccountsPanelUi);
+    document.addEventListener("prototype-usd-custodian-change", syncBankAccountsPanelUi);
 
     return {
       showSnackbar,
@@ -9204,10 +9212,12 @@
       const custodian = getUsdCustodian();
       if (selectorIconEl) selectorIconEl.src = custodian.icon;
       if (selectorNameEl) {
-        selectorNameEl.textContent = custodian.selectorName;
+        selectorNameEl.textContent = tr(custodian.selectorName);
       }
       Object.entries(custodian.details).forEach(([field, value]) => {
-        if (detailEls[field]) detailEls[field].textContent = value;
+        if (!detailEls[field]) return;
+        detailEls[field].textContent =
+          field === "bankName" ? tr(String(value)) : value;
       });
     };
 
@@ -9316,34 +9326,42 @@
         : getUsdCustodian();
       const { details } = custodian;
       const isTaiwan = getPrototypeRegion() === "taiwan";
+      const bankName = isTwd ? custodian.listName : custodian.details.bankName;
+      const localizedBankName = tr(bankName);
 
       if (titleCurrencyEl) titleCurrencyEl.textContent = currencyLabel;
       if (custodianNameEl) {
-        custodianNameEl.textContent = isTwd
-          ? custodian.listName
-          : custodian.details.bankName;
+        custodianNameEl.textContent = localizedBankName;
       }
       if (depositColEl) {
-        depositColEl.textContent = `Deposit ${currencyLabel}`;
+        depositColEl.textContent = tr("Deposit {currencyLabel}", { currencyLabel });
       }
       if (withdrawColEl) {
-        withdrawColEl.textContent = `Withdraw ${currencyLabel}`;
+        withdrawColEl.textContent = tr("Withdraw {currencyLabel}", { currencyLabel });
       }
 
-      const bankName = isTwd ? custodian.listName : custodian.details.bankName;
       if (descBodyEl) {
         if (isTaiwan && isTwd) {
-          descBodyEl.textContent = `${bankName} isn't the bank you're linking — it's the custodian holding your ${currencyLabel}. `;
+          descBodyEl.textContent = tr(
+            "{bankName} isn't the bank you're linking — it's the custodian holding your {currencyLabel}. ",
+            { bankName: localizedBankName, currencyLabel },
+          );
         } else if (isTaiwan) {
-          descBodyEl.textContent = `${bankName} is the custodian holding your ${currencyLabel} — not the bank you're linking.`;
+          descBodyEl.textContent = tr(
+            "{bankName} is the custodian holding your {currencyLabel} — not the bank you're linking.",
+            { bankName: localizedBankName, currencyLabel },
+          );
         } else {
-          descBodyEl.textContent = `This custodian holds your ${currencyLabel}. Deposits & withdrawals will go through it, with the limits below.`;
+          descBodyEl.textContent = tr(
+            "This custodian holds your {currencyLabel}. Deposits & withdrawals will go through it, with the limits below.",
+            { currencyLabel },
+          );
         }
       }
       if (descHighlightEl) {
         if (isTaiwan && isTwd) {
           descHighlightEl.hidden = false;
-          descHighlightEl.textContent = "You can link most Taiwan banks.";
+          descHighlightEl.textContent = tr("You can link most Taiwan banks.");
         } else {
           descHighlightEl.hidden = true;
           descHighlightEl.textContent = "";
@@ -9427,6 +9445,16 @@
       }
       populate("twd");
     });
+    document.addEventListener("prototype-usd-custodian-change", () => {
+      if (!sheet.classList.contains("is-open") || currentCurrency !== "usd") {
+        return;
+      }
+      populate("usd");
+    });
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!sheet.classList.contains("is-open")) return;
+      populate(currentCurrency);
+    });
 
     return {
       open: ({ currency = "twd", onContinue: continueCb } = {}) => {
@@ -9462,6 +9490,11 @@
             ? "assets/icon_radio_on.svg"
             : "assets/icon_radio_off.svg";
         }
+        const custodian = CUSTODIANS[key];
+        const nameEl = btn.querySelector(".custodian-select-sheet__item-name");
+        if (nameEl && custodian) {
+          nameEl.textContent = tr(custodian.listName);
+        }
       });
       currentLabels.forEach((label) => {
         const key = label.getAttribute("data-custodian-select-current");
@@ -9488,6 +9521,10 @@
 
     sheet.querySelectorAll("[data-custodian-select-close]").forEach((btn) => {
       btn.addEventListener("click", () => setOpen(false));
+    });
+    document.addEventListener("prototype-locale-changed", () => {
+      if (sheet.hidden || !sheet.classList.contains("is-open")) return;
+      syncList();
     });
     optionButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -9546,16 +9583,23 @@
     const applyPreview = () => {
       const custodian = CUSTODIANS[state.previewKey] || CUSTODIANS.kgi;
       const hasChanged = state.previewKey !== state.persistedKey;
+      const localizedSelectorName = tr(custodian.selectorName);
       if (selectorIconEl) selectorIconEl.src = custodian.icon;
-      if (selectorNameEl) selectorNameEl.textContent = custodian.selectorName;
+      if (selectorNameEl) selectorNameEl.textContent = localizedSelectorName;
       if (selectorCurrentEl) selectorCurrentEl.hidden = hasChanged;
       Object.entries(custodian.details).forEach(([field, value]) => {
-        if (detailEls[field]) detailEls[field].textContent = value;
+        if (!detailEls[field]) return;
+        detailEls[field].textContent =
+          field === "bankName" ? tr(String(value)) : value;
       });
       if (keepBtn) {
         keepBtn.textContent = hasChanged
-          ? `Switch to ${custodian.selectorName}`
-          : `Stay with ${custodian.selectorName}`;
+          ? tr("Switch to {custodianName}", {
+              custodianName: localizedSelectorName,
+            })
+          : tr("Stay with {custodianName}", {
+              custodianName: localizedSelectorName,
+            });
         keepBtn.classList.toggle("custodian-panel__keep--primary", hasChanged);
       }
       selectPanelApi.syncList?.();
@@ -9637,6 +9681,10 @@
       });
     };
     document.addEventListener("prototype-twd-custodian-change", syncFromPrototype);
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open")) return;
+      applyPreview();
+    });
 
     applyPreview();
 
@@ -9685,11 +9733,12 @@
         '[data-ba-wizard-how-variant="twd"] [data-ba-wizard-how-custodian-desc]',
       );
       if (nameEl) {
-        nameEl.textContent = custodian.listName;
+        nameEl.textContent = tr(custodian.listName);
       }
       if (descEl) {
-        descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian that holds your TWD on XREX in trust.";
+        descEl.textContent = tr(
+          "The bank below isn't the bank you're linking — it's the custodian that holds your TWD on XREX in trust.",
+        );
       }
     };
 
@@ -9739,8 +9788,8 @@
       } else {
         copy = BA_WIZARD_INTRO_COPY.default;
       }
-      if (titleEl) titleEl.innerHTML = copy.title;
-      if (descEl) descEl.innerHTML = copy.desc;
+      if (titleEl) titleEl.innerHTML = tr(copy.title);
+      if (descEl) descEl.innerHTML = tr(copy.desc);
     };
 
     syncBaWizardStepLabels = () => {
@@ -9767,11 +9816,12 @@
         "[data-ba-wizard-how-usd-custodian-desc]",
       );
       if (nameEl) {
-        nameEl.textContent = custodian.details.bankName;
+        nameEl.textContent = tr(custodian.details.bankName);
       }
       if (descEl) {
-        descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.";
+        descEl.textContent = tr(
+          "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.",
+        );
       }
     };
 
@@ -9784,11 +9834,12 @@
         "[data-ba-wizard-how-cayman-custodian-desc]",
       );
       if (nameEl) {
-        nameEl.textContent = custodian.details.bankName;
+        nameEl.textContent = tr(custodian.details.bankName);
       }
       if (descEl) {
-        descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.";
+        descEl.textContent = tr(
+          "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.",
+        );
       }
     };
 
@@ -10313,6 +10364,13 @@
       );
       if (panels.how?.classList.contains("is-open")) syncBaWizardHowContent();
     });
+    document.addEventListener("prototype-locale-changed", () => {
+      syncBaWizardIntroContent(
+        skipCurrencyStep ? selectedSetupCurrency : null,
+      );
+      syncBaWizardStepLabels();
+      if (panels.how?.classList.contains("is-open")) syncBaWizardHowContent();
+    });
     syncBaWizardHowContent();
 
     panels.flow
@@ -10521,14 +10579,14 @@
         ".link-twd-panel__custodian-name, .ba-wizard-explainer__custodian-name",
       )
       .forEach((el) => {
-        el.textContent = shortName;
+        el.textContent = tr(shortName);
       });
     document
       .querySelectorAll(
         ".link-twd-panel__custodian-desc, .ba-wizard-explainer__custodian-desc",
       )
       .forEach((el) => {
-        el.textContent = summary;
+        el.textContent = tr(summary);
       });
   };
   const custodianPanelApi = initCustodianPanel({

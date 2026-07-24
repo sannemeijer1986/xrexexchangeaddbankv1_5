@@ -275,11 +275,24 @@
     }
   };
 
+  const findCanonicalSourceForText = (text) => {
+    const current = String(text ?? '');
+    if (!current) return current;
+    for (const loc of SUPPORTED) {
+      if (loc === 'en') continue;
+      const table = translations[loc] || {};
+      for (const [source, localized] of Object.entries(table)) {
+        if (String(localized) === current) return source;
+      }
+    }
+    return current;
+  };
+
   const reverseLookupSource = (text, forLocale = locale) => {
     const current = String(text ?? '');
     if (!current) return current;
     const target = normalizeLocale(forLocale);
-    if (target === 'en') return current;
+    if (target === 'en') return findCanonicalSourceForText(current);
     const table = translations[target] || {};
     for (const [source, localized] of Object.entries(table)) {
       if (String(localized) === current) return source;
@@ -359,7 +372,6 @@
   const applyLocaleToTree = (root = document.body) => {
     if (!root) return;
     syncDocumentLang();
-    if (locale === 'en') return;
     isApplying = true;
     try {
       if (root instanceof Element) applyElementAttrLocale(root);
@@ -377,8 +389,18 @@
     }
   };
 
+  const stopLocaleObserver = () => {
+    if (!observer) return;
+    observer.disconnect();
+    observer = null;
+  };
+
   const ensureLocaleObserver = () => {
-    if (observer || locale === 'en') return;
+    if (locale === 'en') {
+      stopLocaleObserver();
+      return;
+    }
+    if (observer) return;
     initObserver();
   };
 
@@ -393,7 +415,11 @@
     if (locale === 'zh' && !wasZh) {
       await loadExternalZhTranslations();
     }
-    ensureLocaleObserver();
+    if (locale === 'en') {
+      stopLocaleObserver();
+    } else {
+      ensureLocaleObserver();
+    }
     applyLocaleToTree(document.body);
     document.dispatchEvent(new CustomEvent('prototype-locale-changed', { detail: { locale } }));
     // Second pass: catch any DOM updates main.js makes synchronously in response to the

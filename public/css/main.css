@@ -3204,6 +3204,9 @@ html[data-active-tab=wallet] .app-header__top {
   gap: 0;
   justify-content: center;
 }
+.ba-wizard-how .ba-wizard-explainer__steps-card--compact .ba-wizard-explainer__step-copy:has(.ba-wizard-explainer__step-subtitle) {
+  gap: 2px;
+}
 
 .ba-wizard-how .ba-wizard-pageheader {
   padding: 56px 16px 0;
@@ -3228,6 +3231,13 @@ html[data-active-tab=wallet] .app-header__top {
   font-weight: 400;
   line-height: 20px;
   color: #9b9c9c;
+}
+.ba-wizard-how p.ba-wizard-explainer__step-subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
 }
 .ba-wizard-how p.ba-wizard-how__custodian-heading {
   margin: 0;
@@ -3638,6 +3648,14 @@ html[data-active-tab=wallet] .app-header__top {
   font-weight: 400;
   line-height: 20px;
   color: #9b9c9c;
+}
+
+.ba-wizard-explainer__step-subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
 }
 
 .ba-wizard-explainer__step-divider {
@@ -19901,8 +19919,7 @@ div.currency-sheet__item-icon::before {
   margin-top: 4px;
 }
 
-.build-badge__section-row--version,
-.build-badge__section-row--language {
+.build-badge__section-row--version {
   display: none !important;
 }
 
