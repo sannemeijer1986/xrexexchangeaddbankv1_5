@@ -547,7 +547,7 @@
       });
       syncEmptyCardCopy("usd", {
         title: "Deposit and withdraw USD",
-        note: "Only KGI bank supported",
+        note: "KGI Bank only",
         btn: "Link USD bank account",
         noteHighlight: true,
         btnVariant: "secondary",
@@ -6144,12 +6144,12 @@
     const TWD_FIAT_SELECT_COPY = {
       add: {
         title: "TWD deposit",
-        lead: "Choose a bank account to deposit TWD from",
+        lead: "Select a linked bank account to deposit TWD from",
         ariaLabel: "TWD deposit",
       },
       send: {
         title: "TWD withdrawal",
-        lead: "Choose a bank account to withdraw TWD to",
+        lead: "Select a linked bank account to withdraw TWD to",
         ariaLabel: "TWD withdrawal",
       },
     };
@@ -6299,12 +6299,12 @@
     const USD_FIAT_SELECT_COPY = {
       add: {
         title: "USD deposit",
-        lead: "Choose which of your linked bank accounts you'll deposit USD from",
+        lead: "Select a linked bank account to deposit USD from",
         ariaLabel: "USD deposit",
       },
       send: {
         title: "USD withdrawal",
-        lead: "Choose a bank account to withdraw USD to",
+        lead: "Select a linked bank account to withdraw USD to",
         ariaLabel: "USD withdrawal",
       },
     };
@@ -9333,9 +9333,9 @@
       const bankName = isTwd ? custodian.listName : custodian.details.bankName;
       if (descBodyEl) {
         if (isTaiwan && isTwd) {
-          descBodyEl.textContent = `${bankName} isn't the bank you're linking, it's the custodian holding your ${currencyLabel} — `;
+          descBodyEl.textContent = `${bankName} isn't the bank you're linking — it's the custodian holding your ${currencyLabel}. `;
         } else if (isTaiwan) {
-          descBodyEl.textContent = `${bankName} is the custodian holding your ${currencyLabel}.`;
+          descBodyEl.textContent = `${bankName} is the custodian holding your ${currencyLabel} — not the bank you're linking.`;
         } else {
           descBodyEl.textContent = `This custodian holds your ${currencyLabel}. Deposits & withdrawals will go through it, with the limits below.`;
         }
@@ -9343,7 +9343,7 @@
       if (descHighlightEl) {
         if (isTaiwan && isTwd) {
           descHighlightEl.hidden = false;
-          descHighlightEl.textContent = "You can link most Taiwan bank accounts";
+          descHighlightEl.textContent = "You can link most Taiwan banks.";
         } else {
           descHighlightEl.hidden = true;
           descHighlightEl.textContent = "";
@@ -9554,8 +9554,8 @@
       });
       if (keepBtn) {
         keepBtn.textContent = hasChanged
-          ? `Use ${custodian.selectorName} as custodian`
-          : `Keep ${custodian.selectorName} as custodian`;
+          ? `Switch to ${custodian.selectorName}`
+          : `Stay with ${custodian.selectorName}`;
         keepBtn.classList.toggle("custodian-panel__keep--primary", hasChanged);
       }
       selectPanelApi.syncList?.();
@@ -9689,7 +9689,7 @@
       }
       if (descEl) {
         descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian where any TWD you deposit or have in XREX is held in trust.";
+          "The bank below isn't the bank you're linking — it's the custodian that holds your TWD on XREX in trust.";
       }
     };
 
@@ -9697,28 +9697,28 @@
       default: {
         title: "Link your bank account",
         desc:
-          "Use your own bank account to move TWD or USD in and out of XREX. It must be registered in your name.",
+          "Use a bank account in your name to deposit and withdraw TWD or USD on XREX.",
       },
       twd: {
         title: "Link your TWD bank account",
         desc:
-          "Use your own bank account to move TWD in and out of XREX. It must be registered in your name.",
+          "Use a bank account in your name to deposit and withdraw TWD on XREX.",
       },
       usd: {
         title:
-          'Link your USD bank account <span class="ba-wizard-intro__title-accent">(KGI Bank only)</span>',
+          'Link your KGI USD bank account<span class="ba-wizard-intro__title-accent"></span>',
         desc:
-          "Use your own KGI Bank account to move USD in and out of XREX. It must be registered in your name.",
+          "Use a KGI bank account in your name to deposit and withdraw USD on XREX.",
       },
       caymanMenu: {
         title: "Link your bank account",
         desc:
-          "This is the bank account you'll use to move USD in and out of XREX. Link an account you already have: It must be registered in your name.",
+          "Use a bank account in your name to deposit and withdraw USD on XREX.",
       },
       caymanUsd: {
         title: "Link your USD bank account",
         desc:
-          "Use your own bank account to move USD in and out of XREX. It must be registered in your name.",
+          "Use a bank account in your name to deposit and withdraw USD on XREX.",
       },
     };
 
@@ -9771,7 +9771,7 @@
       }
       if (descEl) {
         descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian where any USD you deposit or have in XREX is held in trust.";
+          "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.";
       }
     };
 
@@ -9788,7 +9788,7 @@
       }
       if (descEl) {
         descEl.textContent =
-          "The bank below isn't the bank you're linking — it's the custodian where any USD you deposit or have in XREX is held in trust.";
+          "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.";
       }
     };
 
@@ -9798,9 +9798,7 @@
       const howVariant = isCayman ? "usd-cayman" : selectedSetupCurrency;
       const titleEl = panels.how?.querySelector("[data-ba-wizard-how-title]");
       if (titleEl) {
-        titleEl.textContent = isTwd
-          ? "How linking your TWD bank account works"
-          : "How linking your USD bank account works";
+        titleEl.textContent = "How it works";
       }
       panels.how?.querySelectorAll("[data-ba-wizard-how-variant]").forEach((el) => {
         const variant = el.getAttribute("data-ba-wizard-how-variant");
