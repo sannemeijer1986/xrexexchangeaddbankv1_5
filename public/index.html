@@ -5059,6 +5059,35 @@
             </div>
         </div>
 
+        <!-- Figma 7907:30533 — Bank account under review bottom sheet -->
+        <div
+            class="currency-sheet bank-account-under-review-sheet"
+            data-bank-account-under-review-sheet
+            hidden
+            aria-modal="true"
+            role="dialog"
+            aria-label="Bank account under review"
+        >
+            <button class="currency-sheet__backdrop" type="button" data-bank-account-under-review-close aria-label="Close"></button>
+            <div class="currency-sheet__panel bank-account-under-review-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body bank-account-under-review-sheet__body">
+                    <div class="bank-account-under-review-sheet__content">
+                        <h2 class="bank-account-under-review-sheet__title" data-bank-account-under-review-title>Bank account under review</h2>
+                        <div class="bank-account-under-review-sheet__desc">
+                            <p class="bank-account-under-review-sheet__desc-body" data-bank-account-under-review-desc-body>You can deposit or withdraw with this linked bank account once it's approved.</p>
+                            <p class="bank-account-under-review-sheet__desc-note" data-bank-account-under-review-desc-highlight>Bank account verification takes 1–3 business days from the time you submitted.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="currency-sheet__footer">
+                    <button class="currency-sheet__cancel" type="button" data-bank-account-under-review-close>Understood</button>
+                </div>
+            </div>
+        </div>
+
         <section class="settings-page" data-settings-page hidden aria-label="Settings">
             <header class="settings-page__header">
                 <div class="settings-page__header-left">

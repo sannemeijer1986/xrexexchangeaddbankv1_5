@@ -150,6 +150,11 @@
     6: { label: "Verified", modifier: "verified" },
   };
 
+  const isBankAccountSubmitted = (currency) => {
+    const stateKey = currency === "twd" ? "twdBankAccount" : "usdBankAccount";
+    return (states[stateKey] ?? 1) === 2;
+  };
+
   const PROTOTYPE_CUSTODIAN_LABELS = {
     "kgi-active": "KGI Bank",
     "feb-active": "Far Eastern Bank",
@@ -6131,7 +6136,11 @@
     };
   };
 
-  const initTwdDepositFlow = ({ baWizardApi, showSnackbar = () => {} } = {}) => {
+  const initTwdDepositFlow = ({
+    baWizardApi,
+    showSnackbar = () => {},
+    openBankAccountUnderReviewSheet,
+  } = {}) => {
     const setupPanel = document.querySelector("[data-twd-deposit-setup]");
     const selectPanel = document.querySelector("[data-twd-deposit-select]");
     if (!setupPanel && !selectPanel) {
@@ -6263,7 +6272,13 @@
       ?.addEventListener("click", () => setPanelOpen(selectPanel, false));
     selectPanel
       ?.querySelector("[data-twd-deposit-bank]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+      ?.addEventListener("click", () => {
+        if (isBankAccountSubmitted("twd")) {
+          openBankAccountUnderReviewSheet?.();
+          return;
+        }
+        showSnackbar("Not in prototype");
+      });
 
     [setupPanel, selectPanel].forEach((panel) => {
       panel
@@ -6285,6 +6300,7 @@
   const initUsdDepositFlow = ({
     baWizardApi,
     showSnackbar = () => {},
+    openBankAccountUnderReviewSheet,
   } = {}) => {
     const setupPanel = document.querySelector("[data-usd-deposit-setup]");
     const selectPanel = document.querySelector("[data-usd-deposit-select]");
@@ -6458,7 +6474,13 @@
       });
     selectPanel
       ?.querySelector("[data-usd-deposit-bank]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+      ?.addEventListener("click", () => {
+        if (isBankAccountSubmitted("usd")) {
+          openBankAccountUnderReviewSheet?.();
+          return;
+        }
+        showSnackbar("Not in prototype");
+      });
     selectPanel
       ?.querySelector("[data-usd-deposit-add-bank]")
       ?.addEventListener("click", () => baWizardApi?.openForCurrency?.("usd"));
@@ -8009,7 +8031,72 @@
     refreshSelectPanelIfOpen: () => {},
   };
 
-  const initBankAccountsPanel = () => {
+  const initBankAccountUnderReviewSheet = () => {
+    const sheet = document.querySelector("[data-bank-account-under-review-sheet]");
+    if (!sheet) return { open: () => {}, close: () => {} };
+
+    const titleEl = sheet.querySelector("[data-bank-account-under-review-title]");
+    const bodyEl = sheet.querySelector("[data-bank-account-under-review-desc-body]");
+    const highlightEl = sheet.querySelector(
+      "[data-bank-account-under-review-desc-highlight]",
+    );
+    const closeButtons = sheet.querySelectorAll(
+      "[data-bank-account-under-review-close]",
+    );
+
+    const populate = () => {
+      const title = tr("Bank account under review");
+      if (titleEl) titleEl.textContent = title;
+      if (bodyEl) {
+        bodyEl.textContent = tr(
+          "You can deposit or withdraw with this linked bank account once it's approved.",
+        );
+      }
+      if (highlightEl) {
+        highlightEl.textContent = tr(
+          "Bank account verification takes 1–3 business days from the time you submitted.",
+        );
+      }
+      sheet.setAttribute("aria-label", title);
+      closeButtons.forEach((btn) => {
+        if (btn.classList.contains("currency-sheet__cancel")) {
+          btn.textContent = tr("Understood");
+        }
+      });
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        populate();
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+        return;
+      }
+      const sheetPanel = sheet.querySelector(".currency-sheet__panel");
+      sheet.classList.remove("is-open");
+      const onEnd = () => {
+        if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+        sheetPanel?.removeEventListener("transitionend", onEnd);
+      };
+      sheetPanel?.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 300);
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!sheet.classList.contains("is-open")) return;
+      populate();
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
+  };
+
+  const initBankAccountsPanel = ({ openBankAccountUnderReviewSheet } = {}) => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
     const container = document.querySelector(".phone-container");
     if (!panel) {
@@ -8026,6 +8113,10 @@
     const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
     const linkButtons = panel.querySelectorAll("[data-bank-accounts-link]");
     let snackbarTimeout = null;
+    const openSubmittedSheet =
+      typeof openBankAccountUnderReviewSheet === "function"
+        ? openBankAccountUnderReviewSheet
+        : () => {};
     let onLinkTwd = () => {};
     let onLinkUsd = () => {};
     let onOpenTwdCustodian = () => {};
@@ -8151,7 +8242,14 @@
     panel
       .querySelectorAll("[data-bank-accounts-item]")
       .forEach((button) => {
-        button.addEventListener("click", () => showSnackbar("Not in prototype"));
+        button.addEventListener("click", () => {
+          const currency = button.getAttribute("data-bank-accounts-item");
+          if (currency && isBankAccountSubmitted(currency)) {
+            openSubmittedSheet();
+            return;
+          }
+          showSnackbar("Not in prototype");
+        });
       });
     panel.querySelectorAll("[data-bank-accounts-edit]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -10596,7 +10694,11 @@
     };
   };
 
-  const bankAccountsApi = initBankAccountsPanel();
+  const bankAccountUnderReviewSheetApi = initBankAccountUnderReviewSheet();
+  const bankAccountsApi = initBankAccountsPanel({
+    openBankAccountUnderReviewSheet: () =>
+      bankAccountUnderReviewSheetApi.open(),
+  });
   const hidePanelInstant = (panel) => {
     if (!panel) return;
     panel.classList.add("is-instant");
@@ -10693,10 +10795,14 @@
   twdDepositApi = initTwdDepositFlow({
     baWizardApi,
     showSnackbar,
+    openBankAccountUnderReviewSheet: () =>
+      bankAccountUnderReviewSheetApi.open(),
   });
   usdDepositApi = initUsdDepositFlow({
     baWizardApi,
     showSnackbar,
+    openBankAccountUnderReviewSheet: () =>
+      bankAccountUnderReviewSheetApi.open(),
   });
   onAddSendTwdSelected = (mode) => twdDepositApi.openFromAddSend(mode);
   onAddSendUsdSelected = (mode) => usdDepositApi.openFromAddSend(mode);
