@@ -9187,6 +9187,33 @@
     return USD_CUSTODIANS[key] || USD_CUSTODIANS.kgi;
   };
 
+  const syncCustodianPanelIntro = ({
+    panel,
+    currency,
+    bodySelector,
+    highlightSelector,
+  }) => {
+    const introBodyEl = panel.querySelector(bodySelector);
+    const introHighlightEl = panel.querySelector(highlightSelector);
+    const isTwd = currency === "twd";
+
+    if (introBodyEl) {
+      introBodyEl.textContent = tr(
+        isTwd
+          ? "Your custodian holds your TWD in trust on XREX. "
+          : "Your custodian holds your USD in trust on XREX.",
+      );
+    }
+    if (introHighlightEl) {
+      introHighlightEl.hidden = false;
+      introHighlightEl.textContent = tr(
+        isTwd
+          ? "It's not your linked bank account."
+          : " It's not your linked bank account.",
+      );
+    }
+  };
+
   const initUsdCustodianPanel = ({ showSnackbar }) => {
     const panel = document.querySelector("[data-usd-custodian-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
@@ -9214,6 +9241,12 @@
       if (selectorNameEl) {
         selectorNameEl.textContent = tr(custodian.selectorName);
       }
+      syncCustodianPanelIntro({
+        panel,
+        currency: "usd",
+        bodySelector: "[data-usd-custodian-intro-body]",
+        highlightSelector: "[data-usd-custodian-intro-highlight]",
+      });
       Object.entries(custodian.details).forEach(([field, value]) => {
         if (!detailEls[field]) return;
         detailEls[field].textContent =
@@ -9259,6 +9292,10 @@
     applyContent();
     document.addEventListener("prototype-usd-custodian-change", applyContent);
     document.addEventListener("prototype-region-change", applyContent);
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open")) return;
+      applyContent();
+    });
 
     return {
       open: (opts) => setOpen(true, opts),
@@ -9626,9 +9663,16 @@
       const custodian = CUSTODIANS[state.previewKey] || CUSTODIANS.kgi;
       const hasChanged = state.previewKey !== state.persistedKey;
       const localizedSelectorName = tr(custodian.selectorName);
+      const localizedBankName = tr(custodian.listName);
       if (selectorIconEl) selectorIconEl.src = custodian.icon;
       if (selectorNameEl) selectorNameEl.textContent = localizedSelectorName;
       if (selectorCurrentEl) selectorCurrentEl.hidden = hasChanged;
+      syncCustodianPanelIntro({
+        panel,
+        currency: "twd",
+        bodySelector: "[data-custodian-intro-body]",
+        highlightSelector: "[data-custodian-intro-highlight]",
+      });
       Object.entries(custodian.details).forEach(([field, value]) => {
         if (!detailEls[field]) return;
         detailEls[field].textContent =
@@ -9636,11 +9680,11 @@
       });
       if (keepBtn) {
         keepBtn.textContent = hasChanged
-          ? tr("Switch to {custodianName}", {
+          ? tr("Use {custodianName} as custodian", {
               custodianName: localizedSelectorName,
             })
-          : tr("Stay with {custodianName}", {
-              custodianName: localizedSelectorName,
+          : tr("Keep {bankName} as custodian", {
+              bankName: localizedBankName,
             });
         keepBtn.classList.toggle("custodian-panel__keep--primary", hasChanged);
       }
