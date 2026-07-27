@@ -9469,11 +9469,14 @@
 
       if (titleEl) {
         if (isZh) {
-          titleEl.textContent = tr(
-            isTwd
-              ? "Your TWD is held in trust by {bankName} (custodian)"
-              : "Your USD is held in trust by {bankName} (custodian)",
-            { bankName: localizedBankName },
+          const titleTemplate = isTwd
+            ? "Your TWD is held in trust by {bankName} (custodian)"
+            : "Your USD is held in trust by {bankName} (custodian)";
+          const bankMarker = "{{BANK_NAME}}";
+          const titleText = tr(titleTemplate, { bankName: bankMarker });
+          titleEl.innerHTML = titleText.replace(
+            bankMarker,
+            `<span class="custodian-apply-sheet__title-accent">${localizedBankName}</span>`,
           );
         } else {
           titleEl.innerHTML = `${tr("Your {currencyLabel} is held in trust at", { currencyLabel })}<br /><span class="custodian-apply-sheet__title-accent">${localizedBankName}</span> ${tr("(custodian)")}`;
@@ -9488,29 +9491,21 @@
 
       if (descBodyEl) {
         if (isTaiwan && isTwd) {
-          if (isZh) {
-            descBodyEl.textContent = tr(
-              "{bankName} holds your TWD on XREX. Not the bank you're linking — you can link most Taiwan banks.",
-              { bankName: localizedBankName },
-            );
-          } else {
-            descBodyEl.textContent = tr(
-              "{bankName} is the custodian holding your {currencyLabel} on XREX. ",
-              { bankName: localizedBankName, currencyLabel },
-            );
-          }
+          descBodyEl.textContent = tr(
+            isZh
+              ? "{bankName} holds your TWD on XREX. "
+              : "{bankName} is the custodian holding your {currencyLabel} on XREX. ",
+            isZh
+              ? { bankName: localizedBankName }
+              : { bankName: localizedBankName, currencyLabel },
+          );
         } else if (isTaiwan) {
-          if (isZh) {
-            descBodyEl.textContent = tr(
-              "{bankName} holds your USD on XREX. Same bank — but separate from the bank account you're linking.",
-              { bankName: localizedBankName },
-            );
-          } else {
-            descBodyEl.textContent = tr(
-              "{bankName} is the custodian holding your USD on XREX. ",
-              { bankName: localizedBankName },
-            );
-          }
+          descBodyEl.textContent = tr(
+            isZh
+              ? "{bankName} holds your USD on XREX. "
+              : "{bankName} is the custodian holding your USD on XREX. ",
+            { bankName: localizedBankName },
+          );
         } else {
           descBodyEl.textContent = tr(
             "This custodian holds your {currencyLabel}. Deposits & withdrawals will go through it, with the limits below.",
@@ -9519,12 +9514,12 @@
         }
       }
       if (descHighlightEl) {
-        if (isTaiwan && isTwd && !isZh) {
+        if (isTaiwan && isTwd) {
           descHighlightEl.hidden = false;
           descHighlightEl.textContent = tr(
             "Not the bank you're linking — you can link most Taiwan banks.",
           );
-        } else if (isTaiwan && !isTwd && !isZh) {
+        } else if (isTaiwan && !isTwd) {
           descHighlightEl.hidden = false;
           descHighlightEl.textContent = tr(
             "Same bank — but separate from the bank account you're linking.",

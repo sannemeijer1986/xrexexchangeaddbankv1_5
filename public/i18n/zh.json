@@ -686,6 +686,8 @@
   "Where your USD will be held": "您的美元存放位置",
   "The bank below isn't the bank you're linking — it's the custodian that holds your TWD on XREX in trust.": "下方銀行並非您要綁定的銀行，而是在 XREX 上以信託方式保管您 TWD 的託管銀行。",
   "The bank below isn't the bank you're linking — it's the custodian that holds your USD on XREX in trust.": "下方銀行並非您要綁定的銀行，而是在 XREX 上以信託方式保管您 USD 的託管銀行。",
+  "{bankName} holds your TWD on XREX. ": "{bankName}保管您在 XREX 的新臺幣。",
+  "{bankName} holds your USD on XREX. ": "{bankName}保管您在 XREX 的美元。",
   "{bankName} is the custodian holding your {currencyLabel} on XREX. ": "{bankName}為託管銀行,保管您在 XREX 的{currencyLabel}。",
   "{bankName} holds your TWD on XREX. Not the bank you're linking — you can link most Taiwan banks.": "{bankName}保管您在 XREX 的新臺幣。非您要綁定的銀行 — 您可綁定大多數台灣銀行。",
   "Not the bank you're linking — you can link most Taiwan banks.": "非您要綁定的銀行 — 您可綁定大多數台灣銀行。",
