@@ -9319,14 +9319,6 @@
       return value.endsWith(suffix) ? value.slice(0, -suffix.length) : value;
     };
 
-    const getLocalizedBankShortName = (name, localeIsZh) => {
-      const localized = tr(name);
-      if (localeIsZh && localized.endsWith("銀行")) {
-        return localized.slice(0, -2);
-      }
-      return localized;
-    };
-
     const populate = (currency) => {
       currentCurrency = currency;
       const isTwd = currency === "twd";
@@ -9363,11 +9355,8 @@
         if (isTaiwan && isTwd) {
           if (isZh) {
             descBodyEl.textContent = tr(
-              "{bankName} holds your TWD on XREX. {bankShortName} is not the bank you're linking — you can link most Taiwan banks.",
-              {
-                bankName: localizedBankName,
-                bankShortName: getLocalizedBankShortName(bankName, isZh),
-              },
+              "{bankName} holds your TWD on XREX. Not the bank you're linking — you can link most Taiwan banks.",
+              { bankName: localizedBankName },
             );
           } else {
             descBodyEl.textContent = tr(
@@ -9378,7 +9367,7 @@
         } else if (isTaiwan) {
           if (isZh) {
             descBodyEl.textContent = tr(
-              "{bankName} holds your USD on XREX. It's the same bank, but separate from your linked account.",
+              "{bankName} holds your USD on XREX. Same bank — but separate from the bank account you're linking.",
               { bankName: localizedBankName },
             );
           } else {
@@ -9398,12 +9387,12 @@
         if (isTaiwan && isTwd && !isZh) {
           descHighlightEl.hidden = false;
           descHighlightEl.textContent = tr(
-            "This isn't the bank account you're linking — you can link most Taiwan banks.",
+            "Not the bank you're linking — you can link most Taiwan banks.",
           );
         } else if (isTaiwan && !isTwd && !isZh) {
           descHighlightEl.hidden = false;
           descHighlightEl.textContent = tr(
-            "It's the same bank — but separate from the bank account you're linking.",
+            "Same bank — but separate from the bank account you're linking.",
           );
         } else {
           descHighlightEl.hidden = true;
