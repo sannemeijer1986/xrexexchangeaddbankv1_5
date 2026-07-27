@@ -9270,16 +9270,18 @@
     const sheet = document.querySelector("[data-custodian-apply-sheet]");
     if (!sheet) return { open: () => {} };
 
-    const titleCurrencyEl = sheet.querySelector(
-      "[data-custodian-apply-currency-label]",
-    );
-    const custodianNameEl = sheet.querySelector(
-      "[data-custodian-apply-custodian-name]",
-    );
+    const titleEl = sheet.querySelector("[data-custodian-apply-title]");
     const descBodyEl = sheet.querySelector("[data-custodian-apply-desc-body]");
     const descHighlightEl = sheet.querySelector(
       "[data-custodian-apply-desc-highlight]",
     );
+    const limitsHeadingEl = sheet.querySelector(
+      "[data-custodian-apply-limits-heading]",
+    );
+    const footnoteEl = sheet.querySelector(
+      "[data-custodian-apply-limits-footnote]",
+    );
+    const backBtnEl = sheet.querySelector("[data-custodian-apply-back]");
     const depositColEl = sheet.querySelector(
       "[data-custodian-apply-deposit-col-label]",
     );
@@ -9317,6 +9319,14 @@
       return value.endsWith(suffix) ? value.slice(0, -suffix.length) : value;
     };
 
+    const getLocalizedBankShortName = (name, localeIsZh) => {
+      const localized = tr(name);
+      if (localeIsZh && localized.endsWith("銀行")) {
+        return localized.slice(0, -2);
+      }
+      return localized;
+    };
+
     const populate = (currency) => {
       currentCurrency = currency;
       const isTwd = currency === "twd";
@@ -9326,12 +9336,21 @@
         : getUsdCustodian();
       const { details } = custodian;
       const isTaiwan = getPrototypeRegion() === "taiwan";
+      const isZh = (window.I18N?.getLocale?.() || "en") === "zh";
       const bankName = isTwd ? custodian.listName : custodian.details.bankName;
       const localizedBankName = tr(bankName);
 
-      if (titleCurrencyEl) titleCurrencyEl.textContent = currencyLabel;
-      if (custodianNameEl) {
-        custodianNameEl.textContent = localizedBankName;
+      if (titleEl) {
+        if (isZh) {
+          titleEl.textContent = tr(
+            isTwd
+              ? "Your TWD is held in trust by {bankName} (custodian)"
+              : "Your USD is held in trust by {bankName} (custodian)",
+            { bankName: localizedBankName },
+          );
+        } else {
+          titleEl.innerHTML = `${tr("Your {currencyLabel} is held in trust at", { currencyLabel })}<br /><span class="custodian-apply-sheet__title-accent">${localizedBankName}</span> ${tr("(custodian)")}`;
+        }
       }
       if (depositColEl) {
         depositColEl.textContent = tr("Deposit {currencyLabel}", { currencyLabel });
@@ -9342,15 +9361,32 @@
 
       if (descBodyEl) {
         if (isTaiwan && isTwd) {
-          descBodyEl.textContent = tr(
-            "{bankName} isn't the bank you're linking — it's the custodian holding your {currencyLabel}. ",
-            { bankName: localizedBankName, currencyLabel },
-          );
+          if (isZh) {
+            descBodyEl.textContent = tr(
+              "{bankName} holds your TWD on XREX. {bankShortName} is not the bank you're linking — you can link most Taiwan banks.",
+              {
+                bankName: localizedBankName,
+                bankShortName: getLocalizedBankShortName(bankName, isZh),
+              },
+            );
+          } else {
+            descBodyEl.textContent = tr(
+              "{bankName} is the custodian holding your {currencyLabel} on XREX. ",
+              { bankName: localizedBankName, currencyLabel },
+            );
+          }
         } else if (isTaiwan) {
-          descBodyEl.textContent = tr(
-            "{bankName} is the custodian holding your {currencyLabel} — not the bank you're linking.",
-            { bankName: localizedBankName, currencyLabel },
-          );
+          if (isZh) {
+            descBodyEl.textContent = tr(
+              "{bankName} holds your USD on XREX. It's the same bank, but separate from your linked account.",
+              { bankName: localizedBankName },
+            );
+          } else {
+            descBodyEl.textContent = tr(
+              "{bankName} is the custodian holding your USD on XREX. ",
+              { bankName: localizedBankName },
+            );
+          }
         } else {
           descBodyEl.textContent = tr(
             "This custodian holds your {currencyLabel}. Deposits & withdrawals will go through it, with the limits below.",
@@ -9359,13 +9395,30 @@
         }
       }
       if (descHighlightEl) {
-        if (isTaiwan && isTwd) {
+        if (isTaiwan && isTwd && !isZh) {
           descHighlightEl.hidden = false;
-          descHighlightEl.textContent = tr("You can link most Taiwan banks.");
+          descHighlightEl.textContent = tr(
+            "This isn't the bank account you're linking — you can link most Taiwan banks.",
+          );
+        } else if (isTaiwan && !isTwd && !isZh) {
+          descHighlightEl.hidden = false;
+          descHighlightEl.textContent = tr(
+            "It's the same bank — but separate from the bank account you're linking.",
+          );
         } else {
           descHighlightEl.hidden = true;
           descHighlightEl.textContent = "";
         }
+      }
+
+      if (limitsHeadingEl) {
+        limitsHeadingEl.textContent = tr("Starting limits · First 31 days");
+      }
+      if (footnoteEl) {
+        footnoteEl.textContent = tr("Standard limits apply after 31 days");
+      }
+      if (backBtnEl) {
+        backBtnEl.textContent = tr("Back");
       }
 
       if (limitEls.depositSingle) {
