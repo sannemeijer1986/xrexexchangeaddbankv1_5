@@ -8066,7 +8066,7 @@
     const identity = states.identity ?? 1;
     const questionnaire = states.questionnaire ?? 1;
     const questionnaireMode = getQuestionnaireMode();
-    const processingLabel = tr("Processing");
+    const submittedLabel = tr("Submitted");
     const completedLabel = tr("Completed");
 
     const resetItemState = (item, defaultIcon) => {
@@ -8115,7 +8115,7 @@
       if (iconWrap)
         iconWrap.classList.add("setup-checklist__item-icon--transparent");
       if (status) {
-        status.textContent = processingLabel;
+        status.textContent = submittedLabel;
         status.classList.remove(
           "setup-checklist__item-status-label--success",
           "setup-checklist__item-status-label--warning",
@@ -8209,7 +8209,7 @@
       }
       if (status) {
         if (isBankProcessing) {
-          status.textContent = processingLabel;
+          status.textContent = submittedLabel;
           status.classList.remove(
             "setup-checklist__item-status-label--success",
             "setup-checklist__item-status-label--warning",
@@ -8489,7 +8489,7 @@
   const initSetupKycLocale = () => {
     document.addEventListener("prototype-locale-changed", syncSetupKycUi);
   };
-  const initChecklistPanel = () => {
+  const initChecklistPanel = ({ baWizardApi } = {}) => {
     const panel = document.querySelector("[data-setup-checklist]");
     const container = document.querySelector(".phone-container");
     if (!panel) return;
@@ -8520,6 +8520,22 @@
     };
 
     const showNotInPrototype = () => showSnackbar("Not in prototype");
+
+    const shouldOpenBankWizardFromChecklist = () => {
+      const bank = getEffectiveBankState();
+      const basic = states.basic ?? 1;
+      const identity = states.identity ?? 1;
+      return basic >= 2 && identity >= 2 && bank === 1;
+    };
+
+    const openBankWizardFromChecklist = () => {
+      if (!shouldOpenBankWizardFromChecklist()) {
+        showNotInPrototype();
+        return;
+      }
+      setOpen(false);
+      setTimeout(() => baWizardApi?.openFromMenu?.(), 360);
+    };
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
@@ -8579,13 +8595,36 @@
 
     panel
       .querySelectorAll(
-        "[data-checklist-support], [data-checklist-cs], [data-checklist-cs-learn], [data-checklist-cta], [data-checklist-edd-continue]",
+        "[data-checklist-support], [data-checklist-cs], [data-checklist-cs-learn], [data-checklist-edd-continue]",
       )
       .forEach((el) => {
         el.addEventListener("click", (event) => {
           event.preventDefault();
           showNotInPrototype();
         });
+      });
+
+    panel.querySelector("[data-checklist-cta]")?.addEventListener("click", (event) => {
+      event.preventDefault();
+      openBankWizardFromChecklist();
+    });
+
+    panel.querySelectorAll("[data-checklist-item-action]").forEach((item) => {
+      item.addEventListener("click", (event) => {
+        if (item.dataset.nonclickable === "true") return;
+        if (item.getAttribute("data-checklist-item") !== "bank") return;
+        if (event.target.closest(".setup-checklist__item-secondary-btn")) return;
+        if (event.target.closest(".setup-checklist__item-action")) return;
+        openBankWizardFromChecklist();
+      });
+    });
+
+    panel
+      .querySelector('[data-checklist-item="bank"] [data-checklist-action]')
+      ?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openBankWizardFromChecklist();
       });
   };
 
@@ -11357,7 +11396,7 @@
       } else {
         skipCurrencyStep = false;
       }
-      syncBaWizardIntroContent();
+      syncBaWizardIntroContent(getPrototypeRegion() === "cayman" ? "usd" : null);
       setPanelOpen(panels.intro, true);
       setPhoneShellOpen(true);
     };
@@ -19109,7 +19148,7 @@
   });
 
   initSetupKycLocale();
-  initChecklistPanel();
+  initChecklistPanel({ baWizardApi });
   initLimitsPanel();
   initSettingsPage();
   initSupportGuidePage();
