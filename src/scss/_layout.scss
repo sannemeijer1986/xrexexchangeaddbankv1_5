@@ -5049,6 +5049,139 @@ html[data-active-tab="wallet"] {
   }
 }
 
+// Figma 7921:27205 — Bank account resubmission (issues / state 4)
+.twd-bank-details-panel.is-resubmit-mode,
+.usd-bank-details-panel.is-resubmit-mode {
+  .ba-wizard-details__onboarding {
+    display: none;
+  }
+}
+
+.bank-resubmit-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 0 0;
+}
+
+.bank-resubmit-intro__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bank-resubmit-intro__label {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
+}
+
+.bank-resubmit-intro__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.bank-resubmit-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  line-height: normal;
+}
+
+.bank-resubmit-alert__icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bank-resubmit-alert__text {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
+}
+
+.bank-resubmit-section-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bank-resubmit-section-reason {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
+}
+
+// Beat `.phone-container p` from _base.scss for bank resubmit copy.
+.phone-container p.bank-resubmit-intro__label {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
+}
+
+.phone-container p.bank-resubmit-alert__text,
+.phone-container p.bank-resubmit-section-reason {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
+}
+
+.bank-resubmit-footer {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.bank-resubmit-footer__buttons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.bank-resubmit-delete {
+  margin: 0;
+  padding: 0 0 16px;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #eb5347;
+  text-align: center;
+  cursor: pointer;
+}
+
+.bank-resubmit-delete[hidden] {
+  display: none !important;
+}
+
+.bank-resubmit-section-reason[hidden] {
+  display: none !important;
+}
+
+.bank-resubmit-intro[hidden] {
+  display: none !important;
+}
+
 .usd-bank-details-panel__bank-icon-wrap {
   width: 32px;
   height: 32px;

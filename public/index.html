@@ -4616,14 +4616,27 @@
                 </button>
             </header>
             <div class="twd-bank-details-panel__body">
-                <div class="ba-wizard-details__onboarding">
+                <div class="bank-resubmit-intro" data-bank-resubmit-intro hidden>
+                    <div class="bank-resubmit-intro__heading">
+                        <p class="bank-resubmit-intro__label">Resubmission</p>
+                        <h2 class="bank-resubmit-intro__title" data-bank-resubmit-title>Provide your TWD bank account details</h2>
+                    </div>
+                    <div class="bank-resubmit-alert" data-bank-resubmit-alert>
+                        <img class="bank-resubmit-alert__icon" src="assets/icon_warning.svg" alt="" width="16" height="16" aria-hidden="true" />
+                        <p class="bank-resubmit-alert__text" data-bank-resubmit-alert-text>Some of your bank details couldn't be verified: {ResubmitReason}. Please review and resubmit.</p>
+                    </div>
+                </div>
+                <div class="ba-wizard-details__onboarding" data-bank-details-onboarding>
                     <p class="ba-wizard-how__step-label" data-bank-details-step-label>Step 3 of 3</p>
                     <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your TWD bank account details</h2>
                 </div>
                 <div class="twd-bank-details-panel__section">
-                    <div class="twd-bank-details-panel__section-head">
-                        <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
-                        <span class="twd-bank-details-panel__section-note">Must be your account</span>
+                    <div class="bank-resubmit-section-intro">
+                        <div class="twd-bank-details-panel__section-head">
+                            <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                            <span class="twd-bank-details-panel__section-note">Must be your account</span>
+                        </div>
+                        <p class="bank-resubmit-section-reason" data-bank-resubmit-bank-reason hidden>{CaseBankAccountDetailsReason}</p>
                     </div>
                     <button class="twd-bank-details-panel__selector" type="button" data-twd-bank-details-bank aria-label="Select bank">
                         <span class="twd-bank-details-panel__selector-value is-placeholder" data-twd-bank-details-bank-value>Select bank</span>
@@ -4648,7 +4661,10 @@
                 </div>
                 <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
                 <div class="twd-bank-details-panel__section">
-                    <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                    <div class="bank-resubmit-section-intro">
+                        <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                        <p class="bank-resubmit-section-reason" data-bank-resubmit-holder-reason hidden>{CaseAccountHolderInfoReason}</p>
+                    </div>
                     <label class="twd-bank-details-panel__field">
                         <span class="twd-bank-details-panel__field-label">Holder&rsquo;s Chinese name</span>
                         <span class="twd-bank-details-panel__input-wrap">
@@ -4669,9 +4685,12 @@
                     </button>
                 </div>
             </div>
-            <footer class="ba-wizard-how__footer">
-                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-twd-bank-details-back>Back</button>
-                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-twd-bank-details-submit disabled>Submit</button>
+            <footer class="ba-wizard-how__footer bank-resubmit-footer">
+                <div class="bank-resubmit-footer__buttons">
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-twd-bank-details-back>Back</button>
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-twd-bank-details-submit disabled>Submit</button>
+                </div>
+                <button class="bank-resubmit-delete" type="button" data-bank-resubmit-delete hidden>Delete account</button>
             </footer>
             <div class="twd-bank-details-panel__loader plan-submit-loader" data-twd-bank-details-loader hidden>
                 <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
@@ -4691,15 +4710,28 @@
                 </button>
             </header>
             <div class="twd-bank-details-panel__body">
-                <div class="ba-wizard-details__onboarding">
+                <div class="bank-resubmit-intro" data-bank-resubmit-intro hidden>
+                    <div class="bank-resubmit-intro__heading">
+                        <p class="bank-resubmit-intro__label">Resubmission</p>
+                        <h2 class="bank-resubmit-intro__title" data-bank-resubmit-title>Provide your USD bank account details</h2>
+                    </div>
+                    <div class="bank-resubmit-alert" data-bank-resubmit-alert>
+                        <img class="bank-resubmit-alert__icon" src="assets/icon_warning.svg" alt="" width="16" height="16" aria-hidden="true" />
+                        <p class="bank-resubmit-alert__text" data-bank-resubmit-alert-text>Some of your bank details couldn't be verified: {ResubmitReason}. Please review and resubmit.</p>
+                    </div>
+                </div>
+                <div class="ba-wizard-details__onboarding" data-bank-details-onboarding>
                     <p class="ba-wizard-how__step-label" data-bank-details-step-label>Step 3 of 3</p>
                     <h2 class="ba-wizard-how__title" data-bank-details-setup-title>Provide your USD bank account details</h2>
                 </div>
                 <div data-usd-bank-details-variant="taiwan">
                     <div class="twd-bank-details-panel__section">
-                        <div class="twd-bank-details-panel__section-head">
-                            <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
-                            <span class="twd-bank-details-panel__section-note">Must be your account</span>
+                        <div class="bank-resubmit-section-intro">
+                            <div class="twd-bank-details-panel__section-head">
+                                <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                                <span class="twd-bank-details-panel__section-note">Must be your account</span>
+                            </div>
+                            <p class="bank-resubmit-section-reason" data-bank-resubmit-bank-reason hidden>{CaseBankAccountDetailsReason}</p>
                         </div>
                         <div class="twd-bank-details-panel__selector twd-bank-details-panel__selector--locked" aria-disabled="true">
                             <span class="usd-bank-details-panel__bank-icon-wrap" aria-hidden="true">
@@ -4723,7 +4755,10 @@
                     </div>
                     <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
                     <div class="twd-bank-details-panel__section">
-                        <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                        <div class="bank-resubmit-section-intro">
+                            <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                            <p class="bank-resubmit-section-reason" data-bank-resubmit-holder-reason hidden>{CaseAccountHolderInfoReason}</p>
+                        </div>
                         <label class="twd-bank-details-panel__field">
                             <span class="twd-bank-details-panel__field-label">Holder&rsquo;s Chinese name</span>
                             <span class="twd-bank-details-panel__input-wrap">
@@ -4747,9 +4782,12 @@
                 <div data-usd-bank-details-variant="cayman" hidden>
                     <div class="usd-bank-details-panel__cayman-form">
                         <div class="twd-bank-details-panel__section usd-bank-details-panel__section">
-                            <div class="twd-bank-details-panel__section-head">
-                                <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
-                                <span class="twd-bank-details-panel__section-note">Must be your account</span>
+                            <div class="bank-resubmit-section-intro">
+                                <div class="twd-bank-details-panel__section-head">
+                                    <h3 class="twd-bank-details-panel__section-title">Your bank account</h3>
+                                    <span class="twd-bank-details-panel__section-note">Must be your account</span>
+                                </div>
+                                <p class="bank-resubmit-section-reason" data-bank-resubmit-bank-reason hidden>{CaseBankAccountDetailsReason}</p>
                             </div>
                             <button class="usd-bank-details-panel__picker" type="button" data-usd-cayman-bank-add aria-label="Add bank details">
                                 <span class="usd-bank-details-panel__picker-value is-placeholder" data-usd-cayman-bank-picker-value>Add bank details</span>
@@ -4771,7 +4809,10 @@
                         </div>
                         <div class="twd-bank-details-panel__section-divider" aria-hidden="true"></div>
                         <div class="twd-bank-details-panel__section usd-bank-details-panel__section">
-                            <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                            <div class="bank-resubmit-section-intro">
+                                <h3 class="twd-bank-details-panel__section-title">Account holder</h3>
+                                <p class="bank-resubmit-section-reason" data-bank-resubmit-holder-reason hidden>{CaseAccountHolderInfoReason}</p>
+                            </div>
                             <div class="usd-bank-details-panel__field-stack">
                                 <span class="twd-bank-details-panel__field-label">Bank account holder name</span>
                                 <button class="usd-bank-details-panel__picker" type="button" data-usd-cayman-holder-add aria-label="Add bank account holder name">
@@ -4818,9 +4859,12 @@
                     </div>
                 </div>
             </div>
-            <footer class="ba-wizard-how__footer">
-                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-usd-bank-details-back>Back</button>
-                <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-usd-bank-details-submit disabled>Submit</button>
+            <footer class="ba-wizard-how__footer bank-resubmit-footer">
+                <div class="bank-resubmit-footer__buttons">
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--secondary" type="button" data-usd-bank-details-back>Back</button>
+                    <button class="twd-bank-details-panel__btn twd-bank-details-panel__btn--primary" type="button" data-usd-bank-details-submit disabled>Submit</button>
+                </div>
+                <button class="bank-resubmit-delete" type="button" data-bank-resubmit-delete hidden>Delete account</button>
             </footer>
             <div class="twd-bank-details-panel__loader plan-submit-loader" data-usd-bank-details-loader hidden>
                 <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>

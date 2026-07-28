@@ -209,6 +209,33 @@
     return state === 3 || state === 6;
   };
 
+  const isBankAccountIssues = (currency) => getBankAccountState(currency) === 4;
+
+  let openBankResubmit = () => {};
+
+  const handleLinkedBankItemClick = ({
+    currency,
+    source,
+    listItem,
+    showSnackbar,
+    openDetails,
+    openUnderReview,
+  }) => {
+    if (isBankAccountSubmitted(currency)) {
+      openUnderReview?.();
+      return;
+    }
+    if (isBankAccountIssues(currency)) {
+      openBankResubmit({ currency, source });
+      return;
+    }
+    if (canOpenBankAccountDetails(currency)) {
+      openDetails?.({ currency, listItem });
+      return;
+    }
+    showSnackbar?.("Not in prototype");
+  };
+
   const canOpenBankAccountDetails = (currency) =>
     isBankAccountSubmitted(currency) || isBankAccountVerified(currency);
 
@@ -231,6 +258,12 @@
     if (twd === 4 || usd === 4) return 4;
     if (twd === 5 || usd === 5) return 5;
     return 1;
+  };
+
+  const shouldOpenBankWizardIntro = () => {
+    const basic = states.basic ?? 1;
+    const identity = states.identity ?? 1;
+    return basic >= 2 && identity >= 2 && getEffectiveBankState() === 1;
   };
 
   const getQuestionnaireMode = () => ({
@@ -6375,11 +6408,12 @@
     selectPanel
       ?.querySelector("[data-twd-deposit-bank]")
       ?.addEventListener("click", () => {
-        if (isBankAccountSubmitted("twd")) {
-          openBankAccountUnderReviewSheet?.();
-          return;
-        }
-        showSnackbar("Not in prototype");
+        handleLinkedBankItemClick({
+          currency: "twd",
+          source: "deposit-select",
+          showSnackbar,
+          openUnderReview: () => openBankAccountUnderReviewSheet?.(),
+        });
       });
 
     [setupPanel, selectPanel].forEach((panel) => {
@@ -6577,11 +6611,12 @@
     selectPanel
       ?.querySelector("[data-usd-deposit-bank]")
       ?.addEventListener("click", () => {
-        if (isBankAccountSubmitted("usd")) {
-          openBankAccountUnderReviewSheet?.();
-          return;
-        }
-        showSnackbar("Not in prototype");
+        handleLinkedBankItemClick({
+          currency: "usd",
+          source: "deposit-select",
+          showSnackbar,
+          openUnderReview: () => openBankAccountUnderReviewSheet?.(),
+        });
       });
     selectPanel
       ?.querySelector("[data-usd-deposit-add-bank]")
@@ -8533,12 +8568,7 @@
 
     const showNotInPrototype = () => showSnackbar("Not in prototype");
 
-    const shouldOpenBankWizardFromChecklist = () => {
-      const bank = getEffectiveBankState();
-      const basic = states.basic ?? 1;
-      const identity = states.identity ?? 1;
-      return basic >= 2 && identity >= 2 && bank === 1;
-    };
+    const shouldOpenBankWizardFromChecklist = () => shouldOpenBankWizardIntro();
 
     const openBankWizardFromChecklist = () => {
       if (!shouldOpenBankWizardFromChecklist()) {
@@ -8592,12 +8622,24 @@
 
     openButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        if (container && container.classList.contains("is-menu-open")) {
-          container.classList.remove("is-menu-open");
-          setTimeout(() => setOpen(true), 220);
-        } else {
-          setOpen(true);
+        const openChecklist = () => {
+          if (container && container.classList.contains("is-menu-open")) {
+            container.classList.remove("is-menu-open");
+            setTimeout(() => setOpen(true), 220);
+          } else {
+            setOpen(true);
+          }
+        };
+
+        if (
+          button.matches("[data-setup-btn-primary]") &&
+          shouldOpenBankWizardIntro()
+        ) {
+          baWizardApi?.openFromMenu?.();
+          return;
         }
+
+        openChecklist();
       });
     });
     closeButtons.forEach((button) => {
@@ -9335,11 +9377,13 @@
       .forEach((button) => {
         button.addEventListener("click", () => {
           const currency = button.getAttribute("data-bank-accounts-item");
-          if (currency && canOpenBankAccountDetails(currency)) {
-            openDetails({ currency, listItem: button });
-            return;
-          }
-          showSnackbar("Not in prototype");
+          handleLinkedBankItemClick({
+            currency,
+            source: "bank-accounts",
+            listItem: button,
+            showSnackbar,
+            openDetails,
+          });
         });
       });
     panel.querySelectorAll("[data-bank-accounts-edit]").forEach((button) => {
@@ -9473,9 +9517,22 @@
     };
   };
 
-  const initTwdBankDetailsPanel = ({ showSnackbar, onSubmitComplete }) => {
+  const initTwdBankDetailsPanel = ({
+    showSnackbar,
+    onSubmitComplete,
+    openDeleteBankAccountSheet,
+  } = {}) => {
     const panel = document.querySelector("[data-twd-bank-details-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
+
+    const onboardingEl = panel.querySelector("[data-bank-details-onboarding]");
+    const resubmitIntroEl = panel.querySelector("[data-bank-resubmit-intro]");
+    const resubmitTitleEl = panel.querySelector("[data-bank-resubmit-title]");
+    const resubmitAlertTextEl = panel.querySelector("[data-bank-resubmit-alert-text]");
+    const bankReasonEl = panel.querySelector("[data-bank-resubmit-bank-reason]");
+    const holderReasonEl = panel.querySelector("[data-bank-resubmit-holder-reason]");
+    const deleteBtn = panel.querySelector("[data-bank-resubmit-delete]");
+    const resubmitLabelEl = panel.querySelector(".bank-resubmit-intro__label");
 
     const bankBtn = panel.querySelector("[data-twd-bank-details-bank]");
     const branchBtn = panel.querySelector("[data-twd-bank-details-branch]");
@@ -9524,6 +9581,66 @@
     };
     let submitGeneration = 0;
     const SUBMIT_LOADER_MS = 1600;
+    let isResubmitMode = false;
+    let resubmitSnapshot = null;
+
+    const captureResubmitSnapshot = () => ({
+      bankSelected: state.bankSelected,
+      branchSelected: state.branchSelected,
+      bankLabel: bankValueEl?.textContent?.trim() || "",
+      branchLabel: branchValueEl?.textContent?.trim() || "",
+      fieldValues: textInputs.filter(Boolean).map((input) => input.value),
+      consents: { ...state.consents },
+    });
+
+    const hasResubmitChanges = () => {
+      if (!isResubmitMode || !resubmitSnapshot) return false;
+      const snap = resubmitSnapshot;
+      if (state.bankSelected !== snap.bankSelected) return true;
+      if (state.branchSelected !== snap.branchSelected) return true;
+      if ((bankValueEl?.textContent?.trim() || "") !== snap.bankLabel) return true;
+      if ((branchValueEl?.textContent?.trim() || "") !== snap.branchLabel) {
+        return true;
+      }
+      const inputs = textInputs.filter(Boolean);
+      for (let i = 0; i < inputs.length; i += 1) {
+        if (inputs[i].value !== (snap.fieldValues[i] ?? "")) return true;
+      }
+      for (const key of Object.keys(state.consents)) {
+        if (state.consents[key] !== snap.consents[key]) return true;
+      }
+      return false;
+    };
+
+    const syncResubmitCopy = () => {
+      if (resubmitTitleEl) resubmitTitleEl.textContent = tr(DEFAULT_TITLE);
+      if (resubmitAlertTextEl) {
+        resubmitAlertTextEl.textContent = tr(
+          "Some of your bank details couldn't be verified: {ResubmitReason}. Please review and resubmit.",
+        );
+      }
+      if (bankReasonEl) {
+        bankReasonEl.textContent = tr("{CaseBankAccountDetailsReason}");
+      }
+      if (holderReasonEl) {
+        holderReasonEl.textContent = tr("{CaseAccountHolderInfoReason}");
+      }
+      if (resubmitLabelEl) resubmitLabelEl.textContent = tr("Resubmission");
+      if (deleteBtn) deleteBtn.textContent = tr("Delete account");
+    };
+
+    const setResubmitMode = (enabled) => {
+      isResubmitMode = enabled;
+      if (!enabled) resubmitSnapshot = null;
+      panel.classList.toggle("is-resubmit-mode", enabled);
+      if (onboardingEl) onboardingEl.hidden = enabled;
+      if (resubmitIntroEl) resubmitIntroEl.hidden = !enabled;
+      if (deleteBtn) deleteBtn.hidden = !enabled;
+      if (bankReasonEl) bankReasonEl.hidden = !enabled;
+      if (holderReasonEl) holderReasonEl.hidden = !enabled;
+      if (submitBtn) submitBtn.textContent = tr(enabled ? "Resubmit" : "Submit");
+      if (enabled) syncResubmitCopy();
+    };
 
     const syncSubmit = () => {
       const isValid =
@@ -9534,7 +9651,8 @@
         chineseNameInput?.value.trim() &&
         englishNameInput?.value.trim() &&
         state.consents.lawful;
-      if (submitBtn) submitBtn.disabled = !isValid;
+      const canSubmit = isValid && (!isResubmitMode || hasResubmitChanges());
+      if (submitBtn) submitBtn.disabled = !canSubmit;
     };
 
     const resetForm = () => {
@@ -9606,9 +9724,10 @@
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
-        if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
+        if (titleEl && !isResubmitMode) {
+          titleEl.textContent = opts.title || DEFAULT_TITLE;
+        }
         syncBaWizardStepLabels();
-        resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
@@ -9616,6 +9735,7 @@
       } else {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
+        setResubmitMode(false);
         if (opts.instant) {
           panel.classList.add("is-instant");
           panel.classList.remove("is-open");
@@ -9688,6 +9808,12 @@
     });
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
+      if (isResubmitMode) {
+        setState("twdBankAccount", 2, { force: true });
+        setOpen(false);
+        showSnackbar?.("Not in prototype");
+        return;
+      }
       setState("twdBankAccount", 2, { force: true });
       const gen = (submitGeneration += 1);
       if (loaderEl) loaderEl.hidden = false;
@@ -9698,16 +9824,52 @@
       }, SUBMIT_LOADER_MS);
     });
 
+    deleteBtn?.addEventListener("click", () => {
+      openDeleteBankAccountSheet?.();
+    });
+
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open") || !isResubmitMode) return;
+      syncResubmitCopy();
+    });
+
+    const openPanel = (opts = {}) => {
+      const mode = opts.mode || "setup";
+      setResubmitMode(mode === "resubmit");
+      if (mode === "resubmit") {
+        fillAll();
+        resubmitSnapshot = captureResubmitSnapshot();
+        syncSubmit();
+      } else {
+        resetForm();
+      }
+      setOpen(true, opts);
+    };
+
     return {
-      open: (opts = {}) => setOpen(true, opts),
+      open: openPanel,
+      openResubmit: (opts = {}) => openPanel({ ...opts, mode: "resubmit" }),
       close: (opts) => setOpen(false, opts),
       fillAll,
     };
   };
 
-  const initUsdBankDetailsPanel = ({ showSnackbar, onSubmitComplete }) => {
+  const initUsdBankDetailsPanel = ({
+    showSnackbar,
+    onSubmitComplete,
+    openDeleteBankAccountSheet,
+  } = {}) => {
     const panel = document.querySelector("[data-usd-bank-details-panel]");
     if (!panel) return { open: () => {}, close: () => {} };
+
+    const onboardingEl = panel.querySelector("[data-bank-details-onboarding]");
+    const resubmitIntroEl = panel.querySelector("[data-bank-resubmit-intro]");
+    const resubmitTitleEl = panel.querySelector("[data-bank-resubmit-title]");
+    const resubmitAlertTextEl = panel.querySelector("[data-bank-resubmit-alert-text]");
+    const bankReasonEls = panel.querySelectorAll("[data-bank-resubmit-bank-reason]");
+    const holderReasonEls = panel.querySelectorAll("[data-bank-resubmit-holder-reason]");
+    const deleteBtn = panel.querySelector("[data-bank-resubmit-delete]");
+    const resubmitLabelEl = panel.querySelector(".bank-resubmit-intro__label");
 
     const taiwanVariant = panel.querySelector(
       '[data-usd-bank-details-variant="taiwan"]',
@@ -9789,6 +9951,91 @@
     };
     let submitGeneration = 0;
     const SUBMIT_LOADER_MS = 1600;
+    let isResubmitMode = false;
+    let resubmitSnapshot = null;
+
+    const captureResubmitSnapshot = () => {
+      if (isCaymanRegion()) {
+        return {
+          variant: "cayman",
+          bankAdded: caymanState.bankAdded,
+          holderName: caymanState.holderName,
+          billingAddress: caymanState.billingAddress,
+          documentUploaded: caymanState.documentUploaded,
+          consents: { ...caymanState.consents },
+          bankNickname: caymanBankNicknameEl?.textContent?.trim() || "",
+          holderValue: caymanHolderValueEl?.textContent?.trim() || "",
+        };
+      }
+      return {
+        variant: "taiwan",
+        fieldValues: taiwanTextInputs.filter(Boolean).map((input) => input.value),
+        consents: { ...taiwanState.consents },
+      };
+    };
+
+    const hasResubmitChanges = () => {
+      if (!isResubmitMode || !resubmitSnapshot) return false;
+      const snap = resubmitSnapshot;
+      if (snap.variant === "cayman") {
+        if (caymanState.bankAdded !== snap.bankAdded) return true;
+        if (caymanState.holderName !== snap.holderName) return true;
+        if (caymanState.billingAddress !== snap.billingAddress) return true;
+        if (caymanState.documentUploaded !== snap.documentUploaded) return true;
+        if ((caymanBankNicknameEl?.textContent?.trim() || "") !== snap.bankNickname) {
+          return true;
+        }
+        if ((caymanHolderValueEl?.textContent?.trim() || "") !== snap.holderValue) {
+          return true;
+        }
+        for (const key of Object.keys(caymanState.consents)) {
+          if (caymanState.consents[key] !== snap.consents[key]) return true;
+        }
+        return false;
+      }
+      const inputs = taiwanTextInputs.filter(Boolean);
+      for (let i = 0; i < inputs.length; i += 1) {
+        if (inputs[i].value !== (snap.fieldValues[i] ?? "")) return true;
+      }
+      for (const key of Object.keys(taiwanState.consents)) {
+        if (taiwanState.consents[key] !== snap.consents[key]) return true;
+      }
+      return false;
+    };
+
+    const syncResubmitCopy = () => {
+      if (resubmitTitleEl) resubmitTitleEl.textContent = tr(DEFAULT_TITLE);
+      if (resubmitAlertTextEl) {
+        resubmitAlertTextEl.textContent = tr(
+          "Some of your bank details couldn't be verified: {ResubmitReason}. Please review and resubmit.",
+        );
+      }
+      bankReasonEls.forEach((el) => {
+        el.textContent = tr("{CaseBankAccountDetailsReason}");
+      });
+      holderReasonEls.forEach((el) => {
+        el.textContent = tr("{CaseAccountHolderInfoReason}");
+      });
+      if (resubmitLabelEl) resubmitLabelEl.textContent = tr("Resubmission");
+      if (deleteBtn) deleteBtn.textContent = tr("Delete account");
+    };
+
+    const setResubmitMode = (enabled) => {
+      isResubmitMode = enabled;
+      if (!enabled) resubmitSnapshot = null;
+      panel.classList.toggle("is-resubmit-mode", enabled);
+      if (onboardingEl) onboardingEl.hidden = enabled;
+      if (resubmitIntroEl) resubmitIntroEl.hidden = !enabled;
+      if (deleteBtn) deleteBtn.hidden = !enabled;
+      bankReasonEls.forEach((el) => {
+        el.hidden = !enabled;
+      });
+      holderReasonEls.forEach((el) => {
+        el.hidden = !enabled;
+      });
+      if (submitBtn) submitBtn.textContent = tr(enabled ? "Resubmit" : "Submit");
+      if (enabled) syncResubmitCopy();
+    };
 
     const isCaymanRegion = () => getPrototypeRegion() === "cayman";
 
@@ -9805,7 +10052,8 @@
         chineseNameInput?.value.trim() &&
         englishNameInput?.value.trim() &&
         taiwanState.consents["not-us-taxpayer"];
-      if (submitBtn) submitBtn.disabled = !isValid;
+      const canSubmit = isValid && (!isResubmitMode || hasResubmitChanges());
+      if (submitBtn) submitBtn.disabled = !canSubmit;
     };
 
     const syncCaymanSubmit = () => {
@@ -9815,7 +10063,8 @@
         caymanState.billingAddress &&
         caymanState.documentUploaded &&
         caymanState.consents["not-us-taxpayer"];
-      if (submitBtn) submitBtn.disabled = !isValid;
+      const canSubmit = isValid && (!isResubmitMode || hasResubmitChanges());
+      if (submitBtn) submitBtn.disabled = !canSubmit;
     };
 
     const syncSubmit = () => {
@@ -9963,10 +10212,11 @@
       if (nextOpen) {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
-        if (titleEl) titleEl.textContent = opts.title || DEFAULT_TITLE;
+        if (titleEl && !isResubmitMode) {
+          titleEl.textContent = opts.title || DEFAULT_TITLE;
+        }
         syncRegionVariant();
         syncBaWizardStepLabels();
-        resetForm();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".twd-bank-details-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
@@ -9974,6 +10224,7 @@
       } else {
         submitGeneration += 1;
         if (loaderEl) loaderEl.hidden = true;
+        setResubmitMode(false);
         if (opts.instant) {
           panel.classList.add("is-instant");
           panel.classList.remove("is-open");
@@ -10088,6 +10339,12 @@
 
     submitBtn?.addEventListener("click", () => {
       if (submitBtn.disabled) return;
+      if (isResubmitMode) {
+        setState("usdBankAccount", 2, { force: true });
+        setOpen(false);
+        showSnackbar?.("Not in prototype");
+        return;
+      }
       const currentUsdState = states.usdBankAccount ?? 1;
       const nextUsdState =
         isCaymanRegion() && currentUsdState >= 2 ? 6 : 2;
@@ -10101,11 +10358,35 @@
       }, SUBMIT_LOADER_MS);
     });
 
+    deleteBtn?.addEventListener("click", () => {
+      openDeleteBankAccountSheet?.();
+    });
+
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open") || !isResubmitMode) return;
+      syncResubmitCopy();
+    });
+
     document.addEventListener("prototype-region-change", syncRegionVariant);
     syncRegionVariant();
 
+    const openPanel = (opts = {}) => {
+      const mode = opts.mode || "setup";
+      setResubmitMode(mode === "resubmit");
+      syncRegionVariant();
+      if (mode === "resubmit") {
+        fillAll();
+        resubmitSnapshot = captureResubmitSnapshot();
+        syncSubmit();
+      } else {
+        resetForm();
+      }
+      setOpen(true, opts);
+    };
+
     return {
-      open: (opts = {}) => setOpen(true, opts),
+      open: openPanel,
+      openResubmit: (opts = {}) => openPanel({ ...opts, mode: "resubmit" }),
       close: (opts) => setOpen(false, opts),
       fillAll,
     };
@@ -10153,6 +10434,7 @@
     let twdBankDetailsApi;
     twdBankDetailsApi = initTwdBankDetailsPanel({
       showSnackbar,
+      openDeleteBankAccountSheet: () => deleteBankAccountSheetApi.open(),
       onSubmitComplete: () => {
         bankAccountSuccessApi.setOnDismiss(() => {
           finalizeBankAccountSuccessDismiss();
@@ -10177,6 +10459,7 @@
       open: () => setOpen(true),
       close: () => setOpen(false),
       continueToDetails,
+      openResubmit: (opts = {}) => twdBankDetailsApi.openResubmit?.(opts),
       fillBankForm: () => twdBankDetailsApi?.fillAll?.(),
     };
   };
@@ -10244,6 +10527,7 @@
     let usdBankDetailsApi;
     usdBankDetailsApi = initUsdBankDetailsPanel({
       showSnackbar,
+      openDeleteBankAccountSheet: () => deleteBankAccountSheetApi.open(),
       onSubmitComplete: () => {
         bankAccountSuccessApi.setOnDismiss(() => {
           finalizeBankAccountSuccessDismiss();
@@ -10273,6 +10557,7 @@
       open: () => setOpen(true),
       close: () => setOpen(false),
       continueToDetails,
+      openResubmit: (opts = {}) => usdBankDetailsApi.openResubmit?.(opts),
       fillBankForm: () => usdBankDetailsApi?.fillAll?.(),
     };
   };
@@ -11931,6 +12216,13 @@
     custodianApplySheetApi,
     usdCustodianPanelApi,
   );
+  openBankResubmit = ({ currency, source } = {}) => {
+    if (currency === "twd") {
+      linkTwdApi.openResubmit?.({ source });
+      return;
+    }
+    linkUsdApi.openResubmit?.({ source });
+  };
   baWizardApi.setOnHowContinue?.(() => {
     if (baWizardApi.getSelectedCurrency() === "usd") {
       linkUsdApi.continueToDetails?.();
