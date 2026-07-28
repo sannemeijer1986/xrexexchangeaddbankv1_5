@@ -101,10 +101,10 @@
                                 <img class="side-menu__item-icon" src="assets/icon_users.svg" alt="" />
                                 <span class="side-menu__item-text">Account &amp; Security</span>
                             </div>
-                            <div class="side-menu__item" data-side-menu-not-in-prototype>
+                            <div class="side-menu__item" data-setup-open>
                                 <img class="side-menu__item-icon" src="assets/icon_checklist.svg" alt="" />
                                 <span class="side-menu__item-text">Account checklist</span>
-                                <span class="side-menu__item-meta" data-setup-status>Completed</span>
+                                <span class="side-menu__item-meta" data-setup-status>Get started</span>
                             </div>
                             <div class="side-menu__item" data-bank-accounts-open>
                                 <img class="side-menu__item-icon" src="assets/icon_bankaccounts.svg" alt="" />
@@ -149,6 +149,46 @@
         <div class="content content--home" data-content>
             <div class="content-inner safe-area-bottom">
                 <div data-tab-view="home">
+                <section class="setup-state" data-setup-state>
+                    <div class="setup-state__first-time" data-setup-first-time>
+                        <div class="setup-first__hero" data-setup-hero></div>
+                        <div class="setup-first__title" data-setup-card-title>Just a few steps to unlock trading</div>
+                        <div class="setup-first__subtitle" data-setup-card-subtitle hidden>Typically takes 1-2 business days</div>
+                        <div class="setup-first__progress" data-setup-progress>
+                            <div class="setup-first__steps">
+                                <div class="setup-first__step is-done" data-setup-step="sign-up">
+                                    <div class="setup-first__node">
+                                        <span class="setup-first__rail setup-first__rail--left"></span>
+                                        <img class="setup-first__icon" data-setup-step-icon src="assets/icon_timeline_completed.svg" alt="" />
+                                        <span class="setup-first__rail setup-first__rail--right"></span>
+                                    </div>
+                                    <span class="setup-first__label">Sign up</span>
+                                </div>
+                                <div class="setup-first__step is-current" data-setup-step="next-steps">
+                                    <div class="setup-first__node">
+                                        <span class="setup-first__rail setup-first__rail--left"></span>
+                                        <img class="setup-first__icon" data-setup-step-icon src="assets/icon_timeline_active.svg" alt="" />
+                                        <span class="setup-first__rail setup-first__rail--right"></span>
+                                    </div>
+                                    <span class="setup-first__label">Next steps</span>
+                                </div>
+                                <div class="setup-first__step" data-setup-step="final">
+                                    <div class="setup-first__node">
+                                        <span class="setup-first__rail setup-first__rail--left"></span>
+                                        <img class="setup-first__icon" data-setup-step-icon src="assets/icon_timeline_upcoming.svg" alt="" />
+                                        <span class="setup-first__rail setup-first__rail--right"></span>
+                                    </div>
+                                    <span class="setup-first__label" data-setup-step-final>Trade</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setup-first__buttons" data-setup-buttons>
+                            <button class="setup-first__button is-secondary" type="button" data-setup-btn-secondary data-setup-open>View checklist</button>
+                            <button class="setup-first__button is-primary" type="button" data-setup-cta data-setup-btn-primary data-setup-open>Get started</button>
+                        </div>
+                    </div>
+                    <div class="setup-state__title" data-setup-title hidden>First time content</div>
+                </section>
                 <section class="asset-card">
                     <div class="asset-card__label">
                         <span>Net assets ≈</span>

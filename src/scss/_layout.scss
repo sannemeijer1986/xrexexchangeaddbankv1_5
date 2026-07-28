@@ -1309,7 +1309,6 @@ html[data-active-tab="wallet"] {
   transform: translateX(0);
 }
 
-
 .setup-checklist__header {
   display: flex;
   align-items: center;
@@ -20689,6 +20688,7 @@ div.currency-sheet__item-icon {
 .side-menu__item[data-settings-open],
 .side-menu__item[data-support-guide-open],
 .side-menu__item[data-community-open],
+.side-menu__item[data-setup-open],
 .side-menu__item[data-side-menu-not-in-prototype] {
   cursor: pointer;
 }

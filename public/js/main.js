@@ -45,6 +45,41 @@
         3: "Staking success",
       },
     },
+    basic: {
+      storageKey: "xrexexchange.basicState.v1",
+      min: 1,
+      max: 3,
+      initial: 2,
+      labels: {
+        1: "Not submitted",
+        2: "Submitted",
+        3: "Approved",
+      },
+    },
+    identity: {
+      storageKey: "xrexexchange.identityState.v1",
+      min: 1,
+      max: 4,
+      initial: 2,
+      labels: {
+        1: "Not submitted",
+        2: "Submitted",
+        3: "Approved",
+        4: "Resubmission",
+      },
+    },
+    questionnaire: {
+      storageKey: "xrexexchange.questionnaireState.v1",
+      min: 1,
+      max: 4,
+      initial: 1,
+      labels: {
+        1: "Not enabled",
+        2: "Enabled & no email sent",
+        3: "Enabled & email sent",
+        4: "Approved",
+      },
+    },
     twdBankAccount: {
       storageKey: "xrexexchange.twdBankAccountState.v1",
       min: 1,
@@ -116,6 +151,14 @@
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const states = {};
+  const mvpOverride = true;
+
+  const QUESTIONNAIRE_LABELS_MVP = {
+    1: "Not enabled",
+    2: "Enabled & no email sent",
+    3: "Enabled & email sent",
+    4: "Approved",
+  };
 
   /** Prototype wallet balances — single source of truth (finance, plan detail, convert, …). */
   const PROTOTYPE_BALANCES = { TWD: 75000, USDT: 2750, BTC: 0 };
@@ -140,6 +183,7 @@
       states.usdBankAccount ?? 1,
     );
     syncBankAccountsPanelUi();
+    syncSetupKycUi();
   };
 
   const BANK_ACCOUNT_LINKED_STATUS = {
@@ -167,6 +211,35 @@
 
   const canOpenBankAccountDetails = (currency) =>
     isBankAccountSubmitted(currency) || isBankAccountVerified(currency);
+
+  const hasVerifiedBankAccount = () => {
+    const twdState = getBankAccountState("twd");
+    const usdState = getBankAccountState("usd");
+    return (
+      twdState === 3 ||
+      twdState === 6 ||
+      usdState === 3 ||
+      usdState === 6
+    );
+  };
+
+  const getEffectiveBankState = () => {
+    const twd = getBankAccountState("twd");
+    const usd = getBankAccountState("usd");
+    if (twd === 3 || twd === 6 || usd === 3 || usd === 6) return 3;
+    if (twd === 2 || usd === 2) return 2;
+    if (twd === 4 || usd === 4) return 4;
+    if (twd === 5 || usd === 5) return 5;
+    return 1;
+  };
+
+  const getQuestionnaireMode = () => ({
+    labels: QUESTIONNAIRE_LABELS_MVP,
+    max: 4,
+    approvedState: 4,
+    resubmissionStates: [],
+    pendingStates: [2, 3],
+  });
 
   const PROTOTYPE_CUSTODIAN_LABELS = {
     "kgi-active": "KGI Bank",
@@ -1068,6 +1141,15 @@
       usdDepositApi?.refreshSelectPanelIfOpen?.();
       bankAccountDetailsApi?.refreshIfOpen?.();
     }
+    if (
+      group === "basic" ||
+      group === "identity" ||
+      group === "questionnaire" ||
+      group === "twdBankAccount" ||
+      group === "usdBankAccount"
+    ) {
+      syncSetupKycUi();
+    }
     return clamped;
   };
 
@@ -1075,6 +1157,11 @@
     setState(group, states[group] + (delta || 0));
 
   const initStates = () => {
+    const questionnaireConfig = STATE_CONFIGS.questionnaire;
+    const questionnaireMode = getQuestionnaireMode();
+    questionnaireConfig.max = questionnaireMode.max;
+    questionnaireConfig.labels = { ...questionnaireMode.labels };
+
     Object.keys(STATE_CONFIGS).forEach((group) => {
       const config = STATE_CONFIGS[group];
       const rawInitial =
@@ -1098,6 +1185,7 @@
     syncEarnPortfolioVisMode();
     syncEarnAllocationDetailPage();
     syncEarnPositionPage();
+    syncSetupKycUi();
   };
 
   const initAuthSignup = () => {
@@ -7670,6 +7758,737 @@
     if (scroller) scroller.scrollTop = 0;
   };
 
+  const updateGradientBackground = () => {
+    const container = document.querySelector("[data-content]");
+    if (!container) return;
+    const questionnaireMode = getQuestionnaireMode();
+    const mvpAdditionalNeeds =
+      mvpOverride &&
+      (states.questionnaire === 2 || states.questionnaire === 3);
+    let hasResubmission =
+      ["basic", "identity"].some(
+        (group) => getLabel(group, states[group]) === "Resubmission",
+      ) ||
+      questionnaireMode.resubmissionStates.includes(states.questionnaire) ||
+      mvpAdditionalNeeds ||
+      getEffectiveBankState() === 4;
+    container.classList.toggle("has-resubmission", hasResubmission);
+    container.classList.toggle("has-kyc-progress", !hasVerifiedBankAccount());
+  };
+
+  const updateSetupState = () => {
+    const titleEl = document.querySelector("[data-setup-title]");
+    const statusEl = document.querySelector("[data-setup-status]");
+    const setupStateEl = document.querySelector("[data-setup-state]");
+    const firstTimeEl = document.querySelector("[data-setup-first-time]");
+    const assetCardEl = document.querySelector(".asset-card");
+    const cardTitleEl = document.querySelector("[data-setup-card-title]");
+    const cardSubtitleEl = document.querySelector("[data-setup-card-subtitle]");
+    const cardCtaEl = document.querySelector("[data-setup-cta]");
+    const finalStepEl = document.querySelector("[data-setup-step-final]");
+    const heroEl = document.querySelector("[data-setup-hero]");
+    const stepSignUpEl = document.querySelector('[data-setup-step="sign-up"]');
+    const stepNextEl = document.querySelector('[data-setup-step="next-steps"]');
+    const stepFinalEl = document.querySelector('[data-setup-step="final"]');
+    const btnSecondaryEl = document.querySelector("[data-setup-btn-secondary]");
+    const btnPrimaryEl = document.querySelector("[data-setup-btn-primary]");
+    const buttonsWrapEl = document.querySelector(".setup-first__buttons");
+    const progressEl = document.querySelector("[data-setup-progress]");
+    const buttonsEl = document.querySelector("[data-setup-buttons]");
+    if (!titleEl) return;
+
+    const basic = states.basic ?? 1;
+    const identity = states.identity ?? 1;
+    const bank = getEffectiveBankState();
+    const questionnaireMode = getQuestionnaireMode();
+    const isQuestionnaireActive = (states.questionnaire ?? 1) > 1;
+    const isQuestionnaireApproved =
+      (states.questionnaire ?? 1) === questionnaireMode.approvedState;
+
+    let title = "";
+    let label = "";
+    let statusText = "";
+    let statusState = "";
+    let isWarning = false;
+    let showCard = false;
+    let cardTitle = "";
+    let cardSubtitle = "";
+    let cardCta = "";
+    let finalStepLabel = tr("Trade");
+    let hideSecondaryBtn = true;
+    let hidePrimaryBtn = false;
+    let stepState = "progress";
+
+    if (hasVerifiedBankAccount()) {
+      showCard = false;
+      statusText = tr("Completed");
+      statusState = "approved";
+    } else {
+      const mvpAdditionalNeeds =
+        mvpOverride &&
+        (states.questionnaire === 2 || states.questionnaire === 3);
+      const hasResubmission =
+        ["basic", "identity"].some(
+          (group) => getLabel(group, states[group]) === "Resubmission",
+        ) ||
+        questionnaireMode.resubmissionStates.includes(states.questionnaire) ||
+        mvpAdditionalNeeds ||
+        bank === 4;
+      const isAllApproved =
+        basic === 3 &&
+        identity === 3 &&
+        bank === 3 &&
+        ((states.questionnaire ?? 1) === 1 ||
+          (states.questionnaire ?? 1) === 4);
+
+      if (isAllApproved) {
+        showCard = false;
+        statusText = tr("Completed");
+        statusState = "approved";
+      } else if (
+        mvpOverride &&
+        bank === 3 &&
+        basic >= 2 &&
+        identity >= 2 &&
+        (basic !== 3 || identity !== 3) &&
+        ((states.questionnaire ?? 1) === 1 || (states.questionnaire ?? 1) === 4)
+      ) {
+        title = "Submitted, please wait content";
+        label = "Submitted BI and PI, awaiting";
+        statusText = tr("Under review");
+        statusState = "reviewing";
+        showCard = true;
+        cardTitle = tr(
+          "We're reviewing your application, we will notify you of further updates.",
+        );
+        cardSubtitle = tr("Reviewing usually takes 1-2 business days");
+        finalStepLabel = tr("Reviewing");
+        hidePrimaryBtn = true;
+        stepState = "reviewing";
+      } else if (hasResubmission) {
+        title = "Resubmission content";
+        label = "PI resubmission";
+        statusText = tr("Action required");
+        statusState = "resubmission";
+        isWarning = true;
+        showCard = true;
+        cardTitle = tr(
+          "Some required information or documents are missing and need an update.",
+        );
+        cardCta = tr("Review and update");
+        hideSecondaryBtn = true;
+        stepState = "resubmission";
+      } else if (basic === 1 && identity === 1) {
+        title = "First time content";
+        label = "Setup not started";
+        statusText = tr("Get started");
+        statusState = "getstarted";
+        showCard = true;
+        cardTitle = tr("Just a few steps to unlock trading");
+        cardCta = tr("Get started");
+        stepState = "progress";
+      } else if (
+        basic >= 2 &&
+        identity >= 2 &&
+        bank === 2 &&
+        (!isQuestionnaireActive || isQuestionnaireApproved)
+      ) {
+        title = "Submitted, please wait content";
+        label = "Submitted BI and PI, awaiting";
+        statusText = tr("Under review");
+        statusState = "reviewing";
+        showCard = true;
+        cardTitle = tr(
+          "We're reviewing your application, we will notify you of further updates.",
+        );
+        cardSubtitle = tr("Reviewing usually takes 1-2 business days");
+        finalStepLabel = tr("Reviewing");
+        hidePrimaryBtn = true;
+        stepState = "reviewing";
+      } else if (bank === 3) {
+        title = "Continue setup content";
+        label = "Setup part 1 started but not finished";
+        statusText = tr("Continue");
+        statusState = "continue";
+        showCard = true;
+        cardTitle = tr(
+          "Make your first deposit to activate trading & access all features.",
+        );
+        cardCta = tr("Resume application");
+        stepState = "progress";
+      } else {
+        title = "Continue setup content";
+        label = "Setup part 1 started but not finished";
+        statusText = tr("Continue");
+        statusState = "continue";
+        showCard = true;
+        cardTitle = tr("Pick up where you left off, unlock the best of XREX!");
+        cardCta = tr("Resume application");
+        stepState = "progress";
+      }
+    }
+
+    titleEl.textContent = title;
+    titleEl.dataset.setupLabel = label;
+    titleEl.classList.toggle("is-warning", isWarning);
+    if (statusEl) {
+      statusEl.textContent = statusText;
+      statusEl.dataset.setupStatus = statusState;
+      statusEl.hidden = false;
+    }
+    if (setupStateEl) setupStateEl.dataset.setupLabel = label;
+
+    const toggleHidden = (el, shouldHide) => {
+      if (!el) return;
+      el.hidden = shouldHide;
+      el.classList.toggle("is-hidden", shouldHide);
+    };
+
+    toggleHidden(firstTimeEl, !showCard);
+    toggleHidden(titleEl, showCard);
+    toggleHidden(setupStateEl, !showCard);
+    toggleHidden(assetCardEl, showCard);
+
+    if (cardTitleEl) {
+      cardTitleEl.innerHTML = cardTitle.replace(/\n/g, "<br />");
+    }
+    if (cardSubtitleEl) {
+      cardSubtitleEl.textContent = cardSubtitle;
+      cardSubtitleEl.hidden = !cardSubtitle;
+    }
+    if (cardCtaEl && cardCta) cardCtaEl.textContent = cardCta;
+    if (finalStepEl) finalStepEl.textContent = finalStepLabel;
+    if (btnSecondaryEl) {
+      const hideSecondaryNonMvp =
+        stepState === "resubmission" || stepState === "reviewing";
+      btnSecondaryEl.hidden = mvpOverride ? hideSecondaryBtn : hideSecondaryNonMvp;
+    }
+    if (btnPrimaryEl) btnPrimaryEl.hidden = hidePrimaryBtn;
+
+    if (heroEl) {
+      let illustration = "";
+      if (statusState === "getstarted") {
+        illustration = "assets/illu_setup_1.png";
+      } else if (statusState === "continue" && bank === 3) {
+        illustration = "assets/illu_setup_4_firstdeposit.png";
+      } else if (statusState === "continue") {
+        illustration = "assets/illu_setup_1.png";
+      } else if (statusState === "resubmission") {
+        illustration = "assets/illu_setup_2_resubmit.png";
+      } else if (statusState === "reviewing") {
+        illustration = "assets/illu_setup_3_reviewing.png";
+      }
+      heroEl.classList.toggle("is-illustration", Boolean(illustration));
+      heroEl.style.backgroundImage = illustration
+        ? `url('${illustration}')`
+        : "";
+    }
+
+    if (buttonsWrapEl) {
+      const visibleButtons = Array.from(
+        buttonsWrapEl.querySelectorAll(".setup-first__button"),
+      ).filter((button) => !button.hidden);
+      buttonsWrapEl.classList.toggle("is-single", visibleButtons.length === 1);
+      buttonsWrapEl.classList.toggle(
+        "is-single-wide",
+        visibleButtons.length === 1,
+      );
+    }
+    if (progressEl) progressEl.hidden = false;
+    if (buttonsEl) buttonsEl.hidden = false;
+
+    const clearStep = (el) => {
+      if (!el) return;
+      el.classList.remove(
+        "is-done",
+        "is-current",
+        "is-rail-before-active",
+        "is-rail-after-active",
+      );
+    };
+    [stepSignUpEl, stepNextEl, stepFinalEl].forEach(clearStep);
+
+    if (stepState === "reviewing") {
+      stepFinalEl?.classList.add("is-current");
+      stepSignUpEl?.classList.add("is-done", "is-rail-after-active");
+      stepNextEl?.classList.add(
+        "is-done",
+        "is-rail-after-active",
+        "is-rail-before-active",
+      );
+      stepFinalEl?.classList.add("is-rail-before-active");
+    } else {
+      stepSignUpEl?.classList.add("is-done", "is-rail-after-active");
+      stepNextEl?.classList.add("is-current", "is-rail-before-active");
+    }
+
+    const updateStepIcon = (el) => {
+      if (!el) return;
+      const icon = el.querySelector("[data-setup-step-icon]");
+      if (!icon) return;
+      if (el.classList.contains("is-done")) {
+        icon.src = "assets/icon_timeline_completed.svg";
+      } else if (el.classList.contains("is-current")) {
+        icon.src = isWarning
+          ? "assets/icon_timeline_activewarning.svg"
+          : "assets/icon_timeline_active.svg";
+      } else {
+        icon.src = "assets/icon_timeline_upcoming.svg";
+      }
+    };
+    [stepSignUpEl, stepNextEl, stepFinalEl].forEach(updateStepIcon);
+  };
+
+  const updateChecklistItems = () => {
+    const signupItem = document.querySelector('[data-checklist-item="signup"]');
+    const basicItem = document.querySelector('[data-checklist-item="basic"]');
+    const identityItem = document.querySelector('[data-checklist-item="identity"]');
+    const bankItem = document.querySelector('[data-checklist-item="bank"]');
+    const depositItem = document.querySelector('[data-checklist-item="deposit"]');
+    const questionnaireItem = document.querySelector(
+      '[data-checklist-item="questionnaire"]',
+    );
+    const stepsEl = document.querySelector("[data-checklist-steps]");
+    const ringEl = document.querySelector("[data-checklist-ring]");
+    const ctaEl = document.querySelector("[data-checklist-cta]");
+    const ctaNoteEl = document.querySelector("[data-checklist-cta-note]");
+    const titleEl = document.querySelector("[data-checklist-title]");
+    const stepsSubEl = document.querySelector("[data-checklist-steps-sub]");
+    const checklistCard = document.querySelector(".setup-checklist__card");
+    const checklistContent = document.querySelector(".setup-checklist__content");
+    const sectionTitleEl = document.querySelector(".setup-checklist__section-title");
+    const checklistListEl = document.querySelector(".setup-checklist__list");
+    const reviewAlertEl = document.querySelector("[data-checklist-review-alert]");
+    const successAlertEl = document.querySelector("[data-checklist-success-alert]");
+    const rejectedAlertEl = document.querySelector("[data-checklist-rejected-alert]");
+    const bank = getEffectiveBankState();
+    const basic = states.basic ?? 1;
+    const identity = states.identity ?? 1;
+    const questionnaire = states.questionnaire ?? 1;
+    const questionnaireMode = getQuestionnaireMode();
+    const processingLabel = tr("Processing");
+    const completedLabel = tr("Completed");
+
+    const resetItemState = (item, defaultIcon) => {
+      if (!item) return;
+      const icon = item.querySelector("[data-checklist-icon]");
+      const iconWrap = item.querySelector(".setup-checklist__item-icon");
+      const action = item.querySelector("[data-checklist-action]");
+      const status = item.querySelector("[data-checklist-status]");
+      const meta = item.querySelector(".setup-checklist__item-meta");
+      if (icon) {
+        icon.hidden = false;
+        icon.src = defaultIcon;
+      }
+      if (iconWrap) {
+        iconWrap.classList.remove("setup-checklist__item-icon--transparent");
+        iconWrap
+          .querySelectorAll(".setup-checklist__item-status")
+          .forEach((el) => el.remove());
+      }
+      item.classList.remove("is-complete", "is-processing");
+      if (status) {
+        status.textContent = "";
+        status.hidden = false;
+        status.classList.remove(
+          "setup-checklist__item-status-label--success",
+          "setup-checklist__item-status-label--warning",
+        );
+      }
+      if (meta) meta.hidden = false;
+      if (action) {
+        action.hidden = false;
+        action.disabled = false;
+        action.classList.remove("is-disabled", "is-hidden");
+      }
+      delete item.dataset.nonclickable;
+    };
+
+    const applyProcessingState = (item) => {
+      if (!item) return;
+      const icon = item.querySelector("[data-checklist-icon]");
+      const iconWrap = item.querySelector(".setup-checklist__item-icon");
+      const action = item.querySelector("[data-checklist-action]");
+      const status = item.querySelector("[data-checklist-status]");
+      const meta = item.querySelector(".setup-checklist__item-meta");
+      if (icon) icon.src = "assets/icon_processing.svg";
+      if (iconWrap)
+        iconWrap.classList.add("setup-checklist__item-icon--transparent");
+      if (status) {
+        status.textContent = processingLabel;
+        status.classList.remove(
+          "setup-checklist__item-status-label--success",
+          "setup-checklist__item-status-label--warning",
+        );
+      }
+      if (meta) meta.hidden = true;
+      if (action) {
+        action.disabled = true;
+        action.classList.add("is-disabled");
+      }
+      delete item.dataset.nonclickable;
+    };
+
+    const applyCompletedState = (item) => {
+      if (!item) return;
+      const icon = item.querySelector("[data-checklist-icon]");
+      const iconWrap = item.querySelector(".setup-checklist__item-icon");
+      const action = item.querySelector("[data-checklist-action]");
+      const status = item.querySelector("[data-checklist-status]");
+      const meta = item.querySelector(".setup-checklist__item-meta");
+      if (icon) icon.src = "assets/icon_timeline_completed.svg";
+      if (iconWrap)
+        iconWrap.classList.add("setup-checklist__item-icon--transparent");
+      if (status) {
+        status.textContent = completedLabel;
+        status.classList.remove("setup-checklist__item-status-label--warning");
+        status.classList.add("setup-checklist__item-status-label--success");
+      }
+      if (meta) meta.hidden = true;
+      if (action) {
+        action.disabled = true;
+        action.classList.add("is-disabled");
+      }
+      item.dataset.nonclickable = "true";
+    };
+
+    if (basic === 2) {
+      applyProcessingState(basicItem);
+    } else if (basic === 3) {
+      applyCompletedState(basicItem);
+      basicItem?.querySelector("[data-checklist-action]")?.classList.add("is-hidden");
+    } else {
+      resetItemState(basicItem, "assets/icon-checklist-basicprofile.svg");
+    }
+
+    if (identity === 2) {
+      applyProcessingState(identityItem);
+    } else if (identity === 3) {
+      applyCompletedState(identityItem);
+    } else if (identity === 4) {
+      resetItemState(identityItem, "assets/icon-checklist-identityverification.svg");
+      const status = identityItem?.querySelector("[data-checklist-status]");
+      const meta = identityItem?.querySelector(".setup-checklist__item-meta");
+      if (status) {
+        status.textContent = "{$resubmissionMessage}";
+        status.classList.add("setup-checklist__item-status-label--warning");
+      }
+      if (meta) meta.hidden = true;
+    } else {
+      resetItemState(identityItem, "assets/icon-checklist-identityverification.svg");
+    }
+
+    const bankUnlocked = basic >= 2 && identity >= 2;
+    if (bankItem) {
+      bankItem.classList.toggle("is-disabled", !bankUnlocked);
+      const action = bankItem.querySelector("[data-checklist-action]");
+      const icon = bankItem.querySelector("[data-checklist-icon]");
+      const status = bankItem.querySelector("[data-checklist-status]");
+      const meta = bankItem.querySelector(".setup-checklist__item-meta");
+      const secondaryBtn = bankItem.querySelector("[data-checklist-secondary]");
+      const isBankProcessing = bank === 2;
+      const isBankApproved = bank === 3;
+      const isBankResubmission = bank === 4;
+      if (action) {
+        const shouldDisable =
+          !bankUnlocked || isBankProcessing || isBankApproved;
+        action.disabled = shouldDisable;
+        action.classList.toggle("is-disabled", shouldDisable);
+      }
+      if (icon) {
+        if (isBankProcessing) icon.src = "assets/icon_processing.svg";
+        else if (isBankApproved) icon.src = "assets/icon_timeline_completed.svg";
+        else icon.src = "assets/icon_bankaccounts.svg";
+      }
+      const iconWrap = bankItem.querySelector(".setup-checklist__item-icon");
+      if (iconWrap) {
+        iconWrap.classList.toggle(
+          "setup-checklist__item-icon--transparent",
+          isBankProcessing || isBankApproved,
+        );
+      }
+      if (status) {
+        if (isBankProcessing) {
+          status.textContent = processingLabel;
+          status.classList.remove(
+            "setup-checklist__item-status-label--success",
+            "setup-checklist__item-status-label--warning",
+          );
+        } else if (isBankApproved) {
+          status.textContent = completedLabel;
+          status.classList.remove("setup-checklist__item-status-label--warning");
+          status.classList.add("setup-checklist__item-status-label--success");
+        } else if (isBankResubmission) {
+          status.textContent = "{$resubmissionMessage}";
+          status.classList.remove("setup-checklist__item-status-label--success");
+          status.classList.add("setup-checklist__item-status-label--warning");
+        } else {
+          status.textContent = "";
+          status.classList.remove(
+            "setup-checklist__item-status-label--success",
+            "setup-checklist__item-status-label--warning",
+          );
+        }
+      }
+      if (meta)
+        meta.hidden = isBankProcessing || isBankApproved || isBankResubmission;
+      bankItem.classList.toggle("is-processing", isBankProcessing);
+      if (secondaryBtn) secondaryBtn.hidden = !isBankApproved;
+      if (isBankApproved) bankItem.dataset.nonclickable = "true";
+      else delete bankItem.dataset.nonclickable;
+    }
+
+    if (depositItem) {
+      depositItem.hidden = mvpOverride;
+      depositItem.classList.toggle("is-hidden", mvpOverride);
+    }
+
+    const isQuestionnaireActive = questionnaire >= 2;
+    if (questionnaireItem) {
+      const shouldHide = !isQuestionnaireActive;
+      questionnaireItem.hidden = shouldHide;
+      questionnaireItem.classList.toggle("is-hidden", shouldHide);
+      const action = questionnaireItem.querySelector("[data-checklist-action]");
+      const secondaryBtn = questionnaireItem.querySelector(
+        "[data-checklist-questionnaire-secondary]",
+      );
+      const meta = questionnaireItem.querySelector("[data-checklist-meta]");
+      const status = questionnaireItem.querySelector("[data-checklist-status]");
+      const icon = questionnaireItem.querySelector("[data-checklist-icon]");
+      const iconWrap = questionnaireItem.querySelector(".setup-checklist__item-icon");
+      if (action) {
+        const isApproved = questionnaire === questionnaireMode.approvedState;
+        const isMvpEmailSent = mvpOverride && questionnaire === 3;
+        action.disabled =
+          !isQuestionnaireActive || isApproved || isMvpEmailSent;
+        action.classList.toggle(
+          "is-disabled",
+          !isQuestionnaireActive || isApproved || isMvpEmailSent,
+        );
+        action.classList.toggle("is-hidden", isMvpEmailSent);
+      }
+      if (secondaryBtn) secondaryBtn.hidden = !(mvpOverride && questionnaire === 3);
+      if (meta) {
+        if (questionnaire === 2) {
+          meta.textContent = tr(
+            "As part of our standard process, we need a bit more information to complete your application",
+          );
+        } else if (questionnaire === 3) {
+          meta.textContent = tr(
+            "Check your email inbox for further instructions and complete by",
+          );
+        } else {
+          meta.textContent = "";
+        }
+        meta.hidden = !meta.textContent;
+      }
+      if (status) {
+        if (questionnaire === 3) {
+          status.textContent = "02/29/2077";
+          status.classList.remove("setup-checklist__item-status-label--success");
+          status.classList.add("setup-checklist__item-status-label--warning");
+        } else if (questionnaire === questionnaireMode.approvedState) {
+          status.textContent = completedLabel;
+          status.classList.remove("setup-checklist__item-status-label--warning");
+          status.classList.add("setup-checklist__item-status-label--success");
+        } else {
+          status.textContent = "";
+          status.classList.remove(
+            "setup-checklist__item-status-label--warning",
+            "setup-checklist__item-status-label--success",
+          );
+        }
+        status.hidden = !status.textContent;
+      }
+      if (icon) {
+        icon.src =
+          questionnaire === questionnaireMode.approvedState
+            ? "assets/icon_timeline_completed.svg"
+            : "assets/icon-checklist-kycquestionaire.svg";
+      }
+      if (iconWrap) {
+        iconWrap.classList.toggle(
+          "setup-checklist__item-icon--transparent",
+          questionnaire === questionnaireMode.approvedState,
+        );
+      }
+      if (questionnaire === questionnaireMode.approvedState) {
+        questionnaireItem.dataset.nonclickable = "true";
+      } else {
+        delete questionnaireItem.dataset.nonclickable;
+      }
+    }
+
+    let stepsRemaining = 4;
+    if (basic >= 2 || identity >= 2) stepsRemaining = 3;
+    if (basic >= 2 && identity >= 2) stepsRemaining = 2;
+    if (questionnaireMode.pendingStates.includes(questionnaire)) stepsRemaining += 1;
+    if (bank === 2 || bank === 3) stepsRemaining = Math.max(1, stepsRemaining - 1);
+    if (identity === 4) stepsRemaining += 1;
+    const isDepositComplete =
+      basic === 3 &&
+      identity === 3 &&
+      bank === 3 &&
+      (questionnaire === 1 || questionnaire === 4);
+    if (mvpOverride && !isDepositComplete) {
+      stepsRemaining = Math.max(1, stepsRemaining - 1);
+    }
+
+    const isMvpReviewing =
+      mvpOverride &&
+      bank === 2 &&
+      (questionnaire <= 1 || questionnaire === questionnaireMode.approvedState);
+    const isKycReviewOnly =
+      mvpOverride &&
+      bank === 3 &&
+      basic >= 2 &&
+      identity >= 2 &&
+      (basic !== 3 || identity !== 3) &&
+      (questionnaire === 1 || questionnaire === 4);
+    const isEddAwaiting = mvpOverride && questionnaire === 3;
+
+    if (stepsEl) {
+      if (isEddAwaiting) {
+        stepsEl.textContent = tr("Awaiting your action");
+      } else if (isMvpReviewing || isKycReviewOnly) {
+        stepsEl.textContent = tr("We're reviewing your application");
+      } else if (isDepositComplete || hasVerifiedBankAccount()) {
+        stepsEl.textContent = "31/08/2022";
+        stepsEl.classList.add("is-timestamp");
+      } else {
+        stepsEl.textContent =
+          stepsRemaining === 1
+            ? tr("1 step to go")
+            : tr("4 steps to go").replace("4", String(stepsRemaining));
+        stepsEl.classList.remove("is-timestamp");
+      }
+      stepsEl.hidden =
+        isMvpReviewing ||
+        isKycReviewOnly ||
+        isDepositComplete ||
+        hasVerifiedBankAccount();
+    }
+
+    if (stepsSubEl) {
+      stepsSubEl.hidden =
+        isMvpReviewing || isKycReviewOnly || isDepositComplete || isEddAwaiting
+          ? !isEddAwaiting
+          : true;
+      if (isEddAwaiting) {
+        stepsSubEl.textContent =
+          bank === 2
+            ? tr("Please follow the instructions sent to your email.")
+            : tr(
+                "Please follow the instructions sent to your email. When completed, you can proceed with setup.",
+              );
+      }
+    }
+
+    if (ringEl) {
+      const totalSteps = isQuestionnaireActive ? 5 : 4;
+      if (isMvpReviewing) {
+        ringEl.style.setProperty("--progress", "100%");
+        ringEl.classList.remove("is-complete");
+      } else if (isDepositComplete || hasVerifiedBankAccount()) {
+        ringEl.style.setProperty("--progress", "100%");
+        ringEl.classList.add("is-complete");
+      } else {
+        const completedSteps = Math.max(0, totalSteps - stepsRemaining);
+        const progressPercent =
+          totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+        ringEl.style.setProperty("--progress", `${progressPercent}%`);
+        ringEl.classList.remove("is-complete");
+      }
+    }
+
+    if (titleEl) {
+      if (hasVerifiedBankAccount()) {
+        titleEl.textContent = tr("Completed");
+        titleEl.classList.add("setup-checklist__card-title--completed");
+        titleEl.classList.remove("setup-checklist__card-title--under-review");
+      } else if (isMvpReviewing || isKycReviewOnly) {
+        titleEl.textContent = tr("Under review");
+        titleEl.classList.add("setup-checklist__card-title--under-review");
+        titleEl.classList.remove("setup-checklist__card-title--completed");
+      } else if (isDepositComplete) {
+        titleEl.textContent = tr("Completed");
+        titleEl.classList.add("setup-checklist__card-title--completed");
+        titleEl.classList.remove("setup-checklist__card-title--under-review");
+      } else {
+        titleEl.textContent = tr("Unlock trading");
+        titleEl.classList.remove(
+          "setup-checklist__card-title--under-review",
+          "setup-checklist__card-title--completed",
+        );
+      }
+    }
+
+    if (reviewAlertEl) {
+      const showReviewAlert = isMvpReviewing && questionnaire < 2;
+      reviewAlertEl.hidden = !showReviewAlert;
+      const wrap = reviewAlertEl.closest(".setup-checklist__alert-wrap");
+      if (wrap) wrap.hidden = !showReviewAlert;
+    }
+    if (successAlertEl) {
+      const showSuccess = isDepositComplete || hasVerifiedBankAccount();
+      successAlertEl.hidden = !showSuccess;
+      const wrap = successAlertEl.closest(".setup-checklist__alert-wrap");
+      if (wrap) wrap.hidden = !showSuccess;
+    }
+    if (rejectedAlertEl) rejectedAlertEl.hidden = true;
+
+    if (ctaEl) {
+      const hideCta =
+        hasVerifiedBankAccount() ||
+        isDepositComplete ||
+        bank === 2 ||
+        isEddAwaiting;
+      ctaEl.hidden = hideCta;
+      ctaEl.classList.toggle("is-hidden", hideCta);
+      ctaEl.style.display = hideCta ? "none" : "";
+      ctaEl.textContent = tr("Continue to next step");
+    }
+
+    const eddContinueLink = document.querySelector("[data-checklist-edd-continue]");
+    if (eddContinueLink) {
+      const hideEddContinue = !isEddAwaiting || bank === 2;
+      eddContinueLink.hidden = hideEddContinue;
+      eddContinueLink.classList.toggle("is-hidden", hideEddContinue);
+    }
+    if (ctaNoteEl) {
+      ctaNoteEl.hidden = true;
+      ctaNoteEl.classList.add("is-hidden");
+    }
+
+    if (checklistCard) {
+      checklistCard.hidden = false;
+      checklistCard.classList.remove("is-dimmed");
+    }
+    if (checklistContent) checklistContent.hidden = false;
+
+    if (sectionTitleEl) {
+      const titleText = titleEl?.textContent || "";
+      const shouldShowFinished =
+        titleText === tr("Under review") || titleText === tr("Completed");
+      sectionTitleEl.textContent = shouldShowFinished
+        ? tr("Finished steps")
+        : tr("Next steps");
+    }
+    if (checklistListEl) {
+      checklistListEl.hidden = false;
+      checklistListEl.classList.remove("is-hidden");
+    }
+  };
+
+  const syncSetupKycUi = () => {
+    updateGradientBackground();
+    updateSetupState();
+    updateChecklistItems();
+  };
+
+  const initSetupKycLocale = () => {
+    document.addEventListener("prototype-locale-changed", syncSetupKycUi);
+  };
   const initChecklistPanel = () => {
     const panel = document.querySelector("[data-setup-checklist]");
     const container = document.querySelector(".phone-container");
@@ -7702,89 +8521,9 @@
 
     const showNotInPrototype = () => showSnackbar("Not in prototype");
 
-    const markItemComplete = (item) => {
-      if (!item || item.dataset.checklistItem === "signup") return;
-      item.classList.add("is-complete");
-      item.classList.remove("is-disabled");
-      item.removeAttribute("data-checklist-item-action");
-      item.dataset.nonclickable = "true";
-
-      const iconWrap = item.querySelector(".setup-checklist__item-icon");
-      const icon = item.querySelector("[data-checklist-icon]");
-      const action = item.querySelector("[data-checklist-action]");
-      const status = item.querySelector("[data-checklist-status]");
-      const meta = item.querySelector(".setup-checklist__item-meta");
-      const secondaryBtn = item.querySelector(".setup-checklist__item-secondary-btn");
-
-      if (icon) icon.hidden = true;
-      if (iconWrap) {
-        iconWrap.classList.add("setup-checklist__item-icon--transparent");
-        if (!iconWrap.querySelector(".setup-checklist__item-status")) {
-          const statusImg = document.createElement("img");
-          statusImg.className = "setup-checklist__item-status";
-          statusImg.src = "assets/icon_timeline_completed.svg";
-          statusImg.alt = "";
-          iconWrap.appendChild(statusImg);
-        }
-      }
-      if (action) {
-        action.hidden = true;
-        action.disabled = true;
-      }
-      if (secondaryBtn) secondaryBtn.hidden = true;
-      if (status) {
-        status.textContent = "Completed";
-        status.classList.add("setup-checklist__item-status-label--success");
-        status.classList.remove("setup-checklist__item-status-label--warning");
-      }
-      if (meta) meta.hidden = true;
-    };
-
-    const syncCompletedChecklistUI = () => {
-      const ringEl = panel.querySelector("[data-checklist-ring]");
-      const titleEl = panel.querySelector("[data-checklist-title]");
-      const stepsEl = panel.querySelector("[data-checklist-steps]");
-      const stepsSubEl = panel.querySelector("[data-checklist-steps-sub]");
-      const ctaEl = panel.querySelector("[data-checklist-cta]");
-      const successAlertEl = panel.querySelector("[data-checklist-success-alert]");
-      const sectionTitleEl = panel.querySelector(".setup-checklist__section-title");
-
-      if (ringEl) {
-        ringEl.style.setProperty("--progress", "100%");
-        ringEl.classList.add("is-complete");
-      }
-      if (titleEl) {
-        titleEl.textContent = "Completed";
-        titleEl.classList.add("setup-checklist__card-title--completed");
-        titleEl.classList.remove(
-          "setup-checklist__card-title--under-review",
-          "setup-checklist__card-title--rejected",
-          "setup-checklist__card-title--warning",
-        );
-      }
-      if (stepsEl) stepsEl.hidden = true;
-      if (stepsSubEl) stepsSubEl.hidden = true;
-      if (ctaEl) {
-        ctaEl.hidden = true;
-        ctaEl.classList.add("is-hidden");
-      }
-      if (successAlertEl) {
-        successAlertEl.hidden = false;
-        const wrap = successAlertEl.closest(".setup-checklist__alert-wrap");
-        if (wrap) wrap.hidden = false;
-      }
-      if (sectionTitleEl) sectionTitleEl.textContent = "Finished steps";
-
-      panel
-        .querySelectorAll("[data-checklist-item]")
-        .forEach((item) => markItemComplete(item));
-    };
-
-    syncCompletedChecklistUI();
-
     const setOpen = (nextOpen) => {
       if (nextOpen) {
-        syncCompletedChecklistUI();
+        updateChecklistItems();
         panel.hidden = false;
         if (container) {
           container.classList.remove("is-checklist-open");
@@ -18369,6 +19108,7 @@
     myPlansPanelApi.openFirstDetail?.();
   });
 
+  initSetupKycLocale();
   initChecklistPanel();
   initLimitsPanel();
   initSettingsPage();
