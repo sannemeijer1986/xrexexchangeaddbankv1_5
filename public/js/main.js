@@ -152,6 +152,7 @@
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const states = {};
   const mvpOverride = true;
+  let twdBankAccountStateBeforeCayman = null;
 
   const QUESTIONNAIRE_LABELS_MVP = {
     1: "Not enabled",
@@ -339,6 +340,36 @@
   const getUsdBankAccountMaxState = () =>
     getPrototypeRegion() === "cayman" ? 6 : 5;
 
+  const isTwdBankAccountLockedByRegion = () =>
+    getPrototypeRegion() === "cayman";
+
+  const syncTwdBankAccountStateControlsForRegion = () => {
+    const group = "twdBankAccount";
+    const isCayman = isTwdBankAccountLockedByRegion();
+    const groupEl = document.querySelector(`[data-state-group="${group}"]`);
+
+    if (isCayman) {
+      if ((states[group] ?? 1) !== 1 && twdBankAccountStateBeforeCayman === null) {
+        twdBankAccountStateBeforeCayman = states[group] ?? 1;
+      }
+      if ((states[group] ?? 1) !== 1) {
+        setState(group, 1, { force: true });
+      } else {
+        updateGroupUI(group);
+      }
+      groupEl?.classList.add("is-region-locked");
+      return;
+    }
+
+    groupEl?.classList.remove("is-region-locked");
+    if (twdBankAccountStateBeforeCayman !== null) {
+      setState(group, twdBankAccountStateBeforeCayman, { force: true });
+      twdBankAccountStateBeforeCayman = null;
+      return;
+    }
+    updateGroupUI(group);
+  };
+
   const queryPrototypeRegionSelect = () =>
     document.querySelector("select[data-prototype-region]");
 
@@ -356,6 +387,7 @@
     document.documentElement.removeAttribute("data-prototype-region");
     syncBankAccountsPanelRegionUi();
     updateGroupUI("usdBankAccount");
+    syncTwdBankAccountStateControlsForRegion();
   };
 
   const setPrototypeRegion = (next) => {
@@ -1121,15 +1153,34 @@
       nameEl.textContent = label;
       nameEl.dataset.stateLabel = label;
     }
-    if (downBtn) downBtn.disabled = value <= config.min;
+    if (downBtn) {
+      downBtn.disabled =
+        (group === "twdBankAccount" && isTwdBankAccountLockedByRegion()) ||
+        value <= config.min;
+    }
     const max =
       group === "usdBankAccount" ? getUsdBankAccountMaxState() : config.max;
-    if (upBtn) upBtn.disabled = value >= max;
+    if (upBtn) {
+      upBtn.disabled =
+        (group === "twdBankAccount" && isTwdBankAccountLockedByRegion()) ||
+        value >= max;
+    }
+    groupEl.classList.toggle(
+      "is-region-locked",
+      group === "twdBankAccount" && isTwdBankAccountLockedByRegion(),
+    );
   };
 
   const setState = (group, next, opts = {}) => {
     const config = STATE_CONFIGS[group];
     if (!config) return config?.min ?? 1;
+    if (
+      group === "twdBankAccount" &&
+      isTwdBankAccountLockedByRegion() &&
+      !opts.force
+    ) {
+      return states[group] ?? config.min;
+    }
     const max =
       group === "usdBankAccount" ? getUsdBankAccountMaxState() : config.max;
     const clamped = clamp(parseInt(next, 10), config.min, max);
@@ -1202,8 +1253,10 @@
     return clamped;
   };
 
-  const changeState = (group, delta) =>
+  const changeState = (group, delta) => {
+    if (group === "twdBankAccount" && isTwdBankAccountLockedByRegion()) return;
     setState(group, states[group] + (delta || 0));
+  };
 
   const initStates = () => {
     const questionnaireConfig = STATE_CONFIGS.questionnaire;
@@ -13426,6 +13479,7 @@
     const resetBtn = document.querySelector("[data-prototype-reset]");
     if (!resetBtn) return;
     resetBtn.addEventListener("click", () => {
+      twdBankAccountStateBeforeCayman = null;
       Object.keys(STATE_CONFIGS).forEach((group) => {
         setState(group, STATE_CONFIGS[group].min, { force: true });
       });

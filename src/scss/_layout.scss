@@ -21215,6 +21215,10 @@ div.currency-sheet__item-icon {
   cursor: not-allowed;
 }
 
+.build-badge__group.is-region-locked .build-badge__state {
+  opacity: 0.55;
+}
+
 .build-badge__state-value {
   font-weight: 700;
   font-size: 12px;
