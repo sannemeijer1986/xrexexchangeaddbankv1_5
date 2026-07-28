@@ -2216,7 +2216,14 @@ html[data-active-tab="wallet"] {
   font-size: 12px;
   font-weight: 600;
   line-height: normal;
+}
+
+.bank-account-details-panel__tag--processing {
   color: #4d88ff;
+}
+
+.bank-account-details-panel__tag--verified {
+  color: #5ac47d;
 }
 
 .bank-account-details-panel__alert {
@@ -2272,6 +2279,32 @@ html[data-active-tab="wallet"] {
   line-height: 23px;
   color: #ffffff;
   word-break: break-word;
+}
+
+.bank-account-details-panel__delete {
+  align-self: flex-start;
+  margin: 0;
+  padding: 4px 10px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 12px;
+  background: #dd4c3d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.bank-account-details-panel__delete[hidden] {
+  display: none;
+}
+
+.bank-account-details-panel__alert[hidden] {
+  display: none;
 }
 
 .bank-accounts-panel__card {

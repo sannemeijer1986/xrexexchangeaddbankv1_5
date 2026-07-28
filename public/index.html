@@ -4387,10 +4387,10 @@
                         <div class="bank-account-details-panel__field-label">Account nickname</div>
                         <div class="bank-account-details-panel__nickname-row">
                             <div class="bank-account-details-panel__nickname" data-bank-account-details-nickname>My KGI bank</div>
-                            <span class="bank-account-details-panel__tag" data-bank-account-details-status>Processing</span>
+                            <span class="bank-account-details-panel__tag bank-account-details-panel__tag--processing" data-bank-account-details-status>Processing</span>
                         </div>
                     </div>
-                    <div class="bank-account-details-panel__alert">
+                    <div class="bank-account-details-panel__alert" data-bank-account-details-alert>
                         <div class="bank-account-details-panel__alert-header">
                             <img src="assets/icon_info_circle_blue.svg" alt="" width="16" height="16" aria-hidden="true" />
                             <span data-bank-account-details-note-label>Note</span>
@@ -4419,6 +4419,9 @@
                         <div class="bank-account-details-panel__field-label">Last updated</div>
                         <div class="bank-account-details-panel__field-value" data-bank-account-details-last-updated>01/12/2021, 1:13:12</div>
                     </div>
+                    <button class="bank-account-details-panel__delete" type="button" data-bank-account-details-delete hidden>
+                        Delete account
+                    </button>
                 </div>
             </div>
         </section>

@@ -155,6 +155,19 @@
     return (states[stateKey] ?? 1) === 2;
   };
 
+  const getBankAccountState = (currency) => {
+    const stateKey = currency === "twd" ? "twdBankAccount" : "usdBankAccount";
+    return states[stateKey] ?? 1;
+  };
+
+  const isBankAccountVerified = (currency) => {
+    const state = getBankAccountState(currency);
+    return state === 3 || state === 6;
+  };
+
+  const canOpenBankAccountDetails = (currency) =>
+    isBankAccountSubmitted(currency) || isBankAccountVerified(currency);
+
   const PROTOTYPE_CUSTODIAN_LABELS = {
     "kgi-active": "KGI Bank",
     "feb-active": "Far Eastern Bank",
@@ -8106,6 +8119,8 @@
     const statusEl = panel.querySelector("[data-bank-account-details-status]");
     const noteLabelEl = panel.querySelector("[data-bank-account-details-note-label]");
     const noteEl = panel.querySelector("[data-bank-account-details-note]");
+    const alertEl = panel.querySelector("[data-bank-account-details-alert]");
+    const deleteBtn = panel.querySelector("[data-bank-account-details-delete]");
     const currencyEl = panel.querySelector("[data-bank-account-details-currency]");
     const bankNameEl = panel.querySelector("[data-bank-account-details-bank-name]");
     const accountNumberEl = panel.querySelector(
@@ -8195,14 +8210,33 @@
         listItem?.querySelectorAll(".bank-accounts-panel__list-meta span") || [];
       const bankName = parseMetaValue(metaEls[0]?.textContent);
       const accountNumber = parseMetaValue(metaEls[1]?.textContent);
+      const isVerified = isBankAccountVerified(currency);
 
       if (nicknameEl) nicknameEl.textContent = nickname.trim();
-      if (statusEl) statusEl.textContent = tr("Processing");
-      if (noteLabelEl) noteLabelEl.textContent = tr("Note");
-      if (noteEl) {
-        noteEl.textContent = tr(
-          "Bank account verification requires 1-3 business days.",
+      if (statusEl) {
+        statusEl.textContent = tr(isVerified ? "Verified" : "Processing");
+        statusEl.classList.remove(
+          "bank-account-details-panel__tag--processing",
+          "bank-account-details-panel__tag--verified",
         );
+        statusEl.classList.add(
+          isVerified
+            ? "bank-account-details-panel__tag--verified"
+            : "bank-account-details-panel__tag--processing",
+        );
+      }
+      if (alertEl) alertEl.hidden = isVerified;
+      if (deleteBtn) {
+        deleteBtn.hidden = !isVerified;
+        deleteBtn.textContent = tr("Delete account");
+      }
+      if (!isVerified) {
+        if (noteLabelEl) noteLabelEl.textContent = tr("Note");
+        if (noteEl) {
+          noteEl.textContent = tr(
+            "Bank account verification requires 1-3 business days.",
+          );
+        }
       }
       if (currencyEl) currencyEl.textContent = getCurrencyLabel(currency);
       if (bankNameEl) bankNameEl.textContent = tr(bankName) || bankName;
@@ -8246,6 +8280,7 @@
       btn.addEventListener("click", () => setOpen(false));
     });
     supportBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    deleteBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
 
     document.addEventListener("prototype-locale-changed", () => {
       if (!panel.classList.contains("is-open")) return;
@@ -8417,7 +8452,7 @@
       .forEach((button) => {
         button.addEventListener("click", () => {
           const currency = button.getAttribute("data-bank-accounts-item");
-          if (currency && isBankAccountSubmitted(currency)) {
+          if (currency && canOpenBankAccountDetails(currency)) {
             openDetails({ currency, listItem: button });
             return;
           }
