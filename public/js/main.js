@@ -189,7 +189,7 @@
   const BANK_ACCOUNT_LINKED_STATUS = {
     2: { label: "Processing", modifier: "submitted" },
     3: { label: "Verified", modifier: "verified" },
-    4: { label: "Issues", modifier: "issues" },
+    4: { label: "{ResubmitReason}", modifier: "issues" },
     5: { label: "Rejected", modifier: "rejected" },
     6: { label: "Verified", modifier: "verified" },
   };
@@ -211,6 +211,20 @@
 
   const isBankAccountIssues = (currency) => getBankAccountState(currency) === 4;
 
+  const isBankAccountRejected = (currency) => getBankAccountState(currency) === 5;
+
+  const getChecklistResubmitCurrency = () => {
+    if (getBankAccountState("twd") === 4) return "twd";
+    if (getBankAccountState("usd") === 4) return "usd";
+    return null;
+  };
+
+  const isChecklistBankSubmittedMix = (twdState, usdState) => {
+    const twd = twdState ?? getBankAccountState("twd");
+    const usd = usdState ?? getBankAccountState("usd");
+    return (twd === 4 && usd === 2) || (twd === 2 && usd === 4);
+  };
+
   let openBankResubmit = () => {};
 
   const handleLinkedBankItemClick = ({
@@ -221,7 +235,7 @@
     openDetails,
     openUnderReview,
   }) => {
-    if (isBankAccountSubmitted(currency)) {
+    if (isBankAccountSubmitted(currency) && source !== "bank-accounts") {
       openUnderReview?.();
       return;
     }
@@ -237,7 +251,9 @@
   };
 
   const canOpenBankAccountDetails = (currency) =>
-    isBankAccountSubmitted(currency) || isBankAccountVerified(currency);
+    isBankAccountSubmitted(currency) ||
+    isBankAccountVerified(currency) ||
+    isBankAccountRejected(currency);
 
   const hasVerifiedBankAccount = () => {
     const twdState = getBankAccountState("twd");
@@ -7903,7 +7919,7 @@
       } else if (hasResubmission) {
         title = "Resubmission content";
         label = "PI resubmission";
-        statusText = tr("Action required");
+        statusText = tr("Action needed");
         statusState = "resubmission";
         isWarning = true;
         showCard = true;
@@ -8105,7 +8121,10 @@
     const reviewAlertEl = document.querySelector("[data-checklist-review-alert]");
     const successAlertEl = document.querySelector("[data-checklist-success-alert]");
     const rejectedAlertEl = document.querySelector("[data-checklist-rejected-alert]");
+    const resubmitAlertEl = document.querySelector("[data-checklist-resubmit-alert]");
     const bank = getEffectiveBankState();
+    const twdBankState = getBankAccountState("twd");
+    const usdBankState = getBankAccountState("usd");
     const basic = states.basic ?? 1;
     const identity = states.identity ?? 1;
     const questionnaire = states.questionnaire ?? 1;
@@ -8222,7 +8241,26 @@
       resetItemState(identityItem, "assets/icon-checklist-identityverification.svg");
     }
 
+    const isChecklistKycStepsComplete =
+      isBankAccountVerified("twd") ||
+      isBankAccountVerified("usd") ||
+      twdBankState === 4 ||
+      usdBankState === 4;
+    if (isChecklistKycStepsComplete) {
+      if (basic >= 2 && basic !== 4) {
+        applyCompletedState(basicItem);
+        basicItem?.querySelector("[data-checklist-action]")?.classList.add("is-hidden");
+      }
+      if (identity >= 2 && identity !== 4) {
+        applyCompletedState(identityItem);
+      }
+    }
+
     const bankUnlocked = basic >= 2 && identity >= 2;
+    const isChecklistBankSubmittedState = isChecklistBankSubmittedMix(
+      twdBankState,
+      usdBankState,
+    );
     if (bankItem) {
       bankItem.classList.toggle("is-disabled", !bankUnlocked);
       const action = bankItem.querySelector("[data-checklist-action]");
@@ -8369,7 +8407,9 @@
     if (basic >= 2 || identity >= 2) stepsRemaining = 3;
     if (basic >= 2 && identity >= 2) stepsRemaining = 2;
     if (questionnaireMode.pendingStates.includes(questionnaire)) stepsRemaining += 1;
-    if (bank === 2 || bank === 3) stepsRemaining = Math.max(1, stepsRemaining - 1);
+    if (bank === 2 || bank === 3 || bank === 4) {
+      stepsRemaining = Math.max(1, stepsRemaining - 1);
+    }
     if (identity === 4) stepsRemaining += 1;
     const isDepositComplete =
       basic === 3 &&
@@ -8384,6 +8424,7 @@
       mvpOverride &&
       bank === 2 &&
       (questionnaire <= 1 || questionnaire === questionnaireMode.approvedState);
+    const isChecklistBankUnderReview = isMvpReviewing;
     const isKycReviewOnly =
       mvpOverride &&
       bank === 3 &&
@@ -8396,7 +8437,7 @@
     if (stepsEl) {
       if (isEddAwaiting) {
         stepsEl.textContent = tr("Awaiting your action");
-      } else if (isMvpReviewing || isKycReviewOnly) {
+      } else if (isChecklistBankUnderReview || isKycReviewOnly) {
         stepsEl.textContent = tr("We're reviewing your application");
       } else if (isDepositComplete || hasVerifiedBankAccount()) {
         stepsEl.textContent = "31/08/2022";
@@ -8409,7 +8450,7 @@
         stepsEl.classList.remove("is-timestamp");
       }
       stepsEl.hidden =
-        isMvpReviewing ||
+        isChecklistBankUnderReview ||
         isKycReviewOnly ||
         isDepositComplete ||
         hasVerifiedBankAccount();
@@ -8417,7 +8458,7 @@
 
     if (stepsSubEl) {
       stepsSubEl.hidden =
-        isMvpReviewing || isKycReviewOnly || isDepositComplete || isEddAwaiting
+        isChecklistBankUnderReview || isKycReviewOnly || isDepositComplete || isEddAwaiting
           ? !isEddAwaiting
           : true;
       if (isEddAwaiting) {
@@ -8432,7 +8473,7 @@
 
     if (ringEl) {
       const totalSteps = isQuestionnaireActive ? 5 : 4;
-      if (isMvpReviewing) {
+      if (isChecklistBankUnderReview) {
         ringEl.style.setProperty("--progress", "100%");
         ringEl.classList.remove("is-complete");
       } else if (isDepositComplete || hasVerifiedBankAccount()) {
@@ -8452,7 +8493,7 @@
         titleEl.textContent = tr("Completed");
         titleEl.classList.add("setup-checklist__card-title--completed");
         titleEl.classList.remove("setup-checklist__card-title--under-review");
-      } else if (isMvpReviewing || isKycReviewOnly) {
+      } else if (isChecklistBankUnderReview || isKycReviewOnly) {
         titleEl.textContent = tr("Under review");
         titleEl.classList.add("setup-checklist__card-title--under-review");
         titleEl.classList.remove("setup-checklist__card-title--completed");
@@ -8470,7 +8511,7 @@
     }
 
     if (reviewAlertEl) {
-      const showReviewAlert = isMvpReviewing && questionnaire < 2;
+      const showReviewAlert = isChecklistBankUnderReview && questionnaire < 2;
       reviewAlertEl.hidden = !showReviewAlert;
       const wrap = reviewAlertEl.closest(".setup-checklist__alert-wrap");
       if (wrap) wrap.hidden = !showReviewAlert;
@@ -8481,7 +8522,25 @@
       const wrap = successAlertEl.closest(".setup-checklist__alert-wrap");
       if (wrap) wrap.hidden = !showSuccess;
     }
-    if (rejectedAlertEl) rejectedAlertEl.hidden = true;
+    if (rejectedAlertEl) {
+      rejectedAlertEl.hidden = true;
+      const wrap = rejectedAlertEl.closest(".setup-checklist__alert-wrap");
+      if (wrap) wrap.hidden = true;
+    }
+
+    if (resubmitAlertEl) {
+      const hasBankIssues = twdBankState === 4 || usdBankState === 4;
+      const showBankResubmitAlert =
+        hasBankIssues &&
+        !(isBankAccountVerified("twd") || isBankAccountVerified("usd")) &&
+        !isChecklistBankSubmittedState;
+      resubmitAlertEl.textContent = tr(
+        "Some required information or documents are missing",
+      );
+      resubmitAlertEl.hidden = !showBankResubmitAlert;
+      const wrap = resubmitAlertEl.closest(".setup-checklist__alert-wrap");
+      if (wrap) wrap.hidden = !showBankResubmitAlert;
+    }
 
     if (ctaEl) {
       const hideCta =
@@ -8492,7 +8551,7 @@
       ctaEl.hidden = hideCta;
       ctaEl.classList.toggle("is-hidden", hideCta);
       ctaEl.style.display = hideCta ? "none" : "";
-      ctaEl.textContent = tr("Continue to next step");
+      ctaEl.textContent = tr("Continue");
     }
 
     const eddContinueLink = document.querySelector("[data-checklist-edd-continue]");
@@ -8578,6 +8637,15 @@
       baWizardApi?.openFromChecklist?.();
     };
 
+    const openBankFlowFromChecklist = () => {
+      const resubmitCurrency = getChecklistResubmitCurrency();
+      if (resubmitCurrency) {
+        openBankResubmit({ currency: resubmitCurrency, source: "checklist" });
+        return;
+      }
+      openBankWizardFromChecklist();
+    };
+
     const setOpen = (nextOpen) => {
       if (nextOpen) {
         updateChecklistItems();
@@ -8659,7 +8727,7 @@
 
     panel.querySelector("[data-checklist-cta]")?.addEventListener("click", (event) => {
       event.preventDefault();
-      openBankWizardFromChecklist();
+      openBankFlowFromChecklist();
     });
 
     panel.querySelectorAll("[data-checklist-item-action]").forEach((item) => {
@@ -8668,7 +8736,7 @@
         if (item.getAttribute("data-checklist-item") !== "bank") return;
         if (event.target.closest(".setup-checklist__item-secondary-btn")) return;
         if (event.target.closest(".setup-checklist__item-action")) return;
-        openBankWizardFromChecklist();
+        openBankFlowFromChecklist();
       });
     });
 
@@ -8677,7 +8745,7 @@
       ?.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        openBankWizardFromChecklist();
+        openBankFlowFromChecklist();
       });
   };
 
@@ -9040,6 +9108,8 @@
     const deleteBtn = panel.querySelector("[data-bank-account-details-delete]");
     const currencyEl = panel.querySelector("[data-bank-account-details-currency]");
     const bankNameEl = panel.querySelector("[data-bank-account-details-bank-name]");
+    const branchFieldEl = panel.querySelector("[data-bank-account-details-branch-field]");
+    const branchEl = panel.querySelector("[data-bank-account-details-branch]");
     const accountNumberEl = panel.querySelector(
       "[data-bank-account-details-account-number]",
     );
@@ -9047,8 +9117,11 @@
     const lastUpdatedEl = panel.querySelector(
       "[data-bank-account-details-last-updated]",
     );
+    const nicknameLabelEl = panel.querySelector(
+      ".bank-account-details-panel__nickname-block .bank-account-details-panel__field-label",
+    );
     const fieldLabels = panel.querySelectorAll(
-      ".bank-account-details-panel__field-label",
+      ".bank-account-details-panel__field > .bank-account-details-panel__field-label",
     );
     const closeButtons = panel.querySelectorAll("[data-bank-account-details-close]");
     const supportBtn = panel.querySelector("[data-bank-account-details-support]");
@@ -9116,6 +9189,12 @@
       );
     };
 
+    const getTwdBranchLabel = (bankName) => {
+      const normalized = String(bankName || "").trim().toLowerCase();
+      if (normalized.includes("ctbc")) return "0436 Taipei Xinyi";
+      return "8221241 KGI Bank";
+    };
+
     const populate = () => {
       const listItem = activeListItem;
       const currency =
@@ -9132,26 +9211,36 @@
       const bankName = parseMetaValue(metaEls[0]?.textContent);
       const accountNumber = parseMetaValue(metaEls[1]?.textContent);
       const isVerified = isBankAccountVerified(currency);
+      const isRejected = isBankAccountRejected(currency);
 
       if (nicknameEl) nicknameEl.textContent = nickname.trim();
+      if (nicknameLabelEl) nicknameLabelEl.textContent = tr("Account nickname");
       if (statusEl) {
-        statusEl.textContent = tr(isVerified ? "Verified" : "Processing");
+        let statusKey = "Processing";
+        let statusModifier = "processing";
+        if (isVerified) {
+          statusKey = "Verified";
+          statusModifier = "verified";
+        } else if (isRejected) {
+          statusKey = "Rejected";
+          statusModifier = "rejected";
+        }
+        statusEl.textContent = tr(statusKey);
         statusEl.classList.remove(
           "bank-account-details-panel__tag--processing",
           "bank-account-details-panel__tag--verified",
+          "bank-account-details-panel__tag--rejected",
         );
         statusEl.classList.add(
-          isVerified
-            ? "bank-account-details-panel__tag--verified"
-            : "bank-account-details-panel__tag--processing",
+          `bank-account-details-panel__tag--${statusModifier}`,
         );
       }
-      if (alertEl) alertEl.hidden = isVerified;
+      if (alertEl) alertEl.hidden = isVerified || isRejected;
       if (deleteBtn) {
-        deleteBtn.hidden = !isVerified;
+        deleteBtn.hidden = !(isVerified || isRejected);
         deleteBtn.textContent = tr("Delete account");
       }
-      if (!isVerified) {
+      if (!isVerified && !isRejected) {
         if (noteLabelEl) noteLabelEl.textContent = tr("Note");
         if (noteEl) {
           noteEl.textContent = tr(
@@ -9161,14 +9250,19 @@
       }
       if (currencyEl) currencyEl.textContent = getCurrencyLabel(currency);
       if (bankNameEl) bankNameEl.textContent = tr(bankName) || bankName;
+      const isTwd = currency === "twd";
+      if (branchFieldEl) branchFieldEl.hidden = !isTwd;
+      if (branchEl) {
+        branchEl.textContent = isTwd ? getTwdBranchLabel(bankName) : "";
+      }
       if (accountNumberEl) accountNumberEl.textContent = accountNumber;
       if (custodianEl) custodianEl.textContent = getCustodianName(currency);
       if (lastUpdatedEl) lastUpdatedEl.textContent = "01/12/2021, 1:13:12";
 
       const labelKeys = [
-        "Account nickname",
         "Currency",
         "Bank name",
+        "Branch",
         "Account number",
         "Custodian",
         "Last updated",

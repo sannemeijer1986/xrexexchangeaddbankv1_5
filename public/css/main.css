@@ -1517,7 +1517,11 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .setup-checklist__alert-wrap {
-  margin: 0px 16px 32px 16px;
+  margin: 0 16px 24px 16px;
+}
+
+.setup-checklist__alert-wrap[hidden] {
+  display: none !important;
 }
 
 .setup-checklist__alert {
@@ -1558,6 +1562,26 @@ html[data-active-tab=wallet] .app-header__top {
   color: #FF6D47;
   font-weight: 600;
   line-height: 1.4;
+}
+
+.setup-checklist__resubmit-alert {
+  margin: 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
+}
+
+.phone-container p.setup-checklist__resubmit-alert {
+  margin: 0;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ff6d47;
 }
 
 .setup-checklist__section-title {
@@ -2210,6 +2234,10 @@ html[data-active-tab=wallet] .app-header__top {
   color: #5ac47d;
 }
 
+.bank-account-details-panel__tag--rejected {
+  color: #f76767;
+}
+
 .bank-account-details-panel__alert {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
@@ -2288,6 +2316,10 @@ html[data-active-tab=wallet] .app-header__top {
 
 .bank-account-details-panel__alert[hidden] {
   display: none;
+}
+
+.bank-account-details-panel__field[hidden] {
+  display: none !important;
 }
 
 .bank-accounts-panel__card {
@@ -4987,7 +5019,7 @@ html[data-active-tab=wallet] .app-header__top {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  margin: 0;
+  margin: 8px 0 0 0;
   padding: 8px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
@@ -20288,6 +20320,10 @@ div.currency-sheet__item-icon::before {
 .side-menu__item-meta[data-setup-status=continue],
 .side-menu__item-meta[data-setup-status=reviewing] {
   color: #8FB8FF;
+}
+
+.side-menu__item-meta[data-setup-status=resubmission] {
+  color: #ff6d47;
 }
 
 .side-menu__item[data-limits-open],
