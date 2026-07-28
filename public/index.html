@@ -5143,6 +5143,36 @@
             </div>
         </div>
 
+        <!-- Figma 7914:121543 — Delete bank account bottom sheet -->
+        <div
+            class="currency-sheet delete-bank-account-sheet"
+            data-delete-bank-account-sheet
+            hidden
+            aria-modal="true"
+            role="dialog"
+            aria-label="Delete bank account"
+        >
+            <button class="currency-sheet__backdrop" type="button" data-delete-bank-account-close aria-label="Close"></button>
+            <div class="currency-sheet__panel delete-bank-account-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body delete-bank-account-sheet__body">
+                    <h2 class="delete-bank-account-sheet__title" data-delete-bank-account-title>
+                        Are you sure you want to delete this bank account?
+                    </h2>
+                </div>
+                <div class="currency-sheet__footer delete-bank-account-sheet__footer">
+                    <button class="currency-sheet__cancel delete-bank-account-sheet__confirm" type="button" data-delete-bank-account-confirm>
+                        Confirm
+                    </button>
+                    <button class="currency-sheet__cancel delete-bank-account-sheet__cancel" type="button" data-delete-bank-account-close>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <section class="settings-page" data-settings-page hidden aria-label="Settings">
             <header class="settings-page__header">
                 <div class="settings-page__header-left">

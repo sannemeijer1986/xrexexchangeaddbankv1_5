@@ -1066,6 +1066,7 @@
       syncPrototypeBankAccountStatesToDocument();
       twdDepositApi?.refreshSelectPanelIfOpen?.();
       usdDepositApi?.refreshSelectPanelIfOpen?.();
+      bankAccountDetailsApi?.refreshIfOpen?.();
     }
     return clamped;
   };
@@ -8043,6 +8044,15 @@
     clearEntrySource: () => {},
     refreshSelectPanelIfOpen: () => {},
   };
+  let bankAccountDetailsApi = {
+    open: () => {},
+    close: () => {},
+    refreshIfOpen: () => {},
+  };
+  let deleteBankAccountSheetApi = {
+    open: () => {},
+    close: () => {},
+  };
 
   const initBankAccountUnderReviewSheet = () => {
     const sheet = document.querySelector("[data-bank-account-under-review-sheet]");
@@ -8109,7 +8119,83 @@
     };
   };
 
-  const initBankAccountDetailsPanel = () => {
+  const initDeleteBankAccountSheet = () => {
+    const sheet = document.querySelector("[data-delete-bank-account-sheet]");
+    const container = document.querySelector(".phone-container");
+    if (!sheet) return { open: () => {}, close: () => {} };
+
+    const titleEl = sheet.querySelector("[data-delete-bank-account-title]");
+    const confirmBtn = sheet.querySelector("[data-delete-bank-account-confirm]");
+    const cancelBtn = sheet.querySelector(".delete-bank-account-sheet__cancel");
+    const closeButtons = sheet.querySelectorAll("[data-delete-bank-account-close]");
+    let snackbarTimeout = null;
+
+    const showSnackbar = (message) => {
+      const snackbar = container?.querySelector("[data-snackbar]");
+      if (!snackbar) return;
+      const text = snackbar.querySelector("[data-snackbar-text]");
+      if (text) text.textContent = message;
+      if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+        snackbarTimeout = null;
+      }
+      snackbar.hidden = false;
+      snackbar.classList.remove("is-visible");
+      void snackbar.offsetWidth;
+      requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+      snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove("is-visible");
+        snackbarTimeout = setTimeout(() => {
+          if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+        }, 320);
+      }, 2200);
+    };
+
+    const populate = () => {
+      const title = tr("Are you sure you want to delete this bank account?");
+      if (titleEl) titleEl.textContent = title;
+      sheet.setAttribute("aria-label", title);
+      if (confirmBtn) confirmBtn.textContent = tr("Confirm");
+      if (cancelBtn) cancelBtn.textContent = tr("Cancel");
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        populate();
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+        return;
+      }
+      const sheetPanel = sheet.querySelector(".currency-sheet__panel");
+      sheet.classList.remove("is-open");
+      const onEnd = () => {
+        if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+        sheetPanel?.removeEventListener("transitionend", onEnd);
+      };
+      sheetPanel?.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 300);
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    confirmBtn?.addEventListener("click", () => {
+      setOpen(false);
+      showSnackbar("Not in prototype");
+    });
+
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!sheet.classList.contains("is-open")) return;
+      populate();
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
+  };
+
+  const initBankAccountDetailsPanel = ({ openDeleteBankAccountSheet } = {}) => {
     const panel = document.querySelector("[data-bank-account-details-panel]");
     const container = document.querySelector(".phone-container");
     if (!panel) return { open: () => {}, close: () => {} };
@@ -8135,6 +8221,10 @@
     );
     const closeButtons = panel.querySelectorAll("[data-bank-account-details-close]");
     const supportBtn = panel.querySelector("[data-bank-account-details-support]");
+    const openDeleteSheet =
+      typeof openDeleteBankAccountSheet === "function"
+        ? openDeleteBankAccountSheet
+        : () => {};
     let snackbarTimeout = null;
     let activeListItem = null;
 
@@ -8280,7 +8370,7 @@
       btn.addEventListener("click", () => setOpen(false));
     });
     supportBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
-    deleteBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    deleteBtn?.addEventListener("click", () => openDeleteSheet());
 
     document.addEventListener("prototype-locale-changed", () => {
       if (!panel.classList.contains("is-open")) return;
@@ -8301,6 +8391,10 @@
         setOpen(true);
       },
       close: () => setOpen(false),
+      refreshIfOpen: () => {
+        if (!panel.classList.contains("is-open")) return;
+        populate();
+      },
     };
   };
 
@@ -10898,7 +10992,10 @@
   };
 
   const bankAccountUnderReviewSheetApi = initBankAccountUnderReviewSheet();
-  const bankAccountDetailsApi = initBankAccountDetailsPanel();
+  deleteBankAccountSheetApi = initDeleteBankAccountSheet();
+  bankAccountDetailsApi = initBankAccountDetailsPanel({
+    openDeleteBankAccountSheet: () => deleteBankAccountSheetApi.open(),
+  });
   const bankAccountsApi = initBankAccountsPanel({
     openBankAccountDetails: (opts) => bankAccountDetailsApi.open(opts),
   });

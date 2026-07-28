@@ -6130,6 +6130,40 @@ html[data-active-tab="wallet"] {
   text-align: center;
 }
 
+// Figma 7914:121543 — Delete bank account bottom sheet
+.currency-sheet.delete-bank-account-sheet {
+  z-index: 2270;
+
+  .currency-sheet__panel {
+    padding-bottom: 0;
+  }
+
+  .currency-sheet__body {
+    align-items: center;
+    gap: 0;
+    padding: 16px;
+  }
+}
+
+.delete-bank-account-sheet__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: #1b1d1d;
+}
+
+.phone-container h2.delete-bank-account-sheet__title {
+  margin: 0;
+  width: 100%;
+  max-width: 328px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
 .limits-panel__section-label {
   font-size: 12px;
   font-weight: 600;
@@ -18759,6 +18793,16 @@ button.finance-summary__stat-value--chevron {
 .currency-sheet__cancel.is-disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+[data-delete-bank-account-sheet] .currency-sheet__cancel.delete-bank-account-sheet__confirm {
+  background: #eb5347;
+  color: #ffffff;
+}
+
+[data-delete-bank-account-sheet] .currency-sheet__cancel.delete-bank-account-sheet__cancel {
+  background: #2d2f2f;
+  color: #ffffff;
 }
 
 // img icons (display + investment currency sheets): no circle fill
