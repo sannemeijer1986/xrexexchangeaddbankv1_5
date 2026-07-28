@@ -143,7 +143,7 @@
   };
 
   const BANK_ACCOUNT_LINKED_STATUS = {
-    2: { label: "Submitted", modifier: "submitted" },
+    2: { label: "Processing", modifier: "submitted" },
     3: { label: "Verified", modifier: "verified" },
     4: { label: "Issues", modifier: "issues" },
     5: { label: "Rejected", modifier: "rejected" },
@@ -447,7 +447,7 @@
           if (itemStatusEl) {
             const cfg =
               BANK_ACCOUNT_LINKED_STATUS[state] || BANK_ACCOUNT_LINKED_STATUS[3];
-            itemStatusEl.textContent = cfg.label;
+            itemStatusEl.textContent = tr(cfg.label);
             itemStatusEl.classList.remove(
               "bank-accounts-panel__list-status--submitted",
               "bank-accounts-panel__list-status--verified",
@@ -473,7 +473,7 @@
       if (statusEl && currency !== "usd") {
         const cfg =
           BANK_ACCOUNT_LINKED_STATUS[state] || BANK_ACCOUNT_LINKED_STATUS[3];
-        statusEl.textContent = cfg.label;
+        statusEl.textContent = tr(cfg.label);
         statusEl.classList.remove(
           "bank-accounts-panel__list-status--submitted",
           "bank-accounts-panel__list-status--verified",
@@ -6210,7 +6210,7 @@
       const twdState = states.twdBankAccount ?? 1;
       const cfg =
         BANK_ACCOUNT_LINKED_STATUS[twdState] || BANK_ACCOUNT_LINKED_STATUS[3];
-      statusEl.textContent = cfg.label;
+      statusEl.textContent = tr(cfg.label);
       statusEl.classList.remove(
         "twd-deposit-select__item-status--submitted",
         "twd-deposit-select__item-status--verified",
@@ -6408,7 +6408,7 @@
       if (!statusEl) return;
       const cfg =
         BANK_ACCOUNT_LINKED_STATUS[usdState] || BANK_ACCOUNT_LINKED_STATUS[3];
-      statusEl.textContent = cfg.label;
+      statusEl.textContent = tr(cfg.label);
       statusEl.classList.remove(
         "twd-deposit-select__item-status--submitted",
         "twd-deposit-select__item-status--verified",
@@ -8096,7 +8096,180 @@
     };
   };
 
-  const initBankAccountsPanel = ({ openBankAccountUnderReviewSheet } = {}) => {
+  const initBankAccountDetailsPanel = () => {
+    const panel = document.querySelector("[data-bank-account-details-panel]");
+    const container = document.querySelector(".phone-container");
+    if (!panel) return { open: () => {}, close: () => {} };
+
+    const titleEl = panel.querySelector(".bank-account-details-panel__title");
+    const nicknameEl = panel.querySelector("[data-bank-account-details-nickname]");
+    const statusEl = panel.querySelector("[data-bank-account-details-status]");
+    const noteLabelEl = panel.querySelector("[data-bank-account-details-note-label]");
+    const noteEl = panel.querySelector("[data-bank-account-details-note]");
+    const currencyEl = panel.querySelector("[data-bank-account-details-currency]");
+    const bankNameEl = panel.querySelector("[data-bank-account-details-bank-name]");
+    const accountNumberEl = panel.querySelector(
+      "[data-bank-account-details-account-number]",
+    );
+    const custodianEl = panel.querySelector("[data-bank-account-details-custodian]");
+    const lastUpdatedEl = panel.querySelector(
+      "[data-bank-account-details-last-updated]",
+    );
+    const fieldLabels = panel.querySelectorAll(
+      ".bank-account-details-panel__field-label",
+    );
+    const closeButtons = panel.querySelectorAll("[data-bank-account-details-close]");
+    const supportBtn = panel.querySelector("[data-bank-account-details-support]");
+    let snackbarTimeout = null;
+    let activeListItem = null;
+
+    const showSnackbar = (message) => {
+      const snackbar = container?.querySelector("[data-snackbar]");
+      if (!snackbar) return;
+      const text = snackbar.querySelector("[data-snackbar-text]");
+      if (text) text.textContent = message;
+      if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+        snackbarTimeout = null;
+      }
+      snackbar.hidden = false;
+      snackbar.classList.remove("is-visible");
+      void snackbar.offsetWidth;
+      requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+      snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove("is-visible");
+        snackbarTimeout = setTimeout(() => {
+          if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+        }, 320);
+      }, 2200);
+    };
+
+    const parseMetaValue = (text) => {
+      const raw = String(text || "").trim();
+      const idx = raw.indexOf(":");
+      return idx >= 0 ? raw.slice(idx + 1).trim() : raw;
+    };
+
+    const getCurrencyLabel = (currency) => {
+      if (currency === "twd") return tr("TWD (New Taiwan Dollar)");
+      if (currency === "usd") return tr("USD (US Dollar)");
+      return "";
+    };
+
+    const getCustodianName = (currency) => {
+      const section = document.querySelector(
+        `[data-bank-accounts-section="${currency}"]`,
+      );
+      const custodianLabel = section?.querySelector(
+        "[data-bank-accounts-custodian-label]",
+      );
+      if (custodianLabel) {
+        const raw = String(custodianLabel.textContent || "").trim();
+        const match = raw.match(/^Custodian:\s*(.+)$/i);
+        if (match) return match[1].trim();
+      }
+      const custodianKey =
+        document.documentElement.dataset[
+          currency === "twd"
+            ? "prototypeTwdCustodianActive"
+            : "prototypeUsdCustodianActive"
+        ] || "kgi-active";
+      return tr(
+        PROTOTYPE_CUSTODIAN_LABELS[custodianKey] ||
+          PROTOTYPE_CUSTODIAN_LABELS["kgi-active"],
+      );
+    };
+
+    const populate = () => {
+      const listItem = activeListItem;
+      const currency =
+        listItem?.getAttribute("data-bank-accounts-item") || "usd";
+      const title = tr("Bank account details");
+      if (titleEl) titleEl.textContent = title;
+      panel.setAttribute("aria-label", title);
+
+      const nickname =
+        listItem?.querySelector(".bank-accounts-panel__list-title")?.textContent ||
+        "";
+      const metaEls =
+        listItem?.querySelectorAll(".bank-accounts-panel__list-meta span") || [];
+      const bankName = parseMetaValue(metaEls[0]?.textContent);
+      const accountNumber = parseMetaValue(metaEls[1]?.textContent);
+
+      if (nicknameEl) nicknameEl.textContent = nickname.trim();
+      if (statusEl) statusEl.textContent = tr("Processing");
+      if (noteLabelEl) noteLabelEl.textContent = tr("Note");
+      if (noteEl) {
+        noteEl.textContent = tr(
+          "Bank account verification requires 1-3 business days.",
+        );
+      }
+      if (currencyEl) currencyEl.textContent = getCurrencyLabel(currency);
+      if (bankNameEl) bankNameEl.textContent = tr(bankName) || bankName;
+      if (accountNumberEl) accountNumberEl.textContent = accountNumber;
+      if (custodianEl) custodianEl.textContent = getCustodianName(currency);
+      if (lastUpdatedEl) lastUpdatedEl.textContent = "01/12/2021, 1:13:12";
+
+      const labelKeys = [
+        "Account nickname",
+        "Currency",
+        "Bank name",
+        "Account number",
+        "Custodian",
+        "Last updated",
+      ];
+      fieldLabels.forEach((labelEl, index) => {
+        const key = labelKeys[index];
+        if (key) labelEl.textContent = tr(key);
+      });
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        populate();
+        panel.hidden = false;
+        const scrollBody = panel.querySelector(".bank-account-details-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+        return;
+      }
+      panel.classList.remove("is-open");
+      const onEnd = () => {
+        if (!panel.classList.contains("is-open")) panel.hidden = true;
+        panel.removeEventListener("transitionend", onEnd);
+      };
+      panel.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 400);
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    supportBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open")) return;
+      populate();
+    });
+    document.addEventListener("prototype-twd-custodian-change", () => {
+      if (!panel.classList.contains("is-open")) return;
+      populate();
+    });
+    document.addEventListener("prototype-usd-custodian-change", () => {
+      if (!panel.classList.contains("is-open")) return;
+      populate();
+    });
+
+    return {
+      open: ({ listItem } = {}) => {
+        activeListItem = listItem || null;
+        setOpen(true);
+      },
+      close: () => setOpen(false),
+    };
+  };
+
+  const initBankAccountsPanel = ({ openBankAccountDetails } = {}) => {
     const panel = document.querySelector("[data-bank-accounts-panel]");
     const container = document.querySelector(".phone-container");
     if (!panel) {
@@ -8113,9 +8286,9 @@
     const closeButtons = panel.querySelectorAll("[data-bank-accounts-close]");
     const linkButtons = panel.querySelectorAll("[data-bank-accounts-link]");
     let snackbarTimeout = null;
-    const openSubmittedSheet =
-      typeof openBankAccountUnderReviewSheet === "function"
-        ? openBankAccountUnderReviewSheet
+    const openDetails =
+      typeof openBankAccountDetails === "function"
+        ? openBankAccountDetails
         : () => {};
     let onLinkTwd = () => {};
     let onLinkUsd = () => {};
@@ -8245,7 +8418,7 @@
         button.addEventListener("click", () => {
           const currency = button.getAttribute("data-bank-accounts-item");
           if (currency && isBankAccountSubmitted(currency)) {
-            openSubmittedSheet();
+            openDetails({ currency, listItem: button });
             return;
           }
           showSnackbar("Not in prototype");
@@ -10690,9 +10863,9 @@
   };
 
   const bankAccountUnderReviewSheetApi = initBankAccountUnderReviewSheet();
+  const bankAccountDetailsApi = initBankAccountDetailsPanel();
   const bankAccountsApi = initBankAccountsPanel({
-    openBankAccountUnderReviewSheet: () =>
-      bankAccountUnderReviewSheetApi.open(),
+    openBankAccountDetails: (opts) => bankAccountDetailsApi.open(opts),
   });
   const hidePanelInstant = (panel) => {
     if (!panel) return;
