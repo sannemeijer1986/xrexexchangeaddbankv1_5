@@ -20683,6 +20683,11 @@ div.currency-sheet__item-icon {
   color: #5AC47D;
 }
 
+.side-menu__item-meta[data-setup-status="continue"],
+.side-menu__item-meta[data-setup-status="reviewing"] {
+  color: #8FB8FF;
+}
+
 .side-menu__item[data-limits-open],
 .side-menu__item[data-bank-accounts-open],
 .side-menu__item[data-settings-open],

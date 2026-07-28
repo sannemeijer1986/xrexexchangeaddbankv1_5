@@ -8533,8 +8533,7 @@
         showNotInPrototype();
         return;
       }
-      setOpen(false);
-      setTimeout(() => baWizardApi?.openFromMenu?.(), 360);
+      baWizardApi?.openFromChecklist?.();
     };
 
     const setOpen = (nextOpen) => {
@@ -10968,12 +10967,13 @@
       flow: document.querySelector("[data-ba-wizard-flow]"),
     };
     if (!panels.intro || !panels.currency || !panels.how) {
-      return { openFromMenu: () => {}, closeAll: () => {} };
+      return { openFromMenu: () => {}, openFromChecklist: () => {}, closeAll: () => {} };
     }
 
     let selectedSetupCurrency = "twd";
     let skipCurrencyStep = false;
     let openedFromBankAccounts = false;
+    let openedFromChecklist = false;
     const shouldSkipCurrencyStep = () =>
       skipCurrencyStep || getPrototypeRegion() === "cayman";
     let continueFromHow =
@@ -11378,17 +11378,19 @@
 
     const closeAll = (opts = {}) => {
       closeWizardPanels(opts);
-      if (!openedFromBankAccounts) {
+      if (!openedFromBankAccounts && !openedFromChecklist) {
         setPhoneShellOpen(false);
       }
       skipCurrencyStep = false;
       openedFromBankAccounts = false;
+      openedFromChecklist = false;
     };
 
     closeBaWizardFlow = closeAll;
 
     const openIntro = () => {
       openedFromBankAccounts = false;
+      openedFromChecklist = false;
       closeAll({ instant: true });
       if (getPrototypeRegion() === "cayman") {
         selectedSetupCurrency = "usd";
@@ -11401,12 +11403,27 @@
       setPhoneShellOpen(true);
     };
 
+    const openFromChecklist = () => {
+      openedFromChecklist = true;
+      openedFromBankAccounts = false;
+      closeWizardPanels({ instant: true });
+      if (getPrototypeRegion() === "cayman") {
+        selectedSetupCurrency = "usd";
+        skipCurrencyStep = true;
+      } else {
+        skipCurrencyStep = false;
+      }
+      syncBaWizardIntroContent(getPrototypeRegion() === "cayman" ? "usd" : null);
+      setPanelOpen(panels.intro, true);
+    };
+
     const openForCurrency = (currency) => {
       selectedSetupCurrency = currency === "usd" ? "usd" : "twd";
       openedFromBankAccounts =
         document
           .querySelector("[data-bank-accounts-panel]")
           ?.classList.contains("is-open") ?? false;
+      openedFromChecklist = false;
       skipCurrencyStep = true;
       closeWizardPanels({ instant: true });
       syncBaWizardIntroContent(selectedSetupCurrency);
@@ -11757,6 +11774,7 @@
 
     return {
       openFromMenu: openIntro,
+      openFromChecklist,
       openForCurrency,
       openTwdHowFromDeposit,
       openUsdHowFromDeposit,
