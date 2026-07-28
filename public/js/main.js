@@ -8040,6 +8040,15 @@
   };
 
   const updateChecklistItems = () => {
+    const getChecklistBankCurListLabel = () => {
+      if (getPrototypeRegion() === "cayman") return tr("USD");
+      return tr("TWD and USD");
+    };
+    const getChecklistBankMetaCopy = () =>
+      tr("Link your bank account to deposit and withdraw {CurList} on XREX", {
+        CurList: getChecklistBankCurListLabel(),
+      });
+
     const signupItem = document.querySelector('[data-checklist-item="signup"]');
     const basicItem = document.querySelector('[data-checklist-item="basic"]');
     const identityItem = document.querySelector('[data-checklist-item="identity"]');
@@ -8230,8 +8239,10 @@
           );
         }
       }
-      if (meta)
+      if (meta) {
+        meta.textContent = getChecklistBankMetaCopy();
         meta.hidden = isBankProcessing || isBankApproved || isBankResubmission;
+      }
       bankItem.classList.toggle("is-processing", isBankProcessing);
       if (secondaryBtn) secondaryBtn.hidden = !isBankApproved;
       if (isBankApproved) bankItem.dataset.nonclickable = "true";
@@ -8488,6 +8499,7 @@
 
   const initSetupKycLocale = () => {
     document.addEventListener("prototype-locale-changed", syncSetupKycUi);
+    document.addEventListener("prototype-region-change", syncSetupKycUi);
   };
   const initChecklistPanel = ({ baWizardApi } = {}) => {
     const panel = document.querySelector("[data-setup-checklist]");

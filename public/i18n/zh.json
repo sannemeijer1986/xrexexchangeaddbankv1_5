@@ -680,8 +680,9 @@
 
   "_comment_bank_flow": "── Bank flow strings (Figma EN-AI/ZH-AI migration) ──────────────",
   "Set up": "設定",
-  "Link bank account": "綁定銀行帳戶",
-  "Link your bank account to deposit and withdraw TWD or USD on XREX, and more": "綁定您的銀行帳戶，在 XREX 進行 TWD 或 USD 的入金與出金，以及更多功能",
+  "Link bank account": "連結銀行帳戶",
+  "Link your bank account to deposit and withdraw {CurList} on XREX": "連結您的銀行帳戶，即可在 XREX 存入與提領 {CurList}",
+  "TWD and USD": "TWD 與 USD",
   "Link your bank account": "綁定您的銀行帳戶",
   "Link your TWD bank account": "綁定您的新臺幣銀行帳戶",
   "Link your KGI USD bank account": "綁定您的凱基銀行美元帳戶",
