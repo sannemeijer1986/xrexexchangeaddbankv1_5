@@ -95,17 +95,31 @@
     usdBankAccount: {
       storageKey: "xrexexchange.usdBankAccountState.v1",
       min: 1,
-      max: 6,
+      max: 7,
       labels: {
         1: "No USD BA",
         2: "USD BA submitted",
         3: "USD BA approved",
         4: "USD BA issues",
         5: "USD BA rejected",
-        6: "USD BA multiple",
+        6: "USD BA multiple (2)",
+        7: "USD BA max (5)",
       },
     },
   };
+
+  const CAYMAN_USD_MAX_ACCOUNTS = 5;
+
+  const getCaymanUsdLinkedAccountCount = (state) => {
+    const normalized = state ?? 1;
+    if (normalized <= 1) return 0;
+    if (normalized <= 5) return 1;
+    if (normalized === 6) return 2;
+    return CAYMAN_USD_MAX_ACCOUNTS;
+  };
+
+  const isCaymanUsdAtMaxAccounts = (state) =>
+    getPrototypeRegion() === "cayman" && (state ?? 1) >= 7;
 
   const PROTOTYPE_CUSTODIAN_CONFIGS = {
     twd: {
@@ -193,6 +207,7 @@
     4: { label: "{ResubmitReason}", modifier: "issues" },
     5: { label: "Rejected", modifier: "rejected" },
     6: { label: "Verified", modifier: "verified" },
+    7: { label: "Verified", modifier: "verified" },
   };
 
   const isBankAccountSubmitted = (currency) => {
@@ -207,7 +222,7 @@
 
   const isBankAccountVerified = (currency) => {
     const state = getBankAccountState(currency);
-    return state === 3 || state === 6;
+    return state === 3 || state === 6 || state === 7;
   };
 
   const isBankAccountIssues = (currency) => getBankAccountState(currency) === 4;
@@ -270,14 +285,15 @@
       twdState === 3 ||
       twdState === 6 ||
       usdState === 3 ||
-      usdState === 6
+      usdState === 6 ||
+      usdState === 7
     );
   };
 
   const getEffectiveBankState = () => {
     const twd = getBankAccountState("twd");
     const usd = getBankAccountState("usd");
-    if (twd === 3 || twd === 6 || usd === 3 || usd === 6) return 3;
+    if (twd === 3 || twd === 6 || usd === 3 || usd === 6 || usd === 7) return 3;
     if (twd === 2 || usd === 2) return 2;
     if (twd === 4 || usd === 4) return 4;
     if (twd === 5 || usd === 5) return 5;
@@ -356,7 +372,7 @@
     getPrototypeRegion() === "taiwan";
 
   const getUsdBankAccountMaxState = () =>
-    getPrototypeRegion() === "cayman" ? 6 : 5;
+    getPrototypeRegion() === "cayman" ? 7 : 5;
 
   const isTwdBankAccountLockedByRegion = () =>
     getPrototypeRegion() === "cayman";
@@ -607,38 +623,63 @@
       );
       const statusEl = section.querySelector("[data-bank-accounts-status]");
       const hintEl = section.querySelector("[data-bank-accounts-linked-hint]");
-      const isUsdMultiple =
-        currency === "usd" &&
-        state === 6 &&
-        getPrototypeRegion() === "cayman";
+      const editLinkEl = section.querySelector(
+        `[data-bank-accounts-edit="${currency}"]`,
+      );
+      const isCayman = getPrototypeRegion() === "cayman";
 
       const isLinked = state >= 2;
       const isTaiwan = getPrototypeRegion() === "taiwan";
       if (emptyEl) emptyEl.hidden = isLinked;
       if (linkedEl) linkedEl.hidden = !isLinked;
       if (custodianWrap) custodianWrap.hidden = !isLinked;
-      if (hintEl) hintEl.hidden = !isLinked || !isTaiwan;
+
+      if (hintEl) {
+        if (currency === "twd") {
+          hintEl.hidden = !isLinked || !isTaiwan;
+          if (!hintEl.hidden) {
+            hintEl.textContent = tr("One TWD account maximum");
+          }
+        } else if (currency === "usd") {
+          if (isTaiwan && isLinked) {
+            hintEl.hidden = false;
+            hintEl.textContent = tr("One USD account maximum");
+          } else if (isCayman && isCaymanUsdAtMaxAccounts(state)) {
+            hintEl.hidden = false;
+            hintEl.textContent = tr("Five USD accounts maximum");
+          } else {
+            hintEl.hidden = true;
+          }
+        }
+      }
+
+      if (editLinkEl && currency === "usd") {
+        editLinkEl.hidden = !isCayman || isCaymanUsdAtMaxAccounts(state);
+      }
 
       if (currency === "usd") {
-        const isCayman = getPrototypeRegion() === "cayman";
+        const usdAccountCount = isCayman
+          ? getCaymanUsdLinkedAccountCount(state)
+          : isLinked
+            ? 1
+            : 0;
+        section.querySelectorAll("[data-bank-accounts-usd-slot]").forEach((card) => {
+          const slot = parseInt(card.getAttribute("data-bank-accounts-usd-slot"), 10);
+          card.hidden = !slot || slot > usdAccountCount;
+        });
         const usdListItems = section.querySelectorAll(
           "[data-bank-accounts-item='usd']",
         );
-        const usdSecondaryCard = section.querySelector(
-          '[data-bank-accounts-usd-card="secondary"]',
-        );
-        if (usdSecondaryCard) usdSecondaryCard.hidden = !isUsdMultiple;
         usdListItems.forEach((item, index) => {
+          const card = item.closest("[data-bank-accounts-usd-slot]");
+          if (card?.hidden) return;
+
           const titleEl = item.querySelector(".bank-accounts-panel__list-title");
           if (titleEl) {
             if (isCayman) {
-              titleEl.textContent = isUsdMultiple
-                ? `My USD bank ${index + 1}`
-                : "My USD bank";
+              titleEl.textContent = `My USD bank ${index + 1}`;
             } else {
-              titleEl.textContent = isUsdMultiple
-                ? `My KGI bank ${index + 1}`
-                : "My KGI bank";
+              titleEl.textContent = "My KGI bank";
             }
           }
           const metaEls = item.querySelectorAll(
@@ -648,6 +689,12 @@
             metaEls[0].textContent = isCayman
               ? "Bank Name : CTBC Bank"
               : "Bank Name : KGI bank";
+          }
+          if (metaEls[1]) {
+            metaEls[1].textContent =
+              index === 0
+                ? "Account number : 12345678999"
+                : "Account number : 12345679000";
           }
           const itemStatusEl = item.querySelector("[data-bank-accounts-status]");
           if (itemStatusEl) {
@@ -777,12 +824,15 @@
 
     const usdEditLink = document.querySelector('[data-bank-accounts-edit="usd"]');
     if (usdEditLink) {
-      usdEditLink.textContent = isCayman
-        ? "Add USD bank account"
-        : "Add USD account";
+      const usdState = states.usdBankAccount ?? 1;
+      const atMax = isCayman && isCaymanUsdAtMaxAccounts(usdState);
+      usdEditLink.hidden = !isCayman || atMax;
+      if (!usdEditLink.hidden) {
+        usdEditLink.textContent = "Add USD bank account";
+      }
     }
 
-    if (!isCayman && (states.usdBankAccount ?? 1) === 6) {
+    if (!isCayman && (states.usdBankAccount ?? 1) >= 6) {
       setState("usdBankAccount", 5, { force: true });
     }
 
@@ -6679,12 +6729,16 @@
       const titleEl = selectPanel?.querySelector("[data-usd-deposit-bank-title]");
       const bankNameEl = selectPanel?.querySelector("[data-usd-deposit-bank-name]");
       const usdState = states.usdBankAccount ?? 1;
-      const isUsdMultiple = usdState === 6 && getPrototypeRegion() === "cayman";
+      const isUsdMultiple =
+        usdState === 6 && getPrototypeRegion() === "cayman";
+      const isUsdMaxAccounts = isCaymanUsdAtMaxAccounts(usdState);
 
       if (titleEl) {
         const isTaiwan = getPrototypeRegion() === "taiwan";
         titleEl.textContent =
-          isUsdMultiple || isTaiwan ? "My KGI Bank 1" : "My KGI Bank";
+          isUsdMaxAccounts || isUsdMultiple || isTaiwan
+            ? "My KGI Bank 1"
+            : "My KGI Bank";
       }
       if (bankNameEl) {
         bankNameEl.textContent = "Bank Name : KGI Bank";
