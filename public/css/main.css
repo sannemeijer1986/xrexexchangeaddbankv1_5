@@ -2779,6 +2779,9 @@ html[data-active-tab=wallet] .app-header__top {
   background: #1b1d1d;
   border-radius: 16px;
 }
+.twd-deposit-select__card[hidden] {
+  display: none !important;
+}
 
 .twd-deposit-select__item {
   display: flex;

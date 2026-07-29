@@ -6725,37 +6725,65 @@
     };
 
     const syncSelectPanelUi = () => {
-      const statusEl = selectPanel?.querySelector("[data-usd-deposit-status]");
-      const titleEl = selectPanel?.querySelector("[data-usd-deposit-bank-title]");
-      const bankNameEl = selectPanel?.querySelector("[data-usd-deposit-bank-name]");
       const usdState = states.usdBankAccount ?? 1;
-      const isUsdMultiple =
-        usdState === 6 && getPrototypeRegion() === "cayman";
-      const isUsdMaxAccounts = isCaymanUsdAtMaxAccounts(usdState);
-
-      if (titleEl) {
-        const isTaiwan = getPrototypeRegion() === "taiwan";
-        titleEl.textContent =
-          isUsdMaxAccounts || isUsdMultiple || isTaiwan
-            ? "My KGI Bank 1"
-            : "My KGI Bank";
-      }
-      if (bankNameEl) {
-        bankNameEl.textContent = "Bank Name : KGI Bank";
-      }
-      if (!statusEl) return;
-      const cfg =
-        BANK_ACCOUNT_LINKED_STATUS[usdState] || BANK_ACCOUNT_LINKED_STATUS[3];
-      statusEl.textContent = tr(cfg.label);
-      statusEl.classList.remove(
+      const isCayman = getPrototypeRegion() === "cayman";
+      const isTaiwan = getPrototypeRegion() === "taiwan";
+      const accountCount = isCayman
+        ? getCaymanUsdLinkedAccountCount(usdState)
+        : usdState >= 2
+          ? 1
+          : 0;
+      const statusModifiers = [
         "twd-deposit-select__item-status--submitted",
         "twd-deposit-select__item-status--verified",
         "twd-deposit-select__item-status--issues",
         "twd-deposit-select__item-status--rejected",
-      );
-      statusEl.classList.add(
-        `twd-deposit-select__item-status--${cfg.modifier}`,
-      );
+      ];
+
+      selectPanel?.querySelectorAll("[data-usd-deposit-slot]").forEach((card) => {
+        const slot = parseInt(card.getAttribute("data-usd-deposit-slot"), 10);
+        card.hidden = !slot || slot > accountCount;
+      });
+
+      selectPanel?.querySelectorAll("[data-usd-deposit-bank]").forEach((btn, index) => {
+        const card = btn.closest("[data-usd-deposit-slot]");
+        if (card?.hidden) return;
+
+        const titleEl = btn.querySelector("[data-usd-deposit-bank-title]");
+        const bankNameEl = btn.querySelector("[data-usd-deposit-bank-name]");
+        const accountNumberEl = btn.querySelector("[data-usd-deposit-account-number]");
+        const statusEl = btn.querySelector("[data-usd-deposit-status]");
+
+        if (titleEl) {
+          if (isCayman && accountCount > 1) {
+            titleEl.textContent = `My USD bank ${index + 1}`;
+          } else if (isTaiwan) {
+            titleEl.textContent = "My KGI Bank 1";
+          } else {
+            titleEl.textContent = isCayman ? "My USD bank" : "My KGI Bank";
+          }
+        }
+        if (bankNameEl) {
+          bankNameEl.textContent = isCayman
+            ? "Bank Name : CTBC Bank"
+            : "Bank Name : KGI Bank";
+        }
+        if (accountNumberEl) {
+          accountNumberEl.textContent =
+            index === 0
+              ? "Account number : 12345678999"
+              : "Account number : 12345679000";
+        }
+        if (statusEl) {
+          const cfg =
+            BANK_ACCOUNT_LINKED_STATUS[usdState] || BANK_ACCOUNT_LINKED_STATUS[3];
+          statusEl.textContent = tr(cfg.label);
+          statusEl.classList.remove(...statusModifiers);
+          statusEl.classList.add(
+            `twd-deposit-select__item-status--${cfg.modifier}`,
+          );
+        }
+      });
     };
 
     const closeAll = (opts = {}) => {
@@ -6825,14 +6853,16 @@
         setPanelOpen(selectPanel, false);
       });
     selectPanel
-      ?.querySelector("[data-usd-deposit-bank]")
-      ?.addEventListener("click", () => {
-        handleLinkedBankItemClick({
-          currency: "usd",
-          source: "deposit-select",
-          showSnackbar,
-          openUnderReview: () => openBankAccountUnderReviewSheet?.(),
-          openRejected: () => openBankAccountRejectedSheet?.(),
+      ?.querySelectorAll("[data-usd-deposit-bank]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          handleLinkedBankItemClick({
+            currency: "usd",
+            source: "deposit-select",
+            showSnackbar,
+            openUnderReview: () => openBankAccountUnderReviewSheet?.(),
+            openRejected: () => openBankAccountRejectedSheet?.(),
+          });
         });
       });
     selectPanel

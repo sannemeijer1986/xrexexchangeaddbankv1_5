@@ -2806,6 +2806,10 @@ html[data-active-tab="wallet"] {
 .twd-deposit-select__card {
   background: #1b1d1d;
   border-radius: 16px;
+
+  &[hidden] {
+    display: none !important;
+  }
 }
 
 .twd-deposit-select__item {
