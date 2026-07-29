@@ -747,10 +747,9 @@
     if (isCayman) {
       syncEmptyCardCopy("usd", {
         title: "Deposit and withdraw USD",
-        note:
-          "Add a USD bank account you already have: Most USD banks are supported.",
+        note: "Most banks are supported",
         btn: "Link USD bank account",
-        noteHighlight: false,
+        noteHighlight: true,
         btnVariant: "primary",
       });
     } else {
@@ -9240,12 +9239,20 @@
     const cancelBtn = sheet.querySelector(".delete-bank-account-sheet__cancel");
     const closeButtons = sheet.querySelectorAll("[data-delete-bank-account-close]");
     let snackbarTimeout = null;
+    let pendingDelete = { currency: "usd", onComplete: null };
 
-    const showSnackbar = (message) => {
+    const showSnackbar = (message, opts = {}) => {
       const snackbar = container?.querySelector("[data-snackbar]");
       if (!snackbar) return;
       const text = snackbar.querySelector("[data-snackbar-text]");
+      const iconImg = snackbar.querySelector(".snackbar__icon img");
       if (text) text.textContent = message;
+      if (iconImg) {
+        iconImg.src =
+          opts.variant === "success"
+            ? "assets/icon_success_screen.svg"
+            : "assets/icon_info_circle_blue.svg";
+      }
       if (snackbarTimeout) {
         clearTimeout(snackbarTimeout);
         snackbarTimeout = null;
@@ -9291,8 +9298,13 @@
       btn.addEventListener("click", () => setOpen(false));
     });
     confirmBtn?.addEventListener("click", () => {
+      const { currency, onComplete } = pendingDelete;
+      const stateKey = currency === "twd" ? "twdBankAccount" : "usdBankAccount";
       setOpen(false);
-      showSnackbar("Not in prototype");
+      setState(stateKey, 1, { force: true });
+      showSnackbar(tr("Your bank account has been deleted"), { variant: "success" });
+      onComplete?.();
+      pendingDelete = { currency: "usd", onComplete: null };
     });
 
     document.addEventListener("prototype-locale-changed", () => {
@@ -9301,7 +9313,14 @@
     });
 
     return {
-      open: () => setOpen(true),
+      open: (opts = {}) => {
+        pendingDelete = {
+          currency: opts.currency === "twd" ? "twd" : "usd",
+          onComplete:
+            typeof opts.onComplete === "function" ? opts.onComplete : null,
+        };
+        setOpen(true);
+      },
       close: () => setOpen(false),
     };
   };
@@ -9507,7 +9526,23 @@
       btn.addEventListener("click", () => setOpen(false));
     });
     supportBtn?.addEventListener("click", () => showSnackbar("Not in prototype"));
-    deleteBtn?.addEventListener("click", () => openDeleteSheet());
+    deleteBtn?.addEventListener("click", () => {
+      const currency =
+        activeListItem?.getAttribute("data-bank-accounts-item") || "usd";
+      const state = getBankAccountState(currency);
+      if (
+        currency === "usd" &&
+        state === 6 &&
+        getPrototypeRegion() === "cayman"
+      ) {
+        showSnackbar("Not in prototype");
+        return;
+      }
+      openDeleteSheet({
+        currency,
+        onComplete: () => setOpen(false),
+      });
+    });
 
     document.addEventListener("prototype-locale-changed", () => {
       if (!panel.classList.contains("is-open")) return;
@@ -10147,7 +10182,10 @@
     });
 
     deleteBtn?.addEventListener("click", () => {
-      openDeleteBankAccountSheet?.();
+      openDeleteBankAccountSheet?.({
+        currency: "twd",
+        onComplete: () => setOpen(false),
+      });
     });
 
     document.addEventListener("prototype-locale-changed", () => {
@@ -10708,7 +10746,10 @@
     });
 
     deleteBtn?.addEventListener("click", () => {
-      openDeleteBankAccountSheet?.();
+      openDeleteBankAccountSheet?.({
+        currency: "usd",
+        onComplete: () => setOpen(false),
+      });
     });
 
     document.addEventListener("prototype-locale-changed", () => {
@@ -10783,7 +10824,7 @@
     let twdBankDetailsApi;
     twdBankDetailsApi = initTwdBankDetailsPanel({
       showSnackbar,
-      openDeleteBankAccountSheet: () => deleteBankAccountSheetApi.open(),
+      openDeleteBankAccountSheet: (opts) => deleteBankAccountSheetApi.open(opts),
       onSubmitComplete: () => {
         bankAccountSuccessApi.setOnDismiss(() => {
           finalizeBankAccountSuccessDismiss();
@@ -10876,7 +10917,7 @@
     let usdBankDetailsApi;
     usdBankDetailsApi = initUsdBankDetailsPanel({
       showSnackbar,
-      openDeleteBankAccountSheet: () => deleteBankAccountSheetApi.open(),
+      openDeleteBankAccountSheet: (opts) => deleteBankAccountSheetApi.open(opts),
       onSubmitComplete: () => {
         bankAccountSuccessApi.setOnDismiss(() => {
           finalizeBankAccountSuccessDismiss();
@@ -12436,7 +12477,7 @@
   const bankAccountUnderReviewSheetApi = initBankAccountUnderReviewSheet();
   deleteBankAccountSheetApi = initDeleteBankAccountSheet();
   bankAccountDetailsApi = initBankAccountDetailsPanel({
-    openDeleteBankAccountSheet: () => deleteBankAccountSheetApi.open(),
+    openDeleteBankAccountSheet: (opts) => deleteBankAccountSheetApi.open(opts),
   });
   const bankAccountsApi = initBankAccountsPanel({
     openBankAccountDetails: (opts) => bankAccountDetailsApi.open(opts),
