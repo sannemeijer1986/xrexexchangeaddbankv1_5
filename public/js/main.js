@@ -638,15 +638,15 @@
         if (currency === "twd") {
           hintEl.hidden = !isLinked || !isTaiwan;
           if (!hintEl.hidden) {
-            hintEl.textContent = tr("One TWD account maximum");
+            hintEl.textContent = tr("Max 1 account for TWD");
           }
         } else if (currency === "usd") {
           if (isTaiwan && isLinked) {
             hintEl.hidden = false;
-            hintEl.textContent = tr("One USD account maximum");
+            hintEl.textContent = tr("Max 1 account for USD");
           } else if (isCayman && isCaymanUsdAtMaxAccounts(state)) {
             hintEl.hidden = false;
-            hintEl.textContent = tr("Five USD accounts maximum");
+            hintEl.textContent = tr("Max 5 accounts for USD");
           } else {
             hintEl.hidden = true;
           }
