@@ -284,10 +284,21 @@
     return 1;
   };
 
+  const hasRejectedBankAccountForRegion = () => {
+    const region = getPrototypeRegion();
+    const twd = getBankAccountState("twd");
+    const usd = getBankAccountState("usd");
+    if (region === "taiwan") return twd === 5 || usd === 5;
+    if (region === "cayman") return usd === 5;
+    return false;
+  };
+
   const shouldOpenBankWizardIntro = () => {
     const basic = states.basic ?? 1;
     const identity = states.identity ?? 1;
-    return basic >= 2 && identity >= 2 && getEffectiveBankState() === 1;
+    if (basic < 2 || identity < 2) return false;
+    if (getEffectiveBankState() === 1) return true;
+    return hasRejectedBankAccountForRegion();
   };
 
   const getQuestionnaireMode = () => ({
