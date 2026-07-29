@@ -761,6 +761,8 @@
   "Bank account under review": "銀行帳戶審核中",
   "You can deposit or withdraw with this linked bank account once it's approved.": "審核通過後，您即可使用此已連結的銀行帳戶進行入金或出金。",
   "Bank account verification takes 1–3 business days from the time you submitted.": "銀行帳戶驗證自提交日起需 1–3 個工作天。",
+  "Bank account rejected": "銀行帳戶已拒絕",
+  "We couldn't verify the bank account you submitted, so it can't be used on XREX. You can link a different account instead — go to Bank accounts in the side menu to manage your linked accounts.": "我們無法驗證您提交的銀行帳戶，因此無法在 XREX 上使用。您可以改為連結其他帳戶 — 請至側邊選單的「銀行帳戶」管理已連結的帳戶。",
   "Rejected": "已拒絕",
   "Provide your TWD bank account details": "提供您的 TWD 銀行帳戶資料",
   "Provide your USD bank account details": "提供您的 USD 銀行帳戶資料",

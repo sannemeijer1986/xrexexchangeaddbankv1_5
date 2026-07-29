@@ -5234,6 +5234,34 @@
             </div>
         </div>
 
+        <!-- Figma 7927:75844 — Bank account rejected bottom sheet -->
+        <div
+            class="currency-sheet bank-account-rejected-sheet"
+            data-bank-account-rejected-sheet
+            hidden
+            aria-modal="true"
+            role="dialog"
+            aria-label="Bank account rejected"
+        >
+            <button class="currency-sheet__backdrop" type="button" data-bank-account-rejected-close aria-label="Close"></button>
+            <div class="currency-sheet__panel bank-account-rejected-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body bank-account-rejected-sheet__body">
+                    <div class="bank-account-rejected-sheet__content">
+                        <h2 class="bank-account-rejected-sheet__title" data-bank-account-rejected-title>Bank account rejected</h2>
+                        <p class="bank-account-rejected-sheet__desc" data-bank-account-rejected-desc>
+                            We couldn't verify the bank account you submitted, so it can't be used on XREX. You can link a different account instead — go to Bank accounts in the side menu to manage your linked accounts.
+                        </p>
+                    </div>
+                </div>
+                <div class="currency-sheet__footer">
+                    <button class="currency-sheet__cancel" type="button" data-bank-account-rejected-close>Understood</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Figma 7914:121543 — Delete bank account bottom sheet -->
         <div
             class="currency-sheet delete-bank-account-sheet"

@@ -6171,6 +6171,52 @@ html[data-active-tab=wallet] .app-header__top {
   text-align: center;
 }
 
+.currency-sheet.bank-account-rejected-sheet {
+  z-index: 2260;
+}
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__panel {
+  padding-bottom: 0;
+}
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__body {
+  align-items: center;
+  gap: 0;
+  padding: 16px;
+}
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__footer {
+  padding: 16px;
+}
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__cancel {
+  background: #2d2f2f;
+}
+
+.bank-account-rejected-sheet__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 328px;
+}
+
+.phone-container h2.bank-account-rejected-sheet__title {
+  margin: 0;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
+.phone-container p.bank-account-rejected-sheet__desc {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #9b9c9c;
+  text-align: center;
+}
+
 .currency-sheet.delete-bank-account-sheet {
   z-index: 2270;
 }

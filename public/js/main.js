@@ -235,6 +235,7 @@
     showSnackbar,
     openDetails,
     openUnderReview,
+    openRejected,
   }) => {
     if (isBankAccountSubmitted(currency) && source !== "bank-accounts") {
       openUnderReview?.();
@@ -242,6 +243,14 @@
     }
     if (isBankAccountIssues(currency)) {
       openBankResubmit({ currency, source });
+      return;
+    }
+    if (isBankAccountRejected(currency)) {
+      if (source === "bank-accounts") {
+        openDetails?.({ currency, listItem });
+      } else {
+        openRejected?.();
+      }
       return;
     }
     if (canOpenBankAccountDetails(currency)) {
@@ -252,9 +261,7 @@
   };
 
   const canOpenBankAccountDetails = (currency) =>
-    isBankAccountSubmitted(currency) ||
-    isBankAccountVerified(currency) ||
-    isBankAccountRejected(currency);
+    isBankAccountSubmitted(currency) || isBankAccountVerified(currency);
 
   const hasVerifiedBankAccount = () => {
     const twdState = getBankAccountState("twd");
@@ -6344,6 +6351,7 @@
     baWizardApi,
     showSnackbar = () => {},
     openBankAccountUnderReviewSheet,
+    openBankAccountRejectedSheet,
   } = {}) => {
     const setupPanel = document.querySelector("[data-twd-deposit-setup]");
     const selectPanel = document.querySelector("[data-twd-deposit-select]");
@@ -6482,6 +6490,7 @@
           source: "deposit-select",
           showSnackbar,
           openUnderReview: () => openBankAccountUnderReviewSheet?.(),
+          openRejected: () => openBankAccountRejectedSheet?.(),
         });
       });
 
@@ -6506,6 +6515,7 @@
     baWizardApi,
     showSnackbar = () => {},
     openBankAccountUnderReviewSheet,
+    openBankAccountRejectedSheet,
   } = {}) => {
     const setupPanel = document.querySelector("[data-usd-deposit-setup]");
     const selectPanel = document.querySelector("[data-usd-deposit-select]");
@@ -6685,6 +6695,7 @@
           source: "deposit-select",
           showSnackbar,
           openUnderReview: () => openBankAccountUnderReviewSheet?.(),
+          openRejected: () => openBankAccountRejectedSheet?.(),
         });
       });
     selectPanel
@@ -9030,6 +9041,63 @@
       if (highlightEl) {
         highlightEl.textContent = tr(
           "Bank account verification takes 1–3 business days from the time you submitted.",
+        );
+      }
+      sheet.setAttribute("aria-label", title);
+      closeButtons.forEach((btn) => {
+        if (btn.classList.contains("currency-sheet__cancel")) {
+          btn.textContent = tr("Understood");
+        }
+      });
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        populate();
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+        return;
+      }
+      const sheetPanel = sheet.querySelector(".currency-sheet__panel");
+      sheet.classList.remove("is-open");
+      const onEnd = () => {
+        if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+        sheetPanel?.removeEventListener("transitionend", onEnd);
+      };
+      sheetPanel?.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 300);
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!sheet.classList.contains("is-open")) return;
+      populate();
+    });
+
+    return {
+      open: () => setOpen(true),
+      close: () => setOpen(false),
+    };
+  };
+
+  const initBankAccountRejectedSheet = () => {
+    const sheet = document.querySelector("[data-bank-account-rejected-sheet]");
+    if (!sheet) return { open: () => {}, close: () => {} };
+
+    const titleEl = sheet.querySelector("[data-bank-account-rejected-title]");
+    const descEl = sheet.querySelector("[data-bank-account-rejected-desc]");
+    const closeButtons = sheet.querySelectorAll(
+      "[data-bank-account-rejected-close]",
+    );
+
+    const populate = () => {
+      const title = tr("Bank account rejected");
+      if (titleEl) titleEl.textContent = title;
+      if (descEl) {
+        descEl.textContent = tr(
+          "We couldn't verify the bank account you submitted, so it can't be used on XREX. You can link a different account instead — go to Bank accounts in the side menu to manage your linked accounts.",
         );
       }
       sheet.setAttribute("aria-label", title);
@@ -12239,6 +12307,7 @@
   const bankAccountsApi = initBankAccountsPanel({
     openBankAccountDetails: (opts) => bankAccountDetailsApi.open(opts),
   });
+  const bankAccountRejectedSheetApi = initBankAccountRejectedSheet();
   const hidePanelInstant = (panel) => {
     if (!panel) return;
     panel.classList.add("is-instant");
@@ -12337,12 +12406,14 @@
     showSnackbar,
     openBankAccountUnderReviewSheet: () =>
       bankAccountUnderReviewSheetApi.open(),
+    openBankAccountRejectedSheet: () => bankAccountRejectedSheetApi.open(),
   });
   usdDepositApi = initUsdDepositFlow({
     baWizardApi,
     showSnackbar,
     openBankAccountUnderReviewSheet: () =>
       bankAccountUnderReviewSheetApi.open(),
+    openBankAccountRejectedSheet: () => bankAccountRejectedSheetApi.open(),
   });
   onAddSendTwdSelected = (mode) => twdDepositApi.openFromAddSend(mode);
   onAddSendUsdSelected = (mode) => usdDepositApi.openFromAddSend(mode);
