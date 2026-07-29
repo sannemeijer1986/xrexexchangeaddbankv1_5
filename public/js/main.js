@@ -491,6 +491,27 @@
     return twdState >= 2 || usdState >= 2;
   };
 
+  const isUsdFiatFlowRegion = () => {
+    const region = getPrototypeRegion();
+    return region === "taiwan" || region === "cayman";
+  };
+
+  const getUsdBankLinkIntroCopy = () => {
+    if (getPrototypeRegion() === "cayman") {
+      return {
+        title: "Link your USD bank account",
+        desc:
+          "Use a bank account in your name to deposit and withdraw USD on XREX.",
+      };
+    }
+    return {
+      title:
+        'Link your KGI USD bank account<span class="ba-wizard-intro__title-accent"></span>',
+      desc:
+        "Use a KGI bank account in your name to deposit and withdraw USD on XREX.",
+    };
+  };
+
   const shouldOpenSetupFlowFromMenu = () => {
     const region = getPrototypeRegion();
     if (region === "taiwan" && !hasLinkedBankAccounts()) return true;
@@ -6329,7 +6350,7 @@
           onAddSendTwdSelected(mode);
           return;
         }
-        if (asset === "usd" && getPrototypeRegion() === "cayman") {
+        if (asset === "usd" && isUsdFiatFlowRegion()) {
           const mode = panel.dataset.addSendMode === "send" ? "send" : "add";
           onAddSendUsdSelected(mode);
           return;
@@ -6577,6 +6598,7 @@
     const setPanelOpen = (panel, nextOpen, opts = {}) => {
       if (!panel) return;
       if (nextOpen) {
+        if (panel === setupPanel) syncSetupPanelContent();
         panel.hidden = false;
         requestAnimationFrame(() => {
           panel.classList.add("is-open");
@@ -6604,6 +6626,17 @@
       setTimeout(onEnd, 400);
     };
 
+    const syncSetupPanelContent = () => {
+      const titleEl = setupPanel?.querySelector(".ba-wizard-intro__title");
+      const descEl = setupPanel?.querySelector(".ba-wizard-intro__desc");
+      const copy = getUsdBankLinkIntroCopy();
+      if (titleEl) titleEl.innerHTML = tr(copy.title);
+      if (descEl) descEl.innerHTML = tr(copy.desc);
+      if (setupPanel) {
+        setupPanel.setAttribute("aria-label", tr("Link your USD bank account"));
+      }
+    };
+
     const syncSelectPanelCopy = (mode = selectPanelMode) => {
       const resolvedMode = resolveSelectMode(mode);
       selectPanelMode = resolvedMode;
@@ -6612,9 +6645,9 @@
       const titleEl = selectPanel?.querySelector("[data-usd-fiat-select-title]");
       const leadEl = selectPanel?.querySelector("[data-usd-fiat-select-lead]");
       const addLinkEl = selectPanel?.querySelector("[data-usd-deposit-add-bank]");
-      if (titleEl) titleEl.textContent = copy.title;
-      if (leadEl) leadEl.textContent = copy.lead;
-      if (selectPanel) selectPanel.setAttribute("aria-label", copy.ariaLabel);
+      if (titleEl) titleEl.textContent = tr(copy.title);
+      if (leadEl) leadEl.textContent = tr(copy.lead);
+      if (selectPanel) selectPanel.setAttribute("aria-label", tr(copy.ariaLabel));
       if (addLinkEl) addLinkEl.hidden = !canShowAddUsdBankLink(resolvedMode);
     };
 
@@ -6626,7 +6659,9 @@
       const isUsdMultiple = usdState === 6 && getPrototypeRegion() === "cayman";
 
       if (titleEl) {
-        titleEl.textContent = isUsdMultiple ? "My KGI Bank 1" : "My KGI Bank";
+        const isTaiwan = getPrototypeRegion() === "taiwan";
+        titleEl.textContent =
+          isUsdMultiple || isTaiwan ? "My KGI Bank 1" : "My KGI Bank";
       }
       if (bankNameEl) {
         bankNameEl.textContent = "Bank Name : KGI Bank";
@@ -6668,7 +6703,7 @@
     };
 
     const openFromAddSend = (mode = "add") => {
-      if (getPrototypeRegion() !== "cayman") return;
+      if (!isUsdFiatFlowRegion()) return;
       entrySource = mode === "send" ? "send" : "add";
       if (hasUsdBank()) {
         openSelect({ mode: entrySource });
@@ -6718,6 +6753,13 @@
         ?.querySelector('[aria-label="Support"]')
         ?.addEventListener("click", () => showSnackbar("Not in prototype"));
     });
+
+    document.addEventListener("prototype-region-change", () => {
+      if (setupPanel?.classList.contains("is-open") && !setupPanel.hidden) {
+        syncSetupPanelContent();
+      }
+    });
+    syncSetupPanelContent();
 
     return {
       openFromAddSend,
@@ -11561,10 +11603,10 @@
       if (isCayman) {
         copy =
           currency === "usd"
-            ? BA_WIZARD_INTRO_COPY.caymanUsd
+            ? getUsdBankLinkIntroCopy()
             : BA_WIZARD_INTRO_COPY.caymanMenu;
       } else if (currency === "usd") {
-        copy = BA_WIZARD_INTRO_COPY.usd;
+        copy = getUsdBankLinkIntroCopy();
       } else if (currency === "twd") {
         copy = BA_WIZARD_INTRO_COPY.twd;
       } else {
