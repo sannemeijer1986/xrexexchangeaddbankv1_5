@@ -6396,6 +6396,7 @@
         getEntrySource: () => null,
         clearEntrySource: () => {},
         syncSelectPanelUi: () => {},
+        refreshSelectPanelIfOpen: () => {},
       };
     }
 
@@ -6485,6 +6486,28 @@
       setPanelOpen(selectPanel, true);
     };
 
+    const isPanelOpen = (panel) =>
+      Boolean(panel?.classList.contains("is-open") && !panel.hidden);
+
+    const refreshSelectPanelIfOpen = () => {
+      if (isPanelOpen(selectPanel)) {
+        if (!hasTwdBank()) {
+          setPanelOpen(selectPanel, false);
+          setPanelOpen(setupPanel, true);
+          return;
+        }
+        syncSelectPanelUi();
+        syncSelectPanelCopy(
+          entrySource === "send" || entrySource === "add" ? entrySource : "add",
+        );
+        return;
+      }
+      if (isPanelOpen(setupPanel) && hasTwdBank()) {
+        setPanelOpen(setupPanel, false, { instant: true });
+        openSelect({ mode: entrySource || "add" });
+      }
+    };
+
     const openFromAddSend = (mode = "add") => {
       if (getPrototypeRegion() === "cayman") return;
       entrySource = mode === "send" ? "send" : "add";
@@ -6538,6 +6561,7 @@
       closeAll,
       closeSetup,
       syncSelectPanelUi,
+      refreshSelectPanelIfOpen,
       getEntrySource: () => entrySource,
       clearEntrySource,
     };
@@ -6696,10 +6720,24 @@
       setPanelOpen(selectPanel, true);
     };
 
+    const isPanelOpen = (panel) =>
+      Boolean(panel?.classList.contains("is-open") && !panel.hidden);
+
     const refreshSelectPanelIfOpen = () => {
-      if (!selectPanel?.classList.contains("is-open") || selectPanel.hidden) return;
-      syncSelectPanelUi();
-      syncSelectPanelCopy(selectPanelMode);
+      if (isPanelOpen(selectPanel)) {
+        if (!hasUsdBank()) {
+          setPanelOpen(selectPanel, false);
+          setPanelOpen(setupPanel, true);
+          return;
+        }
+        syncSelectPanelUi();
+        syncSelectPanelCopy(selectPanelMode);
+        return;
+      }
+      if (isPanelOpen(setupPanel) && hasUsdBank()) {
+        setPanelOpen(setupPanel, false, { instant: true });
+        openSelect({ mode: entrySource || selectPanelMode || "add" });
+      }
     };
 
     const openFromAddSend = (mode = "add") => {
@@ -9956,7 +9994,8 @@
       syncSubmit();
     };
 
-    const fillAll = () => {
+    const fillAll = (opts = {}) => {
+      const includeConsents = opts.includeConsents !== false;
       state.bankSelected = true;
       state.branchSelected = true;
 
@@ -9977,13 +10016,23 @@
         if (input) input.value = autofillValues.get(input) || "";
       });
 
-      consentButtons.forEach((btn) => {
-        const key = btn.getAttribute("data-twd-bank-details-consent");
-        if (key) state.consents[key] = true;
-        btn.setAttribute("aria-pressed", "true");
-        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
-        if (icon) icon.src = "assets/icon_checkbox_on.svg";
-      });
+      if (includeConsents) {
+        consentButtons.forEach((btn) => {
+          const key = btn.getAttribute("data-twd-bank-details-consent");
+          if (key) state.consents[key] = true;
+          btn.setAttribute("aria-pressed", "true");
+          const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+          if (icon) icon.src = "assets/icon_checkbox_on.svg";
+        });
+      } else {
+        consentButtons.forEach((btn) => {
+          const key = btn.getAttribute("data-twd-bank-details-consent");
+          if (key) state.consents[key] = false;
+          btn.setAttribute("aria-pressed", "false");
+          const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+          if (icon) icon.src = "assets/icon_checkbox_off.svg";
+        });
+      }
 
       syncSubmit();
     };
@@ -10078,8 +10127,13 @@
       if (submitBtn.disabled) return;
       if (isResubmitMode) {
         setState("twdBankAccount", 2, { force: true });
-        setOpen(false);
-        showSnackbar?.("Not in prototype");
+        const gen = (submitGeneration += 1);
+        if (loaderEl) loaderEl.hidden = false;
+        window.setTimeout(() => {
+          if (gen !== submitGeneration) return;
+          if (loaderEl) loaderEl.hidden = true;
+          onSubmitComplete?.();
+        }, SUBMIT_LOADER_MS);
         return;
       }
       setState("twdBankAccount", 2, { force: true });
@@ -10105,7 +10159,7 @@
       const mode = opts.mode || "setup";
       setResubmitMode(mode === "resubmit");
       if (mode === "resubmit") {
-        fillAll();
+        fillAll({ includeConsents: false });
         resubmitSnapshot = captureResubmitSnapshot();
         syncSubmit();
       } else {
@@ -10410,23 +10464,35 @@
       syncSubmit();
     };
 
-    const fillTaiwanAll = () => {
+    const fillTaiwanAll = (opts = {}) => {
+      const includeConsents = opts.includeConsents !== false;
       taiwanTextInputs.forEach((input) => {
         if (input) input.value = taiwanAutofillValues.get(input) || "";
       });
 
-      taiwanConsentButtons.forEach((btn) => {
-        const key = btn.getAttribute("data-usd-bank-details-consent");
-        if (key) taiwanState.consents[key] = true;
-        btn.setAttribute("aria-pressed", "true");
-        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
-        if (icon) icon.src = "assets/icon_checkbox_on.svg";
-      });
+      if (includeConsents) {
+        taiwanConsentButtons.forEach((btn) => {
+          const key = btn.getAttribute("data-usd-bank-details-consent");
+          if (key) taiwanState.consents[key] = true;
+          btn.setAttribute("aria-pressed", "true");
+          const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+          if (icon) icon.src = "assets/icon_checkbox_on.svg";
+        });
+      } else {
+        taiwanConsentButtons.forEach((btn) => {
+          const key = btn.getAttribute("data-usd-bank-details-consent");
+          if (key) taiwanState.consents[key] = false;
+          btn.setAttribute("aria-pressed", "false");
+          const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+          if (icon) icon.src = "assets/icon_checkbox_off.svg";
+        });
+      }
 
       syncSubmit();
     };
 
-    const fillCaymanAll = () => {
+    const fillCaymanAll = (opts = {}) => {
+      const includeConsents = opts.includeConsents !== false;
       const currentUsdState = states.usdBankAccount ?? 1;
       caymanState.bankAdded = true;
       caymanState.holderName = true;
@@ -10460,20 +10526,30 @@
       if (caymanUploadFilled) caymanUploadFilled.hidden = false;
       if (caymanUploadAgainBtn) caymanUploadAgainBtn.hidden = false;
 
-      caymanConsentButtons.forEach((btn) => {
-        const key = btn.getAttribute("data-usd-cayman-consent");
-        if (key) caymanState.consents[key] = true;
-        btn.setAttribute("aria-pressed", "true");
-        const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
-        if (icon) icon.src = "assets/icon_checkbox_on.svg";
-      });
+      if (includeConsents) {
+        caymanConsentButtons.forEach((btn) => {
+          const key = btn.getAttribute("data-usd-cayman-consent");
+          if (key) caymanState.consents[key] = true;
+          btn.setAttribute("aria-pressed", "true");
+          const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+          if (icon) icon.src = "assets/icon_checkbox_on.svg";
+        });
+      } else {
+        caymanConsentButtons.forEach((btn) => {
+          const key = btn.getAttribute("data-usd-cayman-consent");
+          if (key) caymanState.consents[key] = false;
+          btn.setAttribute("aria-pressed", "false");
+          const icon = btn.querySelector(".twd-bank-details-panel__consent-icon");
+          if (icon) icon.src = "assets/icon_checkbox_off.svg";
+        });
+      }
 
       syncSubmit();
     };
 
-    const fillAll = () => {
-      if (isCaymanRegion()) fillCaymanAll();
-      else fillTaiwanAll();
+    const fillAll = (opts = {}) => {
+      if (isCaymanRegion()) fillCaymanAll(opts);
+      else fillTaiwanAll(opts);
     };
 
     const setOpen = (nextOpen, opts = {}) => {
@@ -10609,8 +10685,13 @@
       if (submitBtn.disabled) return;
       if (isResubmitMode) {
         setState("usdBankAccount", 2, { force: true });
-        setOpen(false);
-        showSnackbar?.("Not in prototype");
+        const gen = (submitGeneration += 1);
+        if (loaderEl) loaderEl.hidden = false;
+        window.setTimeout(() => {
+          if (gen !== submitGeneration) return;
+          if (loaderEl) loaderEl.hidden = true;
+          onSubmitComplete?.();
+        }, SUBMIT_LOADER_MS);
         return;
       }
       const currentUsdState = states.usdBankAccount ?? 1;
@@ -10643,7 +10724,7 @@
       setResubmitMode(mode === "resubmit");
       syncRegionVariant();
       if (mode === "resubmit") {
-        fillAll();
+        fillAll({ includeConsents: false });
         resubmitSnapshot = captureResubmitSnapshot();
         syncSubmit();
       } else {
