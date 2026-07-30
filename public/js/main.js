@@ -6665,6 +6665,16 @@
     const openFromAddSend = (mode = "add") => {
       if (getPrototypeRegion() === "cayman") return;
       entrySource = mode === "send" ? "send" : "add";
+      if (
+        getPrototypeRegion() === "taiwan" &&
+        isBankAccountVerified("twd")
+      ) {
+        openFiatFlowPlaceholder?.open?.({
+          currency: "twd",
+          mode: entrySource,
+        });
+        return;
+      }
       if (hasTwdBank()) {
         openSelect({ mode: entrySource });
         return;
@@ -6945,6 +6955,16 @@
     const openFromAddSend = (mode = "add") => {
       if (!isUsdFiatFlowRegion()) return;
       entrySource = mode === "send" ? "send" : "add";
+      if (
+        getPrototypeRegion() === "taiwan" &&
+        isBankAccountVerified("usd")
+      ) {
+        openFiatFlowPlaceholder?.open?.({
+          currency: "usd",
+          mode: entrySource,
+        });
+        return;
+      }
       if (hasUsdBank()) {
         openSelect({ mode: entrySource });
         return;
