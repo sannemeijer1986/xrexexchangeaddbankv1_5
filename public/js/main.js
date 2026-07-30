@@ -6352,6 +6352,7 @@
       }
 
       if (!nextOpen) {
+        fiatFlowPlaceholderApi?.close?.({ instant: Boolean(opts.instant) });
         const isFiatFlowPanelOpen = (selector) => {
           const el = document.querySelector(selector);
           return Boolean(el?.classList.contains("is-open") && !el.hidden);
@@ -6429,11 +6430,113 @@
     };
   };
 
+  const getFiatFlowPlaceholderCopy = ({ currency, mode }) => {
+    const isDeposit = mode !== "send";
+    if (currency === "twd") {
+      return isDeposit
+        ? {
+            title: "TWD deposit",
+            content: "Page : Your XREX TWD deposit account",
+            icon: "assets/TWD.svg",
+            ariaLabel: "TWD deposit",
+          }
+        : {
+            title: "TWD bank withdrawal",
+            content: "Page : How much TWD would you like to withdraw",
+            icon: "assets/TWD.svg",
+            ariaLabel: "TWD bank withdrawal",
+          };
+    }
+    return isDeposit
+      ? {
+          title: "USD deposit",
+          content: "Page : Your XREX USD deposit account",
+          icon: "assets/USD.svg",
+          ariaLabel: "USD deposit",
+        }
+      : {
+          title: "USD bank withdrawal",
+          content: "Page : How much USD would you like to withdraw",
+          icon: "assets/USD.svg",
+          ariaLabel: "USD bank withdrawal",
+        };
+  };
+
+  const initFiatFlowPlaceholderPanel = ({ showSnackbar = () => {} } = {}) => {
+    const panel = document.querySelector("[data-fiat-flow-placeholder]");
+    if (!panel) {
+      return { open: () => {}, close: () => {}, isOpen: () => false };
+    }
+
+    const titleEl = panel.querySelector("[data-fiat-flow-placeholder-title]");
+    const contentEl = panel.querySelector("[data-fiat-flow-placeholder-content]");
+    const iconEl = panel.querySelector("[data-fiat-flow-placeholder-icon]");
+    const closeButtons = panel.querySelectorAll(
+      "[data-fiat-flow-placeholder-close]",
+    );
+
+    const populate = ({ currency, mode }) => {
+      const copy = getFiatFlowPlaceholderCopy({ currency, mode });
+      if (titleEl) titleEl.textContent = tr(copy.title);
+      if (contentEl) contentEl.textContent = tr(copy.content);
+      if (iconEl) iconEl.src = copy.icon;
+      panel.setAttribute("aria-label", tr(copy.ariaLabel));
+    };
+
+    const setOpen = (nextOpen, opts = {}) => {
+      if (nextOpen) {
+        panel.hidden = false;
+        requestAnimationFrame(() => panel.classList.add("is-open"));
+        return;
+      }
+      if (opts.instant) {
+        panel.classList.add("is-instant");
+        panel.classList.remove("is-open");
+        panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
+        return;
+      }
+      panel.classList.remove("is-open");
+      const onEnd = () => {
+        if (!panel.classList.contains("is-open")) panel.hidden = true;
+        panel.removeEventListener("transitionend", onEnd);
+      };
+      panel.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 400);
+    };
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setOpen(false));
+    });
+    panel
+      .querySelector('[aria-label="Support"]')
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open")) return;
+      const currency = panel.dataset.fiatFlowCurrency || "twd";
+      const mode = panel.dataset.fiatFlowMode || "add";
+      populate({ currency, mode });
+    });
+
+    return {
+      open: ({ currency = "twd", mode = "add" } = {}) => {
+        panel.dataset.fiatFlowCurrency = currency;
+        panel.dataset.fiatFlowMode = mode;
+        populate({ currency, mode });
+        setOpen(true);
+      },
+      close: (opts) => setOpen(false, opts),
+      isOpen: () => Boolean(panel.classList.contains("is-open") && !panel.hidden),
+    };
+  };
+
   const initTwdDepositFlow = ({
     baWizardApi,
     showSnackbar = () => {},
     openBankAccountUnderReviewSheet,
     openBankAccountRejectedSheet,
+    openFiatFlowPlaceholder,
   } = {}) => {
     const setupPanel = document.querySelector("[data-twd-deposit-setup]");
     const selectPanel = document.querySelector("[data-twd-deposit-select]");
@@ -6518,6 +6621,7 @@
     };
 
     const closeAll = (opts = {}) => {
+      openFiatFlowPlaceholder?.close?.({ instant: Boolean(opts.instant) });
       setPanelOpen(setupPanel, false, opts);
       setPanelOpen(selectPanel, false, opts);
     };
@@ -6586,7 +6690,10 @@
 
     selectPanel
       ?.querySelector("[data-twd-deposit-select-close]")
-      ?.addEventListener("click", () => setPanelOpen(selectPanel, false));
+      ?.addEventListener("click", () => {
+        openFiatFlowPlaceholder?.close?.({ instant: true });
+        setPanelOpen(selectPanel, false);
+      });
     selectPanel
       ?.querySelector("[data-twd-deposit-bank]")
       ?.addEventListener("click", () => {
@@ -6596,6 +6703,13 @@
           showSnackbar,
           openUnderReview: () => openBankAccountUnderReviewSheet?.(),
           openRejected: () => openBankAccountRejectedSheet?.(),
+          openDetails: () => {
+            if (!isBankAccountVerified("twd")) return;
+            openFiatFlowPlaceholder?.open?.({
+              currency: "twd",
+              mode: entrySource === "send" ? "send" : "add",
+            });
+          },
         });
       });
 
@@ -6622,6 +6736,7 @@
     showSnackbar = () => {},
     openBankAccountUnderReviewSheet,
     openBankAccountRejectedSheet,
+    openFiatFlowPlaceholder,
   } = {}) => {
     const setupPanel = document.querySelector("[data-usd-deposit-setup]");
     const selectPanel = document.querySelector("[data-usd-deposit-select]");
@@ -6792,6 +6907,7 @@
     };
 
     const closeAll = (opts = {}) => {
+      openFiatFlowPlaceholder?.close?.({ instant: Boolean(opts.instant) });
       setPanelOpen(setupPanel, false, opts);
       setPanelOpen(selectPanel, false, opts);
     };
@@ -6855,6 +6971,7 @@
     selectPanel
       ?.querySelector("[data-usd-deposit-select-close]")
       ?.addEventListener("click", () => {
+        openFiatFlowPlaceholder?.close?.({ instant: true });
         setPanelOpen(selectPanel, false);
       });
     selectPanel
@@ -6867,6 +6984,16 @@
             showSnackbar,
             openUnderReview: () => openBankAccountUnderReviewSheet?.(),
             openRejected: () => openBankAccountRejectedSheet?.(),
+            openDetails: () => {
+              if (!isBankAccountVerified("usd")) return;
+              openFiatFlowPlaceholder?.open?.({
+                currency: "usd",
+                mode:
+                  resolveSelectMode(entrySource || selectPanelMode) === "send"
+                    ? "send"
+                    : "add",
+              });
+            },
           });
         });
       });
@@ -9178,6 +9305,11 @@
     closeAll: () => {},
     clearEntrySource: () => {},
     refreshSelectPanelIfOpen: () => {},
+  };
+  let fiatFlowPlaceholderApi = {
+    open: () => {},
+    close: () => {},
+    isOpen: () => false,
   };
   let bankAccountDetailsApi = {
     open: () => {},
@@ -12658,12 +12790,14 @@
     bankAccountSuccessApi,
     bankAccountsApi,
   });
+  fiatFlowPlaceholderApi = initFiatFlowPlaceholderPanel({ showSnackbar });
   twdDepositApi = initTwdDepositFlow({
     baWizardApi,
     showSnackbar,
     openBankAccountUnderReviewSheet: () =>
       bankAccountUnderReviewSheetApi.open(),
     openBankAccountRejectedSheet: () => bankAccountRejectedSheetApi.open(),
+    openFiatFlowPlaceholder: fiatFlowPlaceholderApi,
   });
   usdDepositApi = initUsdDepositFlow({
     baWizardApi,
@@ -12671,6 +12805,7 @@
     openBankAccountUnderReviewSheet: () =>
       bankAccountUnderReviewSheetApi.open(),
     openBankAccountRejectedSheet: () => bankAccountRejectedSheetApi.open(),
+    openFiatFlowPlaceholder: fiatFlowPlaceholderApi,
   });
   onAddSendTwdSelected = (mode) => twdDepositApi.openFromAddSend(mode);
   onAddSendUsdSelected = (mode) => usdDepositApi.openFromAddSend(mode);
