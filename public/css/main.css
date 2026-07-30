@@ -2103,15 +2103,25 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .bank-accounts-panel__edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   align-self: flex-end;
   padding: 0;
   border: 0;
   background: transparent;
   font-size: 14px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: normal;
   color: #3f78ff;
   cursor: pointer;
+}
+
+.bank-accounts-panel__edit-link-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  display: block;
 }
 
 .bank-account-details-panel {
@@ -2761,6 +2771,9 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .twd-deposit-select__add-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   align-self: flex-end;
   padding: 0;
   border: 0;
@@ -2773,6 +2786,13 @@ html[data-active-tab=wallet] .app-header__top {
 }
 .twd-deposit-select__add-link[hidden] {
   display: none !important;
+}
+
+.twd-deposit-select__add-link-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  display: block;
 }
 
 .twd-deposit-select__card {

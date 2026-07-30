@@ -828,7 +828,8 @@
       const atMax = isCayman && isCaymanUsdAtMaxAccounts(usdState);
       usdEditLink.hidden = !isCayman || atMax;
       if (!usdEditLink.hidden) {
-        usdEditLink.textContent = "Add USD bank account";
+        const label = usdEditLink.querySelector("[data-bank-accounts-edit-label]");
+        if (label) label.textContent = tr("Link USD bank account");
       }
     }
 
@@ -6721,7 +6722,11 @@
       if (titleEl) titleEl.textContent = tr(copy.title);
       if (leadEl) leadEl.textContent = tr(copy.lead);
       if (selectPanel) selectPanel.setAttribute("aria-label", tr(copy.ariaLabel));
-      if (addLinkEl) addLinkEl.hidden = !canShowAddUsdBankLink(resolvedMode);
+      if (addLinkEl) {
+        const addLabel = addLinkEl.querySelector("[data-usd-deposit-add-bank-label]");
+        if (addLabel) addLabel.textContent = tr("Link USD bank account");
+        addLinkEl.hidden = !canShowAddUsdBankLink(resolvedMode);
+      }
     };
 
     const syncSelectPanelUi = () => {
@@ -6878,6 +6883,11 @@
     document.addEventListener("prototype-region-change", () => {
       if (setupPanel?.classList.contains("is-open") && !setupPanel.hidden) {
         syncSetupPanelContent();
+      }
+    });
+    document.addEventListener("prototype-locale-changed", () => {
+      if (selectPanel?.classList.contains("is-open") && !selectPanel.hidden) {
+        syncSelectPanelCopy(selectPanelMode);
       }
     });
     syncSetupPanelContent();
