@@ -8938,24 +8938,12 @@
 
     openButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const openChecklist = () => {
-          if (container && container.classList.contains("is-menu-open")) {
-            container.classList.remove("is-menu-open");
-            setTimeout(() => setOpen(true), 220);
-          } else {
-            setOpen(true);
-          }
-        };
-
-        if (
-          button.matches("[data-setup-btn-primary]") &&
-          shouldOpenBankWizardIntro()
-        ) {
-          baWizardApi?.openFromMenu?.();
-          return;
+        if (container && container.classList.contains("is-menu-open")) {
+          container.classList.remove("is-menu-open");
+          setTimeout(() => setOpen(true), 220);
+        } else {
+          setOpen(true);
         }
-
-        openChecklist();
       });
     });
     closeButtons.forEach((button) => {
@@ -9219,12 +9207,12 @@
       if (titleEl) titleEl.textContent = title;
       if (bodyEl) {
         bodyEl.textContent = tr(
-          "You can deposit or withdraw with this linked bank account once it's approved.",
+          "You'll be able to deposit or withdraw with this bank account once it's approved.",
         );
       }
       if (highlightEl) {
         highlightEl.textContent = tr(
-          "Bank account verification takes 1–3 business days from the time you submitted.",
+          "Verification usually takes 1–3 business days from submission.",
         );
       }
       sheet.setAttribute("aria-label", title);
@@ -9281,13 +9269,13 @@
       if (titleEl) titleEl.textContent = title;
       if (descEl) {
         descEl.textContent = tr(
-          "We couldn't verify the bank account you submitted, so it can't be used on XREX. You can link a different account instead — go to Bank accounts in the side menu to manage your linked accounts.",
+          "We couldn't verify the bank account you submitted, so it can't be used on XREX. To link a different account, go to Bank accounts in the side menu.",
         );
       }
       sheet.setAttribute("aria-label", title);
       closeButtons.forEach((btn) => {
         if (btn.classList.contains("currency-sheet__cancel")) {
-          btn.textContent = tr("Understood");
+          btn.textContent = tr("Got it");
         }
       });
     };
