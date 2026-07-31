@@ -12912,45 +12912,14 @@
   const finalizeBankAccountSuccessDismiss = () => {
     hideBankLinkStackInstant();
     closeBaWizardFlow({ instant: true });
+    addSendPanelApi?.close?.({ instant: true });
     fiatFlowPlaceholderApi?.close?.({ instant: true });
-
-    const twdEntry = twdDepositApi?.getEntrySource?.();
-    const usdEntry = usdDepositApi?.getEntrySource?.();
-    const container = document.querySelector(".phone-container");
-    const bankAccountsPanel = document.querySelector("[data-bank-accounts-panel]");
-
-    if (twdEntry === "add" || twdEntry === "send") {
-      if (bankAccountsPanel) hidePanelInstant(bankAccountsPanel);
-      if (container) {
-        container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
-      }
-      twdDepositApi?.closeAll?.({ instant: true });
-      if (getPrototypeRegion() === "taiwan") {
-        addSendPanelApi?.open?.(twdEntry);
-        return;
-      }
-      twdDepositApi?.openSelect?.({ mode: twdEntry });
-      return;
-    }
-
-    if (usdEntry === "add" || usdEntry === "send") {
-      if (bankAccountsPanel) hidePanelInstant(bankAccountsPanel);
-      if (container) {
-        container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
-      }
-      usdDepositApi?.closeAll?.({ instant: true });
-      if (getPrototypeRegion() === "taiwan") {
-        addSendPanelApi?.open?.(usdEntry);
-        return;
-      }
-      usdDepositApi?.openSelect?.({ mode: usdEntry });
-      return;
-    }
-
     twdDepositApi?.closeAll?.({ instant: true });
     twdDepositApi?.clearEntrySource?.();
     usdDepositApi?.closeAll?.({ instant: true });
     usdDepositApi?.clearEntrySource?.();
+
+    const bankAccountsPanel = document.querySelector("[data-bank-accounts-panel]");
     const alreadyOpen = bankAccountsPanel?.classList.contains("is-open");
     if (hasLinkedBankAccounts()) {
       if (alreadyOpen) {
