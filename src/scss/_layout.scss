@@ -6385,6 +6385,11 @@ html[data-active-tab="wallet"] {
   .currency-sheet__cancel {
     background: #2d2f2f;
   }
+
+  .bank-account-status-sheet__footer {
+    padding: 16px;
+    gap: 12px;
+  }
 }
 
 .bank-account-under-review-sheet__content {
@@ -6432,6 +6437,26 @@ html[data-active-tab="wallet"] {
   text-align: center;
 }
 
+.bank-account-under-review-sheet__account,
+.bank-account-rejected-sheet__account {
+  width: 100%;
+  max-width: 328px;
+  margin: 16px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
+.currency-sheet.bank-account-under-review-sheet,
+.currency-sheet.bank-account-rejected-sheet {
+  .bank-account-status-sheet__footer {
+    padding: 16px;
+    gap: 12px;
+  }
+}
+
 // Figma 7927:75844 — Bank account rejected bottom sheet
 .currency-sheet.bank-account-rejected-sheet {
   z-index: 2260;
@@ -6452,6 +6477,11 @@ html[data-active-tab="wallet"] {
 
   .currency-sheet__cancel {
     background: #2d2f2f;
+  }
+
+  .bank-account-status-sheet__footer {
+    padding: 16px;
+    gap: 12px;
   }
 }
 

@@ -5355,10 +5355,12 @@
                             <p class="bank-account-under-review-sheet__desc-body" data-bank-account-under-review-desc-body>You'll be able to deposit or withdraw with this bank account once it's approved.</p>
                             <p class="bank-account-under-review-sheet__desc-note" data-bank-account-under-review-desc-highlight>Verification usually takes 1–3 business days from submission.</p>
                         </div>
+                        <p class="bank-account-under-review-sheet__account" data-bank-account-under-review-account hidden>My CTBC bank · •••• 8999</p>
                     </div>
                 </div>
-                <div class="currency-sheet__footer">
-                    <button class="currency-sheet__cancel" type="button" data-bank-account-under-review-close>Understood</button>
+                <div class="currency-sheet__footer currency-sheet__footer--split bank-account-status-sheet__footer">
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-bank-account-under-review-dismiss>Understood</button>
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-bank-account-under-review-go-bank-accounts>Go to Bank accounts</button>
                 </div>
             </div>
         </div>
@@ -5381,12 +5383,14 @@
                     <div class="bank-account-rejected-sheet__content">
                         <h2 class="bank-account-rejected-sheet__title" data-bank-account-rejected-title>Bank account rejected</h2>
                         <p class="bank-account-rejected-sheet__desc" data-bank-account-rejected-desc>
-                            We couldn't verify the bank account you submitted, so it can't be used on XREX. To link a different account, go to 'Bank accounts' in the side menu.
+                            We couldn't verify the bank account you submitted, so it can't be used on XREX. To link a different account, go to Bank accounts in the side menu.
                         </p>
+                        <p class="bank-account-rejected-sheet__account" data-bank-account-rejected-account hidden>My CTBC bank · •••• 8999</p>
                     </div>
                 </div>
-                <div class="currency-sheet__footer">
-                    <button class="currency-sheet__cancel" type="button" data-bank-account-rejected-close>Got it</button>
+                <div class="currency-sheet__footer currency-sheet__footer--split bank-account-status-sheet__footer">
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-bank-account-rejected-dismiss>Got it</button>
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-bank-account-rejected-go-bank-accounts>Go to Bank accounts</button>
                 </div>
             </div>
         </div>

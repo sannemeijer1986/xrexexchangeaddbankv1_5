@@ -6259,6 +6259,10 @@ html[data-active-tab=wallet] .app-header__top {
 .currency-sheet.bank-account-under-review-sheet .currency-sheet__cancel {
   background: #2d2f2f;
 }
+.currency-sheet.bank-account-under-review-sheet .bank-account-status-sheet__footer {
+  padding: 16px;
+  gap: 12px;
+}
 
 .bank-account-under-review-sheet__content {
   display: flex;
@@ -6305,6 +6309,24 @@ html[data-active-tab=wallet] .app-header__top {
   text-align: center;
 }
 
+.bank-account-under-review-sheet__account,
+.bank-account-rejected-sheet__account {
+  width: 100%;
+  max-width: 328px;
+  margin: 16px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: center;
+}
+
+.currency-sheet.bank-account-under-review-sheet .bank-account-status-sheet__footer,
+.currency-sheet.bank-account-rejected-sheet .bank-account-status-sheet__footer {
+  padding: 16px;
+  gap: 12px;
+}
+
 .currency-sheet.bank-account-rejected-sheet {
   z-index: 2260;
 }
@@ -6321,6 +6343,10 @@ html[data-active-tab=wallet] .app-header__top {
 }
 .currency-sheet.bank-account-rejected-sheet .currency-sheet__cancel {
   background: #2d2f2f;
+}
+.currency-sheet.bank-account-rejected-sheet .bank-account-status-sheet__footer {
+  padding: 16px;
+  gap: 12px;
 }
 
 .bank-account-rejected-sheet__content {

@@ -229,6 +229,103 @@
 
   const isBankAccountRejected = (currency) => getBankAccountState(currency) === 5;
 
+  const getLinkedBankAccountDisplay = (currency) => {
+    const defaults = {
+      twd: { nickname: "My CTBC bank", accountNumber: "12345678999" },
+      usd: { nickname: "My KGI Bank 1", accountNumber: "12345678999" },
+    };
+    const fallback = defaults[currency] || defaults.twd;
+
+    if (currency === "twd") {
+      const source =
+        document.querySelector('[data-bank-accounts-item="twd"]') ||
+        document.querySelector("[data-twd-deposit-bank]");
+      if (!source) return fallback;
+
+      const nickname = source
+        .querySelector(
+          ".bank-accounts-panel__list-title, .twd-deposit-select__item-title",
+        )
+        ?.textContent?.trim();
+      const accountMeta = source.querySelectorAll(
+        ".bank-accounts-panel__list-meta span, .twd-deposit-select__item-meta span",
+      );
+      const accountLine =
+        accountMeta[accountMeta.length - 1]?.textContent?.trim() || "";
+      const accountNumber = accountLine
+        .replace(/^Account number\s*:\s*/i, "")
+        .trim();
+
+      return {
+        nickname: nickname || fallback.nickname,
+        accountNumber: accountNumber || fallback.accountNumber,
+      };
+    }
+
+    const source =
+      document.querySelector(
+        '[data-bank-accounts-usd-slot]:not([hidden]) [data-bank-accounts-item="usd"]',
+      ) ||
+      document.querySelector('[data-bank-accounts-item="usd"]') ||
+      document.querySelector("[data-usd-deposit-bank]");
+    if (!source) return fallback;
+
+    const nickname = source
+      .querySelector(
+        ".bank-accounts-panel__list-title, [data-usd-deposit-bank-title]",
+      )
+      ?.textContent?.trim();
+    const accountLine =
+      source
+        .querySelector(
+          ".bank-accounts-panel__list-meta span:last-child, [data-usd-deposit-account-number]",
+        )
+        ?.textContent?.trim() || "";
+    const accountNumber = accountLine
+      .replace(/^Account number\s*:\s*/i, "")
+      .trim();
+
+    return {
+      nickname: nickname || fallback.nickname,
+      accountNumber: accountNumber || fallback.accountNumber,
+    };
+  };
+
+  const formatLinkedBankAccountSheetLabel = ({ nickname, accountNumber }) => {
+    const digits = String(accountNumber || "").replace(/\D/g, "");
+    const last4 = digits.slice(-4) || "8999";
+    return `${nickname} · •••• ${last4}`;
+  };
+
+  const tryOpenTaiwanAddSendFiatDirect = ({
+    currency,
+    mode,
+    openFiatFlowPlaceholder,
+    openBankAccountUnderReviewSheet,
+    openBankAccountRejectedSheet,
+  }) => {
+    if (getPrototypeRegion() !== "taiwan") return false;
+
+    const normalizedMode = mode === "send" ? "send" : "add";
+    if (isBankAccountVerified(currency)) {
+      openFiatFlowPlaceholder?.open?.({ currency, mode: normalizedMode });
+      return true;
+    }
+    if (isBankAccountSubmitted(currency)) {
+      openBankAccountUnderReviewSheet?.open?.({ currency });
+      return true;
+    }
+    if (isBankAccountIssues(currency)) {
+      openBankResubmit({ currency, source: "add-send" });
+      return true;
+    }
+    if (isBankAccountRejected(currency)) {
+      openBankAccountRejectedSheet?.open?.({ currency });
+      return true;
+    }
+    return false;
+  };
+
   const getChecklistResubmitCurrency = () => {
     if (getBankAccountState("twd") === 4) return "twd";
     if (getBankAccountState("usd") === 4) return "usd";
@@ -6666,13 +6763,14 @@
       if (getPrototypeRegion() === "cayman") return;
       entrySource = mode === "send" ? "send" : "add";
       if (
-        getPrototypeRegion() === "taiwan" &&
-        isBankAccountVerified("twd")
-      ) {
-        openFiatFlowPlaceholder?.open?.({
+        tryOpenTaiwanAddSendFiatDirect({
           currency: "twd",
           mode: entrySource,
-        });
+          openFiatFlowPlaceholder,
+          openBankAccountUnderReviewSheet,
+          openBankAccountRejectedSheet,
+        })
+      ) {
         return;
       }
       if (hasTwdBank()) {
@@ -6711,8 +6809,10 @@
           currency: "twd",
           source: "deposit-select",
           showSnackbar,
-          openUnderReview: () => openBankAccountUnderReviewSheet?.(),
-          openRejected: () => openBankAccountRejectedSheet?.(),
+          openUnderReview: () =>
+            openBankAccountUnderReviewSheet?.open?.({ currency: "twd" }),
+          openRejected: () =>
+            openBankAccountRejectedSheet?.open?.({ currency: "twd" }),
           openDetails: () => {
             if (!isBankAccountVerified("twd")) return;
             openFiatFlowPlaceholder?.open?.({
@@ -6956,13 +7056,14 @@
       if (!isUsdFiatFlowRegion()) return;
       entrySource = mode === "send" ? "send" : "add";
       if (
-        getPrototypeRegion() === "taiwan" &&
-        isBankAccountVerified("usd")
-      ) {
-        openFiatFlowPlaceholder?.open?.({
+        tryOpenTaiwanAddSendFiatDirect({
           currency: "usd",
           mode: entrySource,
-        });
+          openFiatFlowPlaceholder,
+          openBankAccountUnderReviewSheet,
+          openBankAccountRejectedSheet,
+        })
+      ) {
         return;
       }
       if (hasUsdBank()) {
@@ -7002,8 +7103,10 @@
             currency: "usd",
             source: "deposit-select",
             showSnackbar,
-            openUnderReview: () => openBankAccountUnderReviewSheet?.(),
-            openRejected: () => openBankAccountRejectedSheet?.(),
+            openUnderReview: () =>
+              openBankAccountUnderReviewSheet?.open?.({ currency: "usd" }),
+            openRejected: () =>
+              openBankAccountRejectedSheet?.open?.({ currency: "usd" }),
             openDetails: () => {
               if (!isBankAccountVerified("usd")) return;
               openFiatFlowPlaceholder?.open?.({
@@ -9331,6 +9434,10 @@
     close: () => {},
     isOpen: () => false,
   };
+  let addSendPanelApi = {
+    open: () => {},
+    close: () => {},
+  };
   let bankAccountDetailsApi = {
     open: () => {},
     close: () => {},
@@ -9341,7 +9448,9 @@
     close: () => {},
   };
 
-  const initBankAccountUnderReviewSheet = () => {
+  const initBankAccountUnderReviewSheet = ({
+    onGoToBankAccounts = () => {},
+  } = {}) => {
     const sheet = document.querySelector("[data-bank-account-under-review-sheet]");
     if (!sheet) return { open: () => {}, close: () => {} };
 
@@ -9350,11 +9459,22 @@
     const highlightEl = sheet.querySelector(
       "[data-bank-account-under-review-desc-highlight]",
     );
-    const closeButtons = sheet.querySelectorAll(
+    const accountEl = sheet.querySelector(
+      "[data-bank-account-under-review-account]",
+    );
+    const dismissButtons = sheet.querySelectorAll(
+      "[data-bank-account-under-review-dismiss]",
+    );
+    const backdropBtn = sheet.querySelector(
       "[data-bank-account-under-review-close]",
     );
+    const goToBankAccountsBtn = sheet.querySelector(
+      "[data-bank-account-under-review-go-bank-accounts]",
+    );
+    let sheetCurrency = "twd";
 
-    const populate = () => {
+    const populate = ({ currency = sheetCurrency } = {}) => {
+      sheetCurrency = currency === "usd" ? "usd" : "twd";
       const title = tr("Bank account under review");
       if (titleEl) titleEl.textContent = title;
       if (bodyEl) {
@@ -9367,17 +9487,23 @@
           "Verification usually takes 1–3 business days from submission.",
         );
       }
+      if (accountEl) {
+        const account = getLinkedBankAccountDisplay(sheetCurrency);
+        accountEl.textContent = formatLinkedBankAccountSheetLabel(account);
+        accountEl.hidden = false;
+      }
       sheet.setAttribute("aria-label", title);
-      closeButtons.forEach((btn) => {
-        if (btn.classList.contains("currency-sheet__cancel")) {
-          btn.textContent = tr("Understood");
-        }
+      dismissButtons.forEach((btn) => {
+        btn.textContent = tr("Understood");
       });
+      if (goToBankAccountsBtn) {
+        goToBankAccountsBtn.textContent = tr("Go to Bank accounts");
+      }
     };
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
-        populate();
+        populate({ currency: sheetCurrency });
         sheet.hidden = false;
         requestAnimationFrame(() => sheet.classList.add("is-open"));
         return;
@@ -9392,31 +9518,51 @@
       setTimeout(onEnd, 300);
     };
 
-    closeButtons.forEach((btn) => {
-      btn.addEventListener("click", () => setOpen(false));
+    const dismiss = () => setOpen(false);
+
+    backdropBtn?.addEventListener("click", dismiss);
+    dismissButtons.forEach((btn) => {
+      btn.addEventListener("click", dismiss);
+    });
+    goToBankAccountsBtn?.addEventListener("click", () => {
+      dismiss();
+      onGoToBankAccounts();
     });
     document.addEventListener("prototype-locale-changed", () => {
       if (!sheet.classList.contains("is-open")) return;
-      populate();
+      populate({ currency: sheetCurrency });
     });
 
     return {
-      open: () => setOpen(true),
+      open: ({ currency = "twd" } = {}) => {
+        sheetCurrency = currency === "usd" ? "usd" : "twd";
+        populate({ currency: sheetCurrency });
+        setOpen(true);
+      },
       close: () => setOpen(false),
     };
   };
 
-  const initBankAccountRejectedSheet = () => {
+  const initBankAccountRejectedSheet = ({
+    onGoToBankAccounts = () => {},
+  } = {}) => {
     const sheet = document.querySelector("[data-bank-account-rejected-sheet]");
     if (!sheet) return { open: () => {}, close: () => {} };
 
     const titleEl = sheet.querySelector("[data-bank-account-rejected-title]");
     const descEl = sheet.querySelector("[data-bank-account-rejected-desc]");
-    const closeButtons = sheet.querySelectorAll(
-      "[data-bank-account-rejected-close]",
+    const accountEl = sheet.querySelector("[data-bank-account-rejected-account]");
+    const dismissButtons = sheet.querySelectorAll(
+      "[data-bank-account-rejected-dismiss]",
     );
+    const backdropBtn = sheet.querySelector("[data-bank-account-rejected-close]");
+    const goToBankAccountsBtn = sheet.querySelector(
+      "[data-bank-account-rejected-go-bank-accounts]",
+    );
+    let sheetCurrency = "twd";
 
-    const populate = () => {
+    const populate = ({ currency = sheetCurrency } = {}) => {
+      sheetCurrency = currency === "usd" ? "usd" : "twd";
       const title = tr("Bank account rejected");
       if (titleEl) titleEl.textContent = title;
       if (descEl) {
@@ -9424,17 +9570,23 @@
           "We couldn't verify the bank account you submitted, so it can't be used on XREX. To link a different account, go to Bank accounts in the side menu.",
         );
       }
+      if (accountEl) {
+        const account = getLinkedBankAccountDisplay(sheetCurrency);
+        accountEl.textContent = formatLinkedBankAccountSheetLabel(account);
+        accountEl.hidden = false;
+      }
       sheet.setAttribute("aria-label", title);
-      closeButtons.forEach((btn) => {
-        if (btn.classList.contains("currency-sheet__cancel")) {
-          btn.textContent = tr("Got it");
-        }
+      dismissButtons.forEach((btn) => {
+        btn.textContent = tr("Got it");
       });
+      if (goToBankAccountsBtn) {
+        goToBankAccountsBtn.textContent = tr("Go to Bank accounts");
+      }
     };
 
     const setOpen = (nextOpen) => {
       if (nextOpen) {
-        populate();
+        populate({ currency: sheetCurrency });
         sheet.hidden = false;
         requestAnimationFrame(() => sheet.classList.add("is-open"));
         return;
@@ -9449,16 +9601,27 @@
       setTimeout(onEnd, 300);
     };
 
-    closeButtons.forEach((btn) => {
-      btn.addEventListener("click", () => setOpen(false));
+    const dismiss = () => setOpen(false);
+
+    backdropBtn?.addEventListener("click", dismiss);
+    dismissButtons.forEach((btn) => {
+      btn.addEventListener("click", dismiss);
+    });
+    goToBankAccountsBtn?.addEventListener("click", () => {
+      dismiss();
+      onGoToBankAccounts();
     });
     document.addEventListener("prototype-locale-changed", () => {
       if (!sheet.classList.contains("is-open")) return;
-      populate();
+      populate({ currency: sheetCurrency });
     });
 
     return {
-      open: () => setOpen(true),
+      open: ({ currency = "twd" } = {}) => {
+        sheetCurrency = currency === "usd" ? "usd" : "twd";
+        populate({ currency: sheetCurrency });
+        setOpen(true);
+      },
       close: () => setOpen(false),
     };
   };
@@ -12708,7 +12871,12 @@
     };
   };
 
-  const bankAccountUnderReviewSheetApi = initBankAccountUnderReviewSheet();
+  const bankAccountsSheetNavigation = {
+    goToBankAccounts: () => {},
+  };
+  const bankAccountUnderReviewSheetApi = initBankAccountUnderReviewSheet({
+    onGoToBankAccounts: () => bankAccountsSheetNavigation.goToBankAccounts(),
+  });
   deleteBankAccountSheetApi = initDeleteBankAccountSheet();
   bankAccountDetailsApi = initBankAccountDetailsPanel({
     openDeleteBankAccountSheet: (opts) => deleteBankAccountSheetApi.open(opts),
@@ -12716,7 +12884,16 @@
   const bankAccountsApi = initBankAccountsPanel({
     openBankAccountDetails: (opts) => bankAccountDetailsApi.open(opts),
   });
-  const bankAccountRejectedSheetApi = initBankAccountRejectedSheet();
+  const bankAccountRejectedSheetApi = initBankAccountRejectedSheet({
+    onGoToBankAccounts: () => bankAccountsSheetNavigation.goToBankAccounts(),
+  });
+  bankAccountsSheetNavigation.goToBankAccounts = () => {
+    addSendPanelApi?.close?.({ instant: true });
+    fiatFlowPlaceholderApi?.close?.({ instant: true });
+    twdDepositApi?.closeAll?.({ instant: true });
+    usdDepositApi?.closeAll?.({ instant: true });
+    bankAccountsApi.openPanel?.();
+  };
   const hidePanelInstant = (panel) => {
     if (!panel) return;
     panel.classList.add("is-instant");
@@ -12728,13 +12905,14 @@
   const hideBankLinkStackInstant = () => {
     document
       .querySelectorAll(
-        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-usd-deposit-setup], [data-usd-deposit-select]",
+        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-usd-deposit-setup], [data-usd-deposit-select], [data-fiat-flow-placeholder]",
       )
       .forEach(hidePanelInstant);
   };
   const finalizeBankAccountSuccessDismiss = () => {
     hideBankLinkStackInstant();
     closeBaWizardFlow({ instant: true });
+    fiatFlowPlaceholderApi?.close?.({ instant: true });
 
     const twdEntry = twdDepositApi?.getEntrySource?.();
     const usdEntry = usdDepositApi?.getEntrySource?.();
@@ -12746,7 +12924,11 @@
       if (container) {
         container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
       }
-      twdDepositApi?.closeSetup?.({ instant: true });
+      twdDepositApi?.closeAll?.({ instant: true });
+      if (getPrototypeRegion() === "taiwan") {
+        addSendPanelApi?.open?.(twdEntry);
+        return;
+      }
       twdDepositApi?.openSelect?.({ mode: twdEntry });
       return;
     }
@@ -12756,7 +12938,11 @@
       if (container) {
         container.classList.remove("is-bank-accounts-open", "is-bank-accounts-fading");
       }
-      usdDepositApi?.closeSetup?.({ instant: true });
+      usdDepositApi?.closeAll?.({ instant: true });
+      if (getPrototypeRegion() === "taiwan") {
+        addSendPanelApi?.open?.(usdEntry);
+        return;
+      }
       usdDepositApi?.openSelect?.({ mode: usdEntry });
       return;
     }
@@ -12814,17 +13000,15 @@
   twdDepositApi = initTwdDepositFlow({
     baWizardApi,
     showSnackbar,
-    openBankAccountUnderReviewSheet: () =>
-      bankAccountUnderReviewSheetApi.open(),
-    openBankAccountRejectedSheet: () => bankAccountRejectedSheetApi.open(),
+    openBankAccountUnderReviewSheet: bankAccountUnderReviewSheetApi,
+    openBankAccountRejectedSheet: bankAccountRejectedSheetApi,
     openFiatFlowPlaceholder: fiatFlowPlaceholderApi,
   });
   usdDepositApi = initUsdDepositFlow({
     baWizardApi,
     showSnackbar,
-    openBankAccountUnderReviewSheet: () =>
-      bankAccountUnderReviewSheetApi.open(),
-    openBankAccountRejectedSheet: () => bankAccountRejectedSheetApi.open(),
+    openBankAccountUnderReviewSheet: bankAccountUnderReviewSheetApi,
+    openBankAccountRejectedSheet: bankAccountRejectedSheetApi,
     openFiatFlowPlaceholder: fiatFlowPlaceholderApi,
   });
   onAddSendTwdSelected = (mode) => twdDepositApi.openFromAddSend(mode);
@@ -16538,7 +16722,7 @@
   const tradeHeaderApi = initTradeHeaderTabs();
   const marketsPageApi = initMarketsPage();
   initWalletPage();
-  initAddSendPanel();
+  addSendPanelApi = initAddSendPanel();
   initFinanceEarnPage();
   initEarnRewardsLearnPage();
   initEarnStakingPage();
