@@ -1485,6 +1485,7 @@
       twdDepositApi?.refreshSelectPanelIfOpen?.();
       usdDepositApi?.refreshSelectPanelIfOpen?.();
       bankAccountDetailsApi?.refreshIfOpen?.();
+      bankAccountsApi?.refreshViewIfOpen?.();
     }
     if (
       group === "basic" ||
@@ -9764,9 +9765,9 @@
       const { currency, onComplete } = pendingDelete;
       const stateKey = currency === "twd" ? "twdBankAccount" : "usdBankAccount";
       setOpen(false);
+      onComplete?.();
       setState(stateKey, 1, { force: true });
       showSnackbar(tr("Your bank account has been deleted"), { variant: "success" });
-      onComplete?.();
       pendingDelete = { currency: "usd", onComplete: null };
     });
 
@@ -9967,13 +9968,21 @@
       });
     };
 
-    const setOpen = (nextOpen) => {
+    const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         populate();
         panel.hidden = false;
         const scrollBody = panel.querySelector(".bank-account-details-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         requestAnimationFrame(() => panel.classList.add("is-open"));
+        return;
+      }
+      if (opts.instant) {
+        panel.classList.add("is-instant");
+        panel.classList.remove("is-open");
+        panel.hidden = true;
+        void panel.offsetWidth;
+        panel.classList.remove("is-instant");
         return;
       }
       panel.classList.remove("is-open");
@@ -10003,7 +10012,7 @@
       }
       openDeleteSheet({
         currency,
-        onComplete: () => setOpen(false),
+        onComplete: () => setOpen(false, { instant: true }),
       });
     });
 
@@ -10025,7 +10034,7 @@
         activeListItem = listItem || null;
         setOpen(true);
       },
-      close: () => setOpen(false),
+      close: (opts = {}) => setOpen(false, opts),
       refreshIfOpen: () => {
         if (!panel.classList.contains("is-open")) return;
         populate();
@@ -10040,6 +10049,7 @@
       return {
         showSnackbar: () => {},
         openPanel: () => {},
+        refreshViewIfOpen: () => {},
         setOnLinkTwd: () => {},
         setOnLinkUsd: () => {},
         setOnOpenTwdCustodian: () => {},
@@ -10114,6 +10124,20 @@
           }
         }, 350);
       } else {
+        if (opts.instant) {
+          panel.classList.add("is-instant");
+          panel.classList.remove("is-open");
+          panel.hidden = true;
+          scrollEntryContentToTop();
+          if (container) {
+            container.classList.add("is-bank-accounts-fading");
+            container.classList.remove("is-bank-accounts-open");
+            container.classList.remove("is-bank-accounts-fading");
+          }
+          void panel.offsetWidth;
+          panel.classList.remove("is-instant");
+          return;
+        }
         panel.classList.remove("is-open");
         scrollEntryContentToTop();
         if (container) {
@@ -10131,6 +10155,55 @@
         };
         panel.addEventListener("transitionend", onEnd);
         setTimeout(onEnd, 400);
+      }
+    };
+
+    const isBankAccountsViewPanelOpen = (el) =>
+      Boolean(el?.classList.contains("is-open") && !el.hidden);
+
+    const isOtherBankFlowOpen = () => {
+      const blockers = [
+        "[data-twd-deposit-setup]",
+        "[data-usd-deposit-setup]",
+        "[data-twd-deposit-select]",
+        "[data-usd-deposit-select]",
+        "[data-ba-wizard-currency]",
+        "[data-ba-wizard-how]",
+        "[data-ba-wizard-flow]",
+        "[data-twd-bank-details-panel]",
+        "[data-usd-bank-details-panel]",
+        "[data-link-twd-panel]",
+        "[data-link-usd-panel]",
+      ];
+      return blockers.some((selector) =>
+        isBankAccountsViewPanelOpen(document.querySelector(selector)),
+      );
+    };
+
+    const refreshViewIfOpen = () => {
+      const detailsPanel = document.querySelector("[data-bank-account-details-panel]");
+      if (isBankAccountsViewPanelOpen(detailsPanel)) {
+        bankAccountDetailsApi?.close?.({ instant: true });
+      }
+
+      if (isOtherBankFlowOpen()) return;
+
+      const introPanel = document.querySelector("[data-ba-wizard-intro]");
+      const bankAccountsOpen = isBankAccountsViewPanelOpen(panel);
+      const introOpen = isBankAccountsViewPanelOpen(introPanel);
+      const needsSetupFlow = shouldOpenSetupFlowFromMenu();
+
+      if (bankAccountsOpen) {
+        if (needsSetupFlow) {
+          setOpen(false, { instant: true });
+          openBaWizardFromMenu();
+        }
+        return;
+      }
+
+      if (introOpen && !needsSetupFlow) {
+        closeBaWizardFlow({ instant: true });
+        setOpen(true, { instant: true });
       }
     };
 
@@ -10237,6 +10310,7 @@
           open();
         }
       },
+      refreshViewIfOpen,
       setOnLinkTwd: (fn) => {
         onLinkTwd = typeof fn === "function" ? fn : () => {};
       },
