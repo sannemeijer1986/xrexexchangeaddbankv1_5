@@ -6242,38 +6242,50 @@ html[data-active-tab=wallet] .app-header__top {
   padding-top: 16px;
 }
 
-.currency-sheet.bank-account-under-review-sheet {
+.currency-sheet.bank-account-under-review-sheet,
+.currency-sheet.bank-account-rejected-sheet {
   z-index: 2260;
 }
-.currency-sheet.bank-account-under-review-sheet .currency-sheet__panel {
+.currency-sheet.bank-account-under-review-sheet .currency-sheet__panel,
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__panel {
   padding-bottom: 0;
 }
-.currency-sheet.bank-account-under-review-sheet .currency-sheet__body {
+.currency-sheet.bank-account-under-review-sheet .currency-sheet__body,
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__body {
   align-items: center;
   gap: 0;
   padding: 16px;
 }
-.currency-sheet.bank-account-under-review-sheet .currency-sheet__footer {
+.currency-sheet.bank-account-under-review-sheet .currency-sheet__footer.bank-account-status-sheet__footer,
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__footer.bank-account-status-sheet__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
   padding: 16px;
-}
-.currency-sheet.bank-account-under-review-sheet .currency-sheet__cancel {
-  background: #2d2f2f;
-}
-.currency-sheet.bank-account-under-review-sheet .bank-account-status-sheet__footer {
-  padding: 16px;
-  gap: 12px;
+  background: #1b1d1d;
 }
 
-.bank-account-under-review-sheet__content {
+.bank-account-under-review-sheet__content,
+.bank-account-rejected-sheet__content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 24px;
   width: 100%;
   max-width: 328px;
 }
 
-.phone-container h2.bank-account-under-review-sheet__title {
+.bank-account-under-review-sheet__intro,
+.bank-account-rejected-sheet__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.phone-container h2.bank-account-under-review-sheet__title,
+.phone-container h2.bank-account-rejected-sheet__title {
   margin: 0;
   width: 100%;
   font-size: 20px;
@@ -6309,72 +6321,136 @@ html[data-active-tab=wallet] .app-header__top {
   text-align: center;
 }
 
-.bank-account-under-review-sheet__account,
-.bank-account-rejected-sheet__account {
-  width: 100%;
-  max-width: 328px;
-  margin: 16px 0 0;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  color: #ffffff;
-  text-align: center;
-}
-
-.currency-sheet.bank-account-under-review-sheet .bank-account-status-sheet__footer,
-.currency-sheet.bank-account-rejected-sheet .bank-account-status-sheet__footer {
-  padding: 16px;
-  gap: 12px;
-}
-
-.currency-sheet.bank-account-rejected-sheet {
-  z-index: 2260;
-}
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__panel {
-  padding-bottom: 0;
-}
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__body {
-  align-items: center;
-  gap: 0;
-  padding: 16px;
-}
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__footer {
-  padding: 16px;
-}
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__cancel {
-  background: #2d2f2f;
-}
-.currency-sheet.bank-account-rejected-sheet .bank-account-status-sheet__footer {
-  padding: 16px;
-  gap: 12px;
-}
-
-.bank-account-rejected-sheet__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
-  max-width: 328px;
-}
-
-.phone-container h2.bank-account-rejected-sheet__title {
-  margin: 0;
-  width: 100%;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: normal;
-  color: #ffffff;
-  text-align: center;
-}
-
 .phone-container p.bank-account-rejected-sheet__desc {
   margin: 0;
+  width: 100%;
   font-size: 16px;
   font-weight: 400;
   line-height: 23px;
   color: #9b9c9c;
   text-align: center;
+}
+
+.bank-account-status-sheet__card-wrap {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.bank-account-status-sheet__card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  text-align: left;
+}
+
+.bank-account-status-sheet__card-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bank-account-status-sheet__card-icon img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.bank-account-status-sheet__card-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bank-account-status-sheet__card-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-account-status-sheet__card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #9b9c9c;
+}
+
+.bank-account-status-sheet__card-meta span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-account-status-sheet__card-status {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bank-account-status-sheet__card-status--submitted {
+  color: #8fb8ff;
+}
+
+.bank-account-status-sheet__card-status--rejected {
+  color: #eb5347;
+}
+
+.bank-account-status-sheet__card-delete {
+  flex: 0 0 auto;
+  align-self: center;
+  height: 32px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: #eb5347;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bank-account-status-sheet__primary {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: #275cfd;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.bank-account-status-sheet__manage {
+  width: 100%;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #3f78ff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  cursor: pointer;
 }
 
 .currency-sheet.delete-bank-account-sheet {

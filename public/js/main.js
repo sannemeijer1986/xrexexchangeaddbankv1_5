@@ -229,72 +229,131 @@
 
   const isBankAccountRejected = (currency) => getBankAccountState(currency) === 5;
 
-  const getLinkedBankAccountDisplay = (currency) => {
-    const defaults = {
-      twd: { nickname: "My CTBC bank", accountNumber: "12345678999" },
-      usd: { nickname: "My KGI Bank 1", accountNumber: "12345678999" },
-    };
-    const fallback = defaults[currency] || defaults.twd;
-
-    if (currency === "twd") {
-      const source =
+  const getLinkedBankListItem = (currency) => {
+    const normalized = currency === "usd" ? "usd" : "twd";
+    if (normalized === "twd") {
+      return (
         document.querySelector('[data-bank-accounts-item="twd"]') ||
-        document.querySelector("[data-twd-deposit-bank]");
-      if (!source) return fallback;
-
-      const nickname = source
-        .querySelector(
-          ".bank-accounts-panel__list-title, .twd-deposit-select__item-title",
-        )
-        ?.textContent?.trim();
-      const accountMeta = source.querySelectorAll(
-        ".bank-accounts-panel__list-meta span, .twd-deposit-select__item-meta span",
+        document.querySelector("[data-twd-deposit-bank]")
       );
-      const accountLine =
-        accountMeta[accountMeta.length - 1]?.textContent?.trim() || "";
-      const accountNumber = accountLine
-        .replace(/^Account number\s*:\s*/i, "")
-        .trim();
-
-      return {
-        nickname: nickname || fallback.nickname,
-        accountNumber: accountNumber || fallback.accountNumber,
-      };
     }
-
-    const source =
+    return (
       document.querySelector(
         '[data-bank-accounts-usd-slot]:not([hidden]) [data-bank-accounts-item="usd"]',
       ) ||
       document.querySelector('[data-bank-accounts-item="usd"]') ||
-      document.querySelector("[data-usd-deposit-bank]");
-    if (!source) return fallback;
+      document.querySelector("[data-usd-deposit-bank]")
+    );
+  };
 
-    const nickname = source
-      .querySelector(
-        ".bank-accounts-panel__list-title, [data-usd-deposit-bank-title]",
-      )
-      ?.textContent?.trim();
-    const accountLine =
-      source
-        .querySelector(
-          ".bank-accounts-panel__list-meta span:last-child, [data-usd-deposit-account-number]",
-        )
-        ?.textContent?.trim() || "";
-    const accountNumber = accountLine
-      .replace(/^Account number\s*:\s*/i, "")
-      .trim();
+  const parseLinkedBankMetaValue = (text) => {
+    const raw = String(text || "").trim();
+    const colonIdx = raw.indexOf(":");
+    const fullWidthColonIdx = raw.indexOf("：");
+    const idx =
+      colonIdx >= 0 && fullWidthColonIdx >= 0
+        ? Math.min(colonIdx, fullWidthColonIdx)
+        : Math.max(colonIdx, fullWidthColonIdx);
+    return idx >= 0 ? raw.slice(idx + 1).trim() : raw;
+  };
+
+  const getLinkedBankAccountSheetData = (currency) => {
+    const normalized = currency === "usd" ? "usd" : "twd";
+    const defaults = {
+      twd: {
+        nickname: "My CTBC bank",
+        bankName: "CTBC Bank",
+        accountNumber: "12345678999",
+        iconSrc: "assets/icon_currency_TWD.svg",
+      },
+      usd: {
+        nickname: "My KGI Bank 1",
+        bankName: "KGI bank",
+        accountNumber: "12345678999",
+        iconSrc: "assets/icon_currency_USD.svg",
+      },
+    };
+    const fallback = defaults[normalized];
+    const listItem = getLinkedBankListItem(normalized);
+
+    let nickname = fallback.nickname;
+    let bankName = fallback.bankName;
+    let accountNumber = fallback.accountNumber;
+    let bankNameLabel = `${tr("Bank name")} : ${bankName}`;
+    let accountNumberLabel = `${tr("Account number")} : ${accountNumber}`;
+    let iconSrc = fallback.iconSrc;
+
+    if (listItem) {
+      nickname =
+        listItem
+          .querySelector(
+            ".bank-accounts-panel__list-title, .twd-deposit-select__item-title, [data-usd-deposit-bank-title]",
+          )
+          ?.textContent?.trim() || nickname;
+
+      const metaEls = listItem.querySelectorAll(
+        ".bank-accounts-panel__list-meta span, .twd-deposit-select__item-meta span, .usd-deposit-select__item-meta span",
+      );
+      if (metaEls[0]) {
+        bankNameLabel = metaEls[0].textContent?.trim() || bankNameLabel;
+        bankName = parseLinkedBankMetaValue(bankNameLabel) || bankName;
+      }
+      const accountLine =
+        metaEls[metaEls.length - 1]?.textContent?.trim() ||
+        listItem
+          .querySelector("[data-usd-deposit-account-number]")
+          ?.textContent?.trim() ||
+        "";
+      if (accountLine) {
+        accountNumberLabel = accountLine;
+        accountNumber = parseLinkedBankMetaValue(accountLine) || accountNumber;
+      }
+
+      iconSrc =
+        listItem.querySelector(
+          ".bank-accounts-panel__list-icon img, .twd-deposit-select__item-icon, .usd-deposit-select__item-icon",
+        )?.getAttribute("src") || iconSrc;
+    }
 
     return {
-      nickname: nickname || fallback.nickname,
-      accountNumber: accountNumber || fallback.accountNumber,
+      currency: normalized,
+      nickname,
+      bankName,
+      accountNumber,
+      bankNameLabel,
+      accountNumberLabel,
+      iconSrc,
+      listItem,
     };
   };
 
-  const formatLinkedBankAccountSheetLabel = ({ nickname, accountNumber }) => {
-    const digits = String(accountNumber || "").replace(/\D/g, "");
-    const last4 = digits.slice(-4) || "8999";
-    return `${nickname} · •••• ${last4}`;
+  const populateBankAccountStatusSheetCard = (cardEl, data, statusModifier) => {
+    if (!cardEl) return;
+    const iconEl = cardEl.querySelector("[data-bank-status-sheet-icon]");
+    const titleEl = cardEl.querySelector("[data-bank-status-sheet-title]");
+    const bankNameEl = cardEl.querySelector("[data-bank-status-sheet-bank-name]");
+    const accountNumberEl = cardEl.querySelector(
+      "[data-bank-status-sheet-account-number]",
+    );
+    const statusEl = cardEl.querySelector("[data-bank-status-sheet-status]");
+
+    if (iconEl) iconEl.src = data.iconSrc;
+    if (titleEl) titleEl.textContent = data.nickname;
+    if (bankNameEl) bankNameEl.textContent = data.bankNameLabel;
+    if (accountNumberEl) accountNumberEl.textContent = data.accountNumberLabel;
+    if (statusEl) {
+      statusEl.textContent =
+        statusModifier === "rejected" ? tr("Rejected") : tr("Submitted");
+      statusEl.classList.remove(
+        "bank-account-status-sheet__card-status--submitted",
+        "bank-account-status-sheet__card-status--rejected",
+      );
+      statusEl.classList.add(
+        statusModifier === "rejected"
+          ? "bank-account-status-sheet__card-status--rejected"
+          : "bank-account-status-sheet__card-status--submitted",
+      );
+    }
   };
 
   const tryOpenTaiwanAddSendFiatDirect = ({
@@ -9459,9 +9518,7 @@
     const highlightEl = sheet.querySelector(
       "[data-bank-account-under-review-desc-highlight]",
     );
-    const accountEl = sheet.querySelector(
-      "[data-bank-account-under-review-account]",
-    );
+    const accountCard = sheet.querySelector("[data-bank-account-under-review-account]");
     const dismissButtons = sheet.querySelectorAll(
       "[data-bank-account-under-review-dismiss]",
     );
@@ -9484,20 +9541,20 @@
       }
       if (highlightEl) {
         highlightEl.textContent = tr(
-          "Verification usually takes 1–3 business days from submission.",
+          "Verification usually takes 1–3 business days.",
         );
       }
-      if (accountEl) {
-        const account = getLinkedBankAccountDisplay(sheetCurrency);
-        accountEl.textContent = formatLinkedBankAccountSheetLabel(account);
-        accountEl.hidden = false;
-      }
+      populateBankAccountStatusSheetCard(
+        accountCard,
+        getLinkedBankAccountSheetData(sheetCurrency),
+        "submitted",
+      );
       sheet.setAttribute("aria-label", title);
       dismissButtons.forEach((btn) => {
-        btn.textContent = tr("Understood");
+        btn.textContent = tr("Got it");
       });
       if (goToBankAccountsBtn) {
-        goToBankAccountsBtn.textContent = tr("Go to Bank accounts");
+        goToBankAccountsBtn.textContent = tr("Manage my bank accounts");
       }
     };
 
@@ -9545,13 +9602,14 @@
 
   const initBankAccountRejectedSheet = ({
     onGoToBankAccounts = () => {},
+    openDeleteBankAccountSheet = () => {},
   } = {}) => {
     const sheet = document.querySelector("[data-bank-account-rejected-sheet]");
     if (!sheet) return { open: () => {}, close: () => {} };
 
     const titleEl = sheet.querySelector("[data-bank-account-rejected-title]");
     const descEl = sheet.querySelector("[data-bank-account-rejected-desc]");
-    const accountEl = sheet.querySelector("[data-bank-account-rejected-account]");
+    const accountCard = sheet.querySelector("[data-bank-account-rejected-account]");
     const dismissButtons = sheet.querySelectorAll(
       "[data-bank-account-rejected-dismiss]",
     );
@@ -9559,6 +9617,7 @@
     const goToBankAccountsBtn = sheet.querySelector(
       "[data-bank-account-rejected-go-bank-accounts]",
     );
+    const deleteBtn = sheet.querySelector("[data-bank-account-rejected-delete]");
     let sheetCurrency = "twd";
 
     const populate = ({ currency = sheetCurrency } = {}) => {
@@ -9567,21 +9626,22 @@
       if (titleEl) titleEl.textContent = title;
       if (descEl) {
         descEl.textContent = tr(
-          "We couldn't verify the bank account you submitted, so it can't be used on XREX. To link a different account, go to Bank accounts in the side menu.",
+          "We couldn't verify this bank account, so it can't be used on XREX. Delete it first, then link a different account.",
         );
       }
-      if (accountEl) {
-        const account = getLinkedBankAccountDisplay(sheetCurrency);
-        accountEl.textContent = formatLinkedBankAccountSheetLabel(account);
-        accountEl.hidden = false;
-      }
+      populateBankAccountStatusSheetCard(
+        accountCard,
+        getLinkedBankAccountSheetData(sheetCurrency),
+        "rejected",
+      );
       sheet.setAttribute("aria-label", title);
       dismissButtons.forEach((btn) => {
         btn.textContent = tr("Got it");
       });
       if (goToBankAccountsBtn) {
-        goToBankAccountsBtn.textContent = tr("Go to Bank accounts");
+        goToBankAccountsBtn.textContent = tr("Manage my bank accounts");
       }
+      if (deleteBtn) deleteBtn.textContent = tr("Delete");
     };
 
     const setOpen = (nextOpen) => {
@@ -9610,6 +9670,12 @@
     goToBankAccountsBtn?.addEventListener("click", () => {
       dismiss();
       onGoToBankAccounts();
+    });
+    deleteBtn?.addEventListener("click", () => {
+      openDeleteBankAccountSheet({
+        currency: sheetCurrency,
+        onComplete: () => dismiss(),
+      });
     });
     document.addEventListener("prototype-locale-changed", () => {
       if (!sheet.classList.contains("is-open")) return;
@@ -12886,6 +12952,7 @@
   });
   const bankAccountRejectedSheetApi = initBankAccountRejectedSheet({
     onGoToBankAccounts: () => bankAccountsSheetNavigation.goToBankAccounts(),
+    openDeleteBankAccountSheet: (opts) => deleteBankAccountSheetApi.open(opts),
   });
   bankAccountsSheetNavigation.goToBankAccounts = () => {
     addSendPanelApi?.close?.({ instant: true });
