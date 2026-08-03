@@ -6638,6 +6638,42 @@
         };
   };
 
+  const WITHDRAW_PROTOTYPE = {
+    twd: {
+      avail: 5000,
+      maxPerTx: 100000,
+      remainingLimit: 2000000,
+      fee: 150,
+    },
+    usd: {
+      avail: 5000,
+      maxPerTx: 100000,
+      remainingLimit: 2000000,
+      fee: 5,
+    },
+  };
+
+  const maskWithdrawAccountNumber = (accountNumber) => {
+    const digits = String(accountNumber || "").replace(/\D/g, "");
+    if (digits.length <= 6) return digits;
+    return `${digits.slice(0, 3)}***${digits.slice(-3)}`;
+  };
+
+  const formatWithdrawAmount = (value) =>
+    Number(value).toLocaleString("en-US");
+
+  const parseWithdrawAmount = (raw) => {
+    const parsed = parseInt(String(raw || "").replace(/[^0-9]/g, ""), 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  };
+
+  const applyWithdrawAmountInput = (input) => {
+    if (!(input instanceof HTMLInputElement)) return 0;
+    const parsed = parseWithdrawAmount(input.value);
+    input.value = parsed > 0 ? formatWithdrawAmount(parsed) : "";
+    return parsed;
+  };
+
   const initFiatFlowPlaceholderPanel = ({ showSnackbar = () => {} } = {}) => {
     const panel = document.querySelector("[data-fiat-flow-placeholder]");
     if (!panel) {
@@ -6647,16 +6683,167 @@
     const titleEl = panel.querySelector("[data-fiat-flow-placeholder-title]");
     const contentEl = panel.querySelector("[data-fiat-flow-placeholder-content]");
     const iconEl = panel.querySelector("[data-fiat-flow-placeholder-icon]");
+    const depositView = panel.querySelector("[data-fiat-flow-deposit-view]");
+    const withdrawView = panel.querySelector("[data-fiat-flow-withdraw-view]");
     const closeButtons = panel.querySelectorAll(
       "[data-fiat-flow-placeholder-close]",
     );
 
-    const populate = ({ currency, mode }) => {
+    const withdrawEls = {
+      lead: panel.querySelector("[data-fiat-withdraw-lead]"),
+      avail: panel.querySelector("[data-fiat-withdraw-avail]"),
+      icon: panel.querySelector("[data-fiat-withdraw-icon]"),
+      amount: panel.querySelector("[data-fiat-withdraw-amount]"),
+      hint: panel.querySelector("[data-fiat-withdraw-amount-hint]"),
+      currency: panel.querySelector("[data-fiat-withdraw-currency]"),
+      remainingLimit: panel.querySelector("[data-fiat-withdraw-remaining-limit]"),
+      to: panel.querySelector("[data-fiat-withdraw-to]"),
+      arrival: panel.querySelector("[data-fiat-withdraw-arrival]"),
+      fee: panel.querySelector("[data-fiat-withdraw-fee]"),
+      receive: panel.querySelector("[data-fiat-withdraw-receive]"),
+      continueBtn: panel.querySelector("[data-fiat-withdraw-continue]"),
+      amountRow: panel.querySelector(".fiat-withdraw-page__amount-row"),
+      amountError: panel.querySelector("[data-fiat-withdraw-amount-error]"),
+    };
+
+    const keyboardContinueBtn = document.querySelector(
+      "[data-fake-keyboard-withdraw-continue]",
+    );
+
+    let withdrawCurrency = "twd";
+    let withdrawConfig = WITHDRAW_PROTOTYPE.twd;
+    let withdrawBankData = getLinkedBankAccountSheetData("twd");
+
+    const populateDeposit = ({ currency, mode }) => {
       const copy = getFiatFlowPlaceholderCopy({ currency, mode });
       if (titleEl) titleEl.textContent = tr(copy.title);
       if (contentEl) contentEl.textContent = tr(copy.content);
       if (iconEl) iconEl.src = copy.icon;
       panel.setAttribute("aria-label", tr(copy.ariaLabel));
+    };
+
+    const syncWithdrawUi = () => {
+      const curLabel = getBankSheetCurLabel(withdrawCurrency);
+      const bankData = withdrawBankData;
+      const maskedAccount = maskWithdrawAccountNumber(bankData.accountNumber);
+      const bankDisplay = maskedAccount
+        ? `${bankData.bankName} (${maskedAccount})`
+        : bankData.bankName;
+
+      if (withdrawEls.lead) {
+        withdrawEls.lead.textContent = tr(
+          "How much {cur} would you like to withdraw to {bankName}?",
+          { cur: curLabel, bankName: bankData.bankName },
+        );
+      }
+      if (withdrawEls.avail) {
+        withdrawEls.avail.textContent = tr("Avail. {amount} {cur}", {
+          amount: formatWithdrawAmount(withdrawConfig.avail),
+          cur: curLabel,
+        });
+      }
+      if (withdrawEls.icon) {
+        withdrawEls.icon.src =
+          withdrawCurrency === "usd"
+            ? "assets/icon_currency_USD.svg"
+            : "assets/icon_currency_TWD.svg";
+      }
+      if (withdrawEls.currency) withdrawEls.currency.textContent = curLabel;
+      if (withdrawEls.hint) {
+        withdrawEls.hint.textContent = tr("Max {max}", {
+          max: formatWithdrawAmount(withdrawConfig.maxPerTx),
+        });
+      }
+      if (withdrawEls.remainingLimit) {
+        withdrawEls.remainingLimit.textContent = tr(
+          "Remaining limit {amount} {cur}",
+          {
+            amount: formatWithdrawAmount(withdrawConfig.remainingLimit),
+            cur: curLabel,
+          },
+        );
+      }
+      if (withdrawEls.to) withdrawEls.to.textContent = bankDisplay;
+
+      const labelTo = panel.querySelector("[data-fiat-withdraw-label-to]");
+      const labelArrival = panel.querySelector("[data-fiat-withdraw-label-arrival]");
+      const labelFee = panel.querySelector("[data-fiat-withdraw-label-fee]");
+      const labelReceive = panel.querySelector("[data-fiat-withdraw-label-receive]");
+      const amountLabel = panel.querySelector(
+        ".fiat-withdraw-page__amount-section .plan-buffer-funding-input__title",
+      );
+      if (labelTo) labelTo.textContent = tr("Withdraw to");
+      if (labelArrival) labelArrival.textContent = tr("Estimated arrival");
+      if (labelFee) labelFee.textContent = tr("Fee (from balance)");
+      if (labelReceive) labelReceive.textContent = tr("You receive");
+      if (amountLabel) amountLabel.textContent = tr("Amount");
+
+      if (withdrawEls.arrival) {
+        withdrawEls.arrival.textContent = tr("1–3 business days");
+      }
+      if (withdrawEls.fee) {
+        withdrawEls.fee.textContent = `${formatWithdrawAmount(withdrawConfig.fee)} ${curLabel}`;
+      }
+
+      const amount = parseWithdrawAmount(withdrawEls.amount?.value);
+      const hasAmount = amount > 0;
+      const exceedsBalance = hasAmount && amount > withdrawConfig.avail;
+      const exceedsMaxPerTx = hasAmount && amount > withdrawConfig.maxPerTx;
+
+      if (withdrawEls.hint) withdrawEls.hint.hidden = hasAmount;
+      if (withdrawEls.amountError) {
+        withdrawEls.amountError.textContent = tr("Exceeds available balance");
+        withdrawEls.amountError.classList.toggle("is-visible", exceedsBalance);
+        withdrawEls.amountError.setAttribute(
+          "aria-hidden",
+          exceedsBalance ? "false" : "true",
+        );
+      }
+      if (withdrawEls.amount instanceof HTMLInputElement) {
+        withdrawEls.amount.setAttribute(
+          "aria-invalid",
+          exceedsBalance ? "true" : "false",
+        );
+      }
+      if (withdrawEls.receive) {
+        withdrawEls.receive.textContent = hasAmount
+          ? `${formatWithdrawAmount(amount)} ${curLabel}`
+          : `- - ${curLabel}`;
+      }
+
+      const canContinue =
+        hasAmount && !exceedsBalance && !exceedsMaxPerTx;
+      if (withdrawEls.continueBtn) withdrawEls.continueBtn.disabled = !canContinue;
+      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !canContinue;
+    };
+
+    const populateWithdraw = ({ currency }) => {
+      withdrawCurrency = currency === "usd" ? "usd" : "twd";
+      withdrawConfig = WITHDRAW_PROTOTYPE[withdrawCurrency];
+      withdrawBankData = getLinkedBankAccountSheetData(withdrawCurrency);
+
+      const copy = getFiatFlowPlaceholderCopy({
+        currency: withdrawCurrency,
+        mode: "send",
+      });
+      if (titleEl) titleEl.textContent = tr(copy.title);
+      if (iconEl) iconEl.src = copy.icon;
+      panel.setAttribute("aria-label", tr(copy.ariaLabel));
+
+      if (withdrawEls.amount) withdrawEls.amount.value = "";
+      syncWithdrawUi();
+    };
+
+    const populate = ({ currency, mode }) => {
+      const isWithdraw = mode === "send";
+      if (depositView) depositView.hidden = isWithdraw;
+      if (withdrawView) withdrawView.hidden = !isWithdraw;
+      if (isWithdraw) populateWithdraw({ currency });
+      else populateDeposit({ currency, mode });
+    };
+
+    const hideWithdrawKeyboard = () => {
+      document.dispatchEvent(new CustomEvent("fake-keyboard-withdraw-hide"));
     };
 
     const setOpen = (nextOpen, opts = {}) => {
@@ -6665,6 +6852,7 @@
         requestAnimationFrame(() => panel.classList.add("is-open"));
         return;
       }
+      hideWithdrawKeyboard();
       if (opts.instant) {
         panel.classList.add("is-instant");
         panel.classList.remove("is-open");
@@ -6688,6 +6876,39 @@
     panel
       .querySelector('[aria-label="Support"]')
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    panel
+      .querySelector("[data-fiat-withdraw-limit-info]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    panel
+      .querySelector("[data-fiat-withdraw-fee-info]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    withdrawEls.continueBtn?.addEventListener("click", () => {
+      if (withdrawEls.continueBtn?.disabled) return;
+      showSnackbar("Not in prototype");
+    });
+
+    withdrawEls.amount?.addEventListener("input", () => {
+      applyWithdrawAmountInput(withdrawEls.amount);
+      syncWithdrawUi();
+      document.dispatchEvent(new CustomEvent("fake-keyboard-withdraw-sync-pct"));
+    });
+    withdrawEls.amount?.addEventListener("focus", () => {
+      document.dispatchEvent(new CustomEvent("fake-keyboard-withdraw-show"));
+    });
+
+    withdrawEls.amountRow?.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      if (event.target.closest("input")) return;
+      withdrawEls.amount?.focus();
+      if (withdrawEls.amount instanceof HTMLInputElement) {
+        const endPos = withdrawEls.amount.value.length;
+        withdrawEls.amount.setSelectionRange(endPos, endPos);
+      }
+      document.dispatchEvent(new CustomEvent("fake-keyboard-withdraw-show"));
+    });
+
     document.addEventListener("prototype-locale-changed", () => {
       if (!panel.classList.contains("is-open")) return;
       const currency = panel.dataset.fiatFlowCurrency || "twd";
@@ -6704,6 +6925,17 @@
       },
       close: (opts) => setOpen(false, opts),
       isOpen: () => Boolean(panel.classList.contains("is-open") && !panel.hidden),
+      syncWithdrawUi,
+      getWithdrawAmountInput: () => withdrawEls.amount,
+      getWithdrawContext: () => ({
+        currency: withdrawCurrency,
+        config: withdrawConfig,
+        amountInput: withdrawEls.amount,
+        syncUi: syncWithdrawUi,
+        parseAmount: parseWithdrawAmount,
+        formatAmount: formatWithdrawAmount,
+        applyAmountInput: applyWithdrawAmountInput,
+      }),
     };
   };
 
@@ -31562,6 +31794,216 @@
     }
   };
 
+  /** Desktop viewport only: fake keyboard for fiat withdraw amount. */
+  const initWithdrawFakeKeyboard = (fiatFlowPlaceholderApi) => {
+    const container = document.querySelector(".phone-container");
+    const withdrawKeyboard = document.querySelector(
+      '[data-fake-keyboard="withdraw"]',
+    );
+    const withdrawPanel = document.querySelector("[data-fiat-flow-placeholder]");
+    if (!container || !withdrawKeyboard || !withdrawPanel) return;
+
+    const mq = window.matchMedia("(min-width: 641px)");
+    let suppressFocusShow = false;
+
+    const isWithdrawOpen = () =>
+      withdrawPanel.classList.contains("is-open") &&
+      !withdrawPanel.hidden &&
+      withdrawPanel.dataset.fiatFlowMode === "send";
+
+    const isWithdrawKeyboardField = (el) =>
+      !!(
+        el?.closest?.("[data-fiat-flow-withdraw-view]") &&
+        (el.matches?.("[data-fiat-withdraw-amount]") ||
+          el.closest?.(".fiat-withdraw-page__amount-row"))
+      );
+
+    const getContext = () => fiatFlowPlaceholderApi?.getWithdrawContext?.() || null;
+
+    const syncWithdrawScrollInset = () => {
+      if (!withdrawKeyboard.classList.contains("is-visible")) {
+        container.style.removeProperty("--withdraw-keyboard-inset");
+        return;
+      }
+      const h = Math.ceil(withdrawKeyboard.getBoundingClientRect().height);
+      container.style.setProperty("--withdraw-keyboard-inset", `${h}px`);
+    };
+
+    const hideWithdrawKeyboard = (opts = {}) => {
+      const wasVisible = withdrawKeyboard.classList.contains("is-visible");
+      withdrawKeyboard.classList.remove("is-visible");
+      withdrawKeyboard.setAttribute("aria-hidden", "true");
+      withdrawKeyboard.hidden = true;
+      if (!wasVisible) {
+        syncWithdrawScrollInset();
+        return;
+      }
+      if (opts.scrollToTop === false) {
+        container.classList.remove(
+          "is-fake-keyboard-withdraw-visible",
+          "is-fake-keyboard-withdraw-dismissing",
+        );
+        syncWithdrawScrollInset();
+        return;
+      }
+      container.classList.add("is-fake-keyboard-withdraw-dismissing");
+      withdrawPanel
+        .querySelector(".fiat-withdraw-page__scroll")
+        ?.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+        container.classList.remove(
+          "is-fake-keyboard-withdraw-visible",
+          "is-fake-keyboard-withdraw-dismissing",
+        );
+        syncWithdrawScrollInset();
+      }, 220);
+    };
+
+    const showWithdrawKeyboard = () => {
+      if (!mq.matches || !isWithdrawOpen()) return;
+      withdrawKeyboard.hidden = false;
+      container.classList.remove("is-fake-keyboard-withdraw-dismissing");
+      container.classList.add("is-fake-keyboard-withdraw-visible");
+      withdrawKeyboard.classList.add("is-visible");
+      withdrawKeyboard.setAttribute("aria-hidden", "false");
+      requestAnimationFrame(syncWithdrawScrollInset);
+    };
+
+    const setPctActiveState = (selectedPct) => {
+      const pctBtns = Array.from(
+        withdrawKeyboard.querySelectorAll("[data-fake-keyboard-withdraw-pct]"),
+      );
+      pctBtns.forEach((b) => {
+        const btnPct = Number(b.getAttribute("data-fake-keyboard-withdraw-pct"));
+        const isActive = Number.isFinite(btnPct) && btnPct <= selectedPct;
+        b.classList.toggle("is-active", isActive);
+        b.classList.remove("is-active-start", "is-active-end");
+      });
+      const activeBtns = pctBtns.filter((b) => b.classList.contains("is-active"));
+      if (activeBtns.length > 0) {
+        activeBtns[0].classList.add("is-active-start");
+        activeBtns[activeBtns.length - 1].classList.add("is-active-end");
+      }
+    };
+
+    const syncPctFromInput = () => {
+      const ctx = getContext();
+      if (!ctx?.amountInput || !ctx.config) return;
+      const typed = ctx.parseAmount(ctx.amountInput.value);
+      if (!typed) {
+        setPctActiveState(0);
+        return;
+      }
+      const pctOptions = [25, 50, 75, 100];
+      const matched =
+        pctOptions.find((pct) => {
+          const target = Math.round((ctx.config.avail * pct) / 100);
+          return Math.abs(typed - target) < 1e-9;
+        }) ?? null;
+      setPctActiveState(matched ?? 0);
+    };
+
+    container.addEventListener("focusin", (event) => {
+      if (!mq.matches || suppressFocusShow) return;
+      if (isWithdrawKeyboardField(event.target)) showWithdrawKeyboard();
+    });
+
+    withdrawKeyboard
+      .querySelectorAll("[data-fake-keyboard-withdraw-close]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          hideWithdrawKeyboard();
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          }
+        });
+      });
+
+    withdrawKeyboard
+      .querySelector("[data-fake-keyboard-withdraw-continue]")
+      ?.addEventListener("click", () => {
+        const continueBtn = withdrawPanel.querySelector(
+          "[data-fiat-withdraw-continue]",
+        );
+        if (!continueBtn || continueBtn.disabled) return;
+        hideWithdrawKeyboard({ scrollToTop: false });
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+        requestAnimationFrame(() => continueBtn.click());
+      });
+
+    withdrawKeyboard.querySelectorAll(".fake-keyboard__key").forEach((key) => {
+      key.addEventListener("click", () => {
+        const ctx = getContext();
+        const ch = key.querySelector("span")?.textContent?.trim();
+        if (!ch || !ctx?.amountInput) return;
+        const raw = String(ctx.amountInput.value || "").replace(/[^0-9]/g, "");
+        ctx.amountInput.value = `${raw}${ch}`;
+        ctx.amountInput.dispatchEvent(new Event("input", { bubbles: true }));
+        ctx.amountInput.focus();
+      });
+    });
+
+    withdrawKeyboard
+      .querySelector(".fake-keyboard__delete")
+      ?.addEventListener("click", () => {
+        const ctx = getContext();
+        if (!ctx?.amountInput) return;
+        const raw = String(ctx.amountInput.value || "").replace(/[^0-9]/g, "");
+        ctx.amountInput.value = raw.slice(0, -1);
+        ctx.amountInput.dispatchEvent(new Event("input", { bubbles: true }));
+        ctx.amountInput.focus();
+      });
+
+    withdrawKeyboard
+      .querySelectorAll("[data-fake-keyboard-withdraw-pct]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const ctx = getContext();
+          const pct = Number(btn.getAttribute("data-fake-keyboard-withdraw-pct"));
+          if (!ctx?.amountInput || !Number.isFinite(pct) || pct <= 0) return;
+          setPctActiveState(pct);
+          const next = Math.round((ctx.config.avail * pct) / 100);
+          ctx.amountInput.value = next > 0 ? String(next) : "";
+          ctx.amountInput.dispatchEvent(new Event("input", { bubbles: true }));
+          ctx.amountInput.focus();
+        });
+      });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (!mq.matches || !withdrawKeyboard.classList.contains("is-visible")) return;
+      if (event.target instanceof Element) {
+        if (withdrawKeyboard.contains(event.target)) return;
+        if (event.target.closest(".fiat-withdraw-page__amount-row")) return;
+      }
+      suppressFocusShow = true;
+      hideWithdrawKeyboard();
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      requestAnimationFrame(() => {
+        suppressFocusShow = false;
+      });
+    });
+
+    document.addEventListener("fake-keyboard-withdraw-show", showWithdrawKeyboard);
+    document.addEventListener("fake-keyboard-withdraw-hide", () => {
+      hideWithdrawKeyboard({ scrollToTop: false });
+    });
+    document.addEventListener("fake-keyboard-withdraw-sync-pct", syncPctFromInput);
+
+    const onMqChange = () => {
+      if (!mq.matches) hideWithdrawKeyboard({ scrollToTop: false });
+    };
+
+    if (typeof mq.addEventListener === "function") {
+      mq.addEventListener("change", onMqChange);
+    } else if (typeof mq.addListener === "function") {
+      mq.addListener(onMqChange);
+    }
+  };
+
   /** Desktop viewport only: sliding fake keyboards (Convert + allocation picker). */
   const initFakeKeyboard = () => {
     const container = document.querySelector(".phone-container");
@@ -31938,11 +32380,13 @@
     requestIdleCallback(() => {
       initFakeKeyboard();
       initEarnFakeKeyboard();
+      initWithdrawFakeKeyboard(fiatFlowPlaceholderApi);
     }, { timeout: 2500 });
   } else {
     setTimeout(() => {
       initFakeKeyboard();
       initEarnFakeKeyboard();
+      initWithdrawFakeKeyboard(fiatFlowPlaceholderApi);
     }, 1);
   }
 

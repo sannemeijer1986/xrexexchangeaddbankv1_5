@@ -4367,8 +4367,80 @@
                 </button>
             </header>
             <div class="fiat-flow-placeholder__divider" aria-hidden="true"></div>
-            <div class="fiat-flow-placeholder__body">
+            <div class="fiat-flow-placeholder__body" data-fiat-flow-deposit-view>
                 <p class="fiat-flow-placeholder__content" data-fiat-flow-placeholder-content>Page : Your XREX TWD deposit account</p>
+            </div>
+            <div class="fiat-withdraw-page" data-fiat-flow-withdraw-view hidden>
+                <div class="fiat-withdraw-page__scroll">
+                    <p class="fiat-withdraw-page__lead" data-fiat-withdraw-lead>How much TWD would you like to withdraw to KGI Bank?</p>
+                    <section class="fiat-withdraw-page__amount-section" aria-label="Withdraw amount">
+                        <div class="plan-buffer-funding-input__head">
+                            <div class="plan-buffer-funding-input__title">Amount</div>
+                            <div class="plan-buffer-funding-input__avail">
+                                <span data-fiat-withdraw-avail>Avail. 5,000 TWD</span>
+                            </div>
+                        </div>
+                        <div class="plan-buffer-funding-input fiat-withdraw-page__amount-input">
+                            <div class="plan-buffer-funding-input__row fiat-withdraw-page__amount-row">
+                                <div class="plan-buffer-funding-input__left">
+                                    <img class="plan-buffer-funding-input__icon" src="assets/icon_currency_TWD.svg" width="32" height="32" alt="" data-fiat-withdraw-icon />
+                                    <div class="fiat-withdraw-page__amount-input-wrap">
+                                        <input
+                                            class="plan-buffer-funding-input__field"
+                                            type="text"
+                                            inputmode="numeric"
+                                            pattern="[0-9]*"
+                                            autocomplete="off"
+                                            placeholder="0"
+                                            aria-label="Withdraw amount"
+                                            data-fiat-withdraw-amount
+                                        />
+                                        <span class="plan-buffer-funding-input__hint" data-fiat-withdraw-amount-hint>Max 100,000</span>
+                                    </div>
+                                </div>
+                                <div class="plan-buffer-funding-input__cur" data-fiat-withdraw-currency aria-hidden="true">TWD</div>
+                            </div>
+                            <div class="plan-buffer-funding-input__divider"></div>
+                            <p class="plan-detail-panel__amount-error fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
+                        </div>
+                        <div class="fiat-withdraw-page__limit-row">
+                            <span class="fiat-withdraw-page__limit-text" data-fiat-withdraw-remaining-limit>Remaining limit 2,000,000 TWD</span>
+                            <button class="fiat-withdraw-page__limit-info" type="button" aria-label="About remaining limit" data-fiat-withdraw-limit-info>
+                                <img src="assets/icon_info_circle_gray.svg" alt="" width="12" height="12" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </section>
+                </div>
+                <footer class="fiat-withdraw-page__footer">
+                    <div class="fiat-withdraw-page__summary">
+                        <div class="fiat-withdraw-page__summary-row">
+                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-to>To</span>
+                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-to>KGI Bank (123***234)</span>
+                        </div>
+                        <div class="fiat-withdraw-page__summary-row">
+                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-arrival>Estimated arrival</span>
+                            <span class="fiat-withdraw-page__summary-value fiat-withdraw-page__summary-value--highlight" data-fiat-withdraw-arrival>1–3 business days</span>
+                        </div>
+                        <div class="fiat-withdraw-page__summary-row">
+                            <span class="fiat-withdraw-page__summary-label">
+                                <span data-fiat-withdraw-label-fee>Fee (from balance)</span>
+                                <button class="fiat-withdraw-page__fee-info" type="button" aria-label="About fee" data-fiat-withdraw-fee-info>
+                                    <img src="assets/icon_info_circle_gray.svg" alt="" width="12" height="12" aria-hidden="true" />
+                                </button>
+                            </span>
+                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-fee>150 TWD</span>
+                        </div>
+                        <div class="fiat-withdraw-page__summary-divider" aria-hidden="true"></div>
+                        <div class="fiat-withdraw-page__summary-row fiat-withdraw-page__summary-row--total">
+                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-receive>You receive</span>
+                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-receive>- - TWD</span>
+                        </div>
+                    </div>
+                    <div class="fiat-withdraw-page__footer-btns">
+                        <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-fiat-flow-placeholder-close>Back</button>
+                        <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-continue disabled>Continue</button>
+                    </div>
+                </footer>
             </div>
         </section>
 
@@ -8654,6 +8726,49 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                             </div>
                         </div>
                         <button class="fake-keyboard__preview" type="button" data-fake-keyboard-preview disabled>Preview</button>
+                    </div>
+                </div>
+                <div class="fake-keyboard__keys" aria-hidden="true">
+                    <div class="fake-keyboard__key"><span>1</span></div>
+                    <div class="fake-keyboard__key"><span>2</span><small>ABC</small></div>
+                    <div class="fake-keyboard__key"><span>3</span><small>DEF</small></div>
+                    <div class="fake-keyboard__key"><span>4</span><small>GHI</small></div>
+                    <div class="fake-keyboard__key"><span>5</span><small>JKL</small></div>
+                    <div class="fake-keyboard__key"><span>6</span><small>MNO</small></div>
+                    <div class="fake-keyboard__key"><span>7</span><small>PQRS</small></div>
+                    <div class="fake-keyboard__key"><span>8</span><small>TUV</small></div>
+                    <div class="fake-keyboard__key"><span>9</span><small>WXYZ</small></div>
+                    <div class="fake-keyboard__key fake-keyboard__key--empty"></div>
+                    <div class="fake-keyboard__key"><span>0</span></div>
+                    <div class="fake-keyboard__delete" aria-label="Delete">
+                        <span aria-hidden="true">⌫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop prototype only (>640px): Withdraw page numeric keyboard -->
+        <div class="fake-keyboard fake-keyboard--withdraw" data-fake-keyboard="withdraw" aria-hidden="true" hidden>
+            <div class="fake-keyboard__panel" role="presentation">
+                <div class="fake-keyboard__sticky">
+                    <div class="fake-keyboard__top-actions">
+                        <button
+                            class="fake-keyboard__dismiss"
+                            type="button"
+                            data-fake-keyboard-withdraw-close
+                            aria-label="Dismiss keyboard"
+                        >
+                            <img src="assets/icon_chevron_down_white.svg" alt="" width="24" height="24" aria-hidden="true" />
+                        </button>
+                        <div class="fake-keyboard__pct-wrap">
+                            <div class="fake-keyboard__pct-bar" aria-label="Quick amount">
+                                <button type="button" data-fake-keyboard-withdraw-pct="25">25%</button>
+                                <button type="button" data-fake-keyboard-withdraw-pct="50">50%</button>
+                                <button type="button" data-fake-keyboard-withdraw-pct="75">75%</button>
+                                <button type="button" data-fake-keyboard-withdraw-pct="100">100%</button>
+                            </div>
+                        </div>
+                        <button class="fake-keyboard__preview" type="button" data-fake-keyboard-withdraw-continue disabled>Continue</button>
                     </div>
                 </div>
                 <div class="fake-keyboard__keys" aria-hidden="true">

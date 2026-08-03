@@ -328,12 +328,14 @@ body {
     border-bottom-right-radius: 8px;
   }
   .fake-keyboard--convert .fake-keyboard__top-actions,
-  .fake-keyboard--earn .fake-keyboard__top-actions {
+  .fake-keyboard--earn .fake-keyboard__top-actions,
+  .fake-keyboard--withdraw .fake-keyboard__top-actions {
     gap: 16px;
     justify-content: flex-start;
   }
   .fake-keyboard--convert .fake-keyboard__dismiss,
-  .fake-keyboard--earn .fake-keyboard__dismiss {
+  .fake-keyboard--earn .fake-keyboard__dismiss,
+  .fake-keyboard--withdraw .fake-keyboard__dismiss {
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -348,18 +350,21 @@ body {
     -webkit-tap-highlight-color: transparent;
   }
   .fake-keyboard--convert .fake-keyboard__dismiss img,
-  .fake-keyboard--earn .fake-keyboard__dismiss img {
+  .fake-keyboard--earn .fake-keyboard__dismiss img,
+  .fake-keyboard--withdraw .fake-keyboard__dismiss img {
     display: block;
     width: 24px;
     height: 24px;
   }
   .fake-keyboard--convert .fake-keyboard__dismiss:focus-visible,
-  .fake-keyboard--earn .fake-keyboard__dismiss:focus-visible {
+  .fake-keyboard--earn .fake-keyboard__dismiss:focus-visible,
+  .fake-keyboard--withdraw .fake-keyboard__dismiss:focus-visible {
     outline: 2px solid #3f78ff;
     outline-offset: 2px;
   }
   .fake-keyboard--convert .fake-keyboard__preview,
-  .fake-keyboard--earn .fake-keyboard__preview {
+  .fake-keyboard--earn .fake-keyboard__preview,
+  .fake-keyboard--withdraw .fake-keyboard__preview {
     min-width: 0;
     height: 32px;
     padding: 4px 10px;
@@ -2935,6 +2940,7 @@ html[data-active-tab=wallet] .app-header__top {
   flex-direction: column;
   transform: translateX(100%);
   transition: transform 0.35s ease;
+  overflow: hidden;
 }
 
 .fiat-flow-placeholder.is-open {
@@ -3031,6 +3037,228 @@ html[data-active-tab=wallet] .app-header__top {
   color: #ffffff;
 }
 
+.fiat-flow-placeholder__body[hidden],
+.fiat-withdraw-page[hidden] {
+  display: none !important;
+}
+
+.fiat-flow-placeholder:has(.fiat-withdraw-page:not([hidden])) .fiat-flow-placeholder__body {
+  display: none;
+}
+
+.fiat-withdraw-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fiat-withdraw-page__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 24px 16px 16px;
+}
+.fiat-withdraw-page__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.phone-container p.fiat-withdraw-page__lead {
+  margin: 0 0 24px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.fiat-withdraw-page__amount-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fiat-withdraw-page__amount-input.plan-buffer-funding-input {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  gap: 0;
+}
+
+.fiat-withdraw-page .plan-detail-panel__amount-error,
+.phone-container p.fiat-withdraw-page__amount-error {
+  display: none;
+  margin: 4px 0 0;
+  opacity: 1;
+}
+.fiat-withdraw-page .plan-detail-panel__amount-error.is-visible,
+.phone-container p.fiat-withdraw-page__amount-error.is-visible {
+  display: block;
+}
+
+.fiat-withdraw-page__amount-row {
+  cursor: text;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fiat-withdraw-page__amount-input-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+  /* Keep max hint beside the value, not at the currency suffix. */
+}
+.fiat-withdraw-page__amount-input-wrap::after {
+  content: "";
+  flex: 1 1 0;
+  min-width: 0;
+}
+.fiat-withdraw-page__amount-input-wrap .plan-buffer-funding-input__field {
+  flex: 0 1 auto;
+  min-width: 0;
+  width: auto;
+  field-sizing: content;
+  min-inline-size: 24px;
+}
+.fiat-withdraw-page__amount-input-wrap .plan-buffer-funding-input__hint {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #58595a;
+}
+
+.fiat-withdraw-page__limit-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding-top: 16px;
+}
+
+.fiat-withdraw-page__limit-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+  text-align: right;
+}
+
+.fiat-withdraw-page__limit-info,
+.fiat-withdraw-page__fee-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+.fiat-withdraw-page__limit-info img,
+.fiat-withdraw-page__fee-info img {
+  display: block;
+}
+
+.fiat-withdraw-page__footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: #0d0e0f;
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+
+.fiat-withdraw-page__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #1b1d1d;
+}
+
+.fiat-withdraw-page__summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fiat-withdraw-page__summary-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.fiat-withdraw-page__summary-value {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.fiat-withdraw-page__summary-value--highlight {
+  color: #8fb8ff;
+}
+
+.fiat-withdraw-page__summary-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fiat-withdraw-page__summary-row--total .fiat-withdraw-page__summary-label,
+.fiat-withdraw-page__summary-row--total .fiat-withdraw-page__summary-value {
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.fiat-withdraw-page__footer-btns {
+  display: flex;
+  gap: 16px;
+}
+
+.fiat-withdraw-page__footer .schedule-time-sheet__btn--primary:disabled {
+  opacity: 1;
+  background: #081b68;
+  color: #58595a;
+  cursor: not-allowed;
+}
+
+@media (min-width: 641px) {
+  .fake-keyboard--withdraw {
+    z-index: 2175;
+  }
+  .fake-keyboard--withdraw .fake-keyboard__pct-bar button {
+    padding: 2px;
+  }
+  .fake-keyboard--withdraw .fake-keyboard__pct-bar button.is-active {
+    color: #0d0e0f;
+  }
+  .phone-container.is-fake-keyboard-withdraw-visible .fiat-withdraw-page__scroll {
+    padding-bottom: calc(var(--withdraw-keyboard-inset, 332px) + env(safe-area-inset-bottom, 0px));
+  }
+  .phone-container.is-fake-keyboard-withdraw-visible:not(.is-fake-keyboard-withdraw-dismissing) .fiat-withdraw-page__footer {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
 .ba-wizard-intro,
 .ba-wizard-currency,
 .ba-wizard-how,
