@@ -9557,7 +9557,7 @@
       if (titleEl) titleEl.textContent = title;
       if (bodyEl) {
         bodyEl.textContent = tr(
-          "You'll be able to deposit or withdraw with this bank account once it's approved.",
+          "You'll be able to deposit and withdraw using the bank account below once it's approved.",
         );
       }
       if (highlightEl) {
@@ -9647,7 +9647,7 @@
       if (titleEl) titleEl.textContent = title;
       if (descEl) {
         descEl.textContent = tr(
-          "We couldn't verify this bank account, so it can't be used on XREX. Delete it first, then link a different account.",
+          "We couldn't verify the bank account below, so it can't be used on XREX. Delete it first, then link a different account.",
         );
       }
       populateBankAccountStatusSheetCard(
