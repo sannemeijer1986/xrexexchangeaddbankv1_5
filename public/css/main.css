@@ -2713,10 +2713,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .twd-deposit-select__currency-icon {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  display: block;
+  display: none;
 }
 
 .twd-deposit-select__title {
@@ -2757,8 +2754,8 @@ html[data-active-tab=wallet] .app-header__top {
 .twd-deposit-select__lead {
   margin: 0;
   padding: 0 16px 8px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   line-height: normal;
   color: #ffffff;
 }
@@ -2912,8 +2909,8 @@ html[data-active-tab=wallet] .app-header__top {
 
 .phone-container p.twd-deposit-select__lead {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   line-height: normal;
   color: #ffffff;
 }
@@ -2984,10 +2981,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .fiat-flow-placeholder__currency-icon {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  display: block;
+  display: none;
 }
 
 .fiat-flow-placeholder__title {

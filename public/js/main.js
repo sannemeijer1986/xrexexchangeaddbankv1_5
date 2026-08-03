@@ -6604,30 +6604,30 @@
     if (currency === "twd") {
       return isDeposit
         ? {
-            title: "TWD deposit",
+            title: "Deposit TWD",
             content: "Page : Your XREX TWD deposit account",
             icon: "assets/TWD.svg",
-            ariaLabel: "TWD deposit",
+            ariaLabel: "Deposit TWD",
           }
         : {
-            title: "TWD bank withdrawal",
+            title: "Withdraw TWD",
             content: "Page : How much TWD would you like to withdraw",
             icon: "assets/TWD.svg",
-            ariaLabel: "TWD bank withdrawal",
+            ariaLabel: "Withdraw TWD",
           };
     }
     return isDeposit
       ? {
-          title: "USD deposit",
+          title: "Deposit USD",
           content: "Page : Your XREX USD deposit account",
           icon: "assets/USD.svg",
-          ariaLabel: "USD deposit",
+          ariaLabel: "Deposit USD",
         }
       : {
-          title: "USD bank withdrawal",
+          title: "Withdraw USD",
           content: "Page : How much USD would you like to withdraw",
           icon: "assets/USD.svg",
-          ariaLabel: "USD bank withdrawal",
+          ariaLabel: "Withdraw USD",
         };
   };
 
@@ -6724,14 +6724,14 @@
 
     const TWD_FIAT_SELECT_COPY = {
       add: {
-        title: "TWD deposit",
+        title: "Deposit TWD",
         lead: "Select a linked bank account to deposit TWD from",
-        ariaLabel: "TWD deposit",
+        ariaLabel: "Deposit TWD",
       },
       send: {
-        title: "TWD withdrawal",
+        title: "Withdraw TWD",
         lead: "Select a linked bank account to withdraw TWD to",
-        ariaLabel: "TWD withdrawal",
+        ariaLabel: "Withdraw TWD",
       },
     };
 
@@ -6766,9 +6766,9 @@
       const copy = TWD_FIAT_SELECT_COPY[mode] || TWD_FIAT_SELECT_COPY.add;
       const titleEl = selectPanel?.querySelector("[data-twd-fiat-select-title]");
       const leadEl = selectPanel?.querySelector("[data-twd-fiat-select-lead]");
-      if (titleEl) titleEl.textContent = copy.title;
-      if (leadEl) leadEl.textContent = copy.lead;
-      if (selectPanel) selectPanel.setAttribute("aria-label", copy.ariaLabel);
+      if (titleEl) titleEl.textContent = tr(copy.title);
+      if (leadEl) leadEl.textContent = tr(copy.lead);
+      if (selectPanel) selectPanel.setAttribute("aria-label", tr(copy.ariaLabel));
     };
 
     const syncSelectPanelUi = () => {
@@ -6901,6 +6901,14 @@
         ?.addEventListener("click", () => showSnackbar("Not in prototype"));
     });
 
+    document.addEventListener("prototype-locale-changed", () => {
+      if (selectPanel?.classList.contains("is-open") && !selectPanel.hidden) {
+        syncSelectPanelCopy(
+          entrySource === "send" || entrySource === "add" ? entrySource : "add",
+        );
+      }
+    });
+
     return {
       openFromAddSend,
       openSelect,
@@ -6937,14 +6945,14 @@
 
     const USD_FIAT_SELECT_COPY = {
       add: {
-        title: "USD deposit",
+        title: "Deposit USD",
         lead: "Select a linked bank account to deposit USD from",
-        ariaLabel: "USD deposit",
+        ariaLabel: "Deposit USD",
       },
       send: {
-        title: "USD withdrawal",
+        title: "Withdraw USD",
         lead: "Select a linked bank account to withdraw USD to",
-        ariaLabel: "USD withdrawal",
+        ariaLabel: "Withdraw USD",
       },
     };
 
