@@ -6772,7 +6772,7 @@
       const amountLabel = panel.querySelector(
         ".fiat-withdraw-page__amount-section .plan-buffer-funding-input__title",
       );
-      if (labelTo) labelTo.textContent = tr("Withdraw to");
+      if (labelTo) labelTo.textContent = tr("To");
       if (labelArrival) labelArrival.textContent = tr("Estimated arrival");
       if (labelFee) labelFee.textContent = tr("Fee (from balance)");
       if (labelReceive) labelReceive.textContent = tr("You receive");

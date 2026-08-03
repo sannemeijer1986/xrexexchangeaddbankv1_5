@@ -3136,7 +3136,7 @@ html[data-active-tab=wallet] .app-header__top {
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
-  padding-top: 16px;
+  padding-top: 8px;
 }
 
 .fiat-withdraw-page__limit-text {
