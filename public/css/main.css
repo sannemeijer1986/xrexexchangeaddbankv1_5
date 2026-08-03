@@ -5737,15 +5737,33 @@ html[data-active-tab=wallet] .app-header__top {
   margin-bottom: 16px;
 }
 
+.custodian-panel__intro {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.375;
+  color: #ffffff;
+}
+
 .phone-container p.custodian-panel__intro {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1.375;
   color: #ffffff;
 }
 
 .custodian-panel__intro-note {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.375;
+  color: #56c488;
+}
+
+.phone-container .custodian-panel__intro-note {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.375;
   color: #56c488;
 }
 
@@ -6237,21 +6255,25 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .currency-sheet.bank-account-under-review-sheet,
-.currency-sheet.bank-account-rejected-sheet {
+.currency-sheet.bank-account-rejected-sheet,
+.currency-sheet.bank-account-resubmit-sheet {
   z-index: 2260;
 }
 .currency-sheet.bank-account-under-review-sheet .currency-sheet__panel,
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__panel {
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__panel,
+.currency-sheet.bank-account-resubmit-sheet .currency-sheet__panel {
   padding-bottom: 0;
 }
 .currency-sheet.bank-account-under-review-sheet .currency-sheet__body,
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__body {
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__body,
+.currency-sheet.bank-account-resubmit-sheet .currency-sheet__body {
   align-items: center;
   gap: 0;
   padding: 16px;
 }
 .currency-sheet.bank-account-under-review-sheet .currency-sheet__footer.bank-account-status-sheet__footer,
-.currency-sheet.bank-account-rejected-sheet .currency-sheet__footer.bank-account-status-sheet__footer {
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__footer.bank-account-status-sheet__footer,
+.currency-sheet.bank-account-resubmit-sheet .currency-sheet__footer.bank-account-status-sheet__footer {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -6259,9 +6281,19 @@ html[data-active-tab=wallet] .app-header__top {
   padding: 16px;
   background: #1b1d1d;
 }
+.currency-sheet.bank-account-under-review-sheet .currency-sheet__footer.bank-account-resubmit-sheet__footer,
+.currency-sheet.bank-account-rejected-sheet .currency-sheet__footer.bank-account-resubmit-sheet__footer,
+.currency-sheet.bank-account-resubmit-sheet .currency-sheet__footer.bank-account-resubmit-sheet__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 16px;
+  background: #1b1d1d;
+}
 
 .bank-account-under-review-sheet__content,
-.bank-account-rejected-sheet__content {
+.bank-account-rejected-sheet__content,
+.bank-account-resubmit-sheet__content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6271,7 +6303,8 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .bank-account-under-review-sheet__intro,
-.bank-account-rejected-sheet__intro {
+.bank-account-rejected-sheet__intro,
+.bank-account-resubmit-sheet__intro {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -6279,7 +6312,8 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .phone-container h2.bank-account-under-review-sheet__title,
-.phone-container h2.bank-account-rejected-sheet__title {
+.phone-container h2.bank-account-rejected-sheet__title,
+.phone-container h2.bank-account-resubmit-sheet__title {
   margin: 0;
   width: 100%;
   font-size: 20px;
@@ -6315,7 +6349,8 @@ html[data-active-tab=wallet] .app-header__top {
   text-align: center;
 }
 
-.phone-container p.bank-account-rejected-sheet__desc {
+.phone-container p.bank-account-rejected-sheet__desc,
+.phone-container p.bank-account-resubmit-sheet__desc {
   margin: 0;
   width: 100%;
   font-size: 16px;
@@ -6400,6 +6435,10 @@ html[data-active-tab=wallet] .app-header__top {
 
 .bank-account-status-sheet__card-status--rejected {
   color: #eb5347;
+}
+
+.bank-account-status-sheet__card-status--issues {
+  color: #ff6d47;
 }
 
 .bank-account-status-sheet__card-delete {

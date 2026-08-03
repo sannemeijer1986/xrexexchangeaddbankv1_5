@@ -5353,7 +5353,7 @@
                         <div class="bank-account-under-review-sheet__intro">
                             <h2 class="bank-account-under-review-sheet__title" data-bank-account-under-review-title>Bank account under review</h2>
                             <div class="bank-account-under-review-sheet__desc">
-                                <p class="bank-account-under-review-sheet__desc-body" data-bank-account-under-review-desc-body>You'll be able to deposit and withdraw using the bank account below once it's approved.</p>
+                                <p class="bank-account-under-review-sheet__desc-body" data-bank-account-under-review-desc-body>You'll be able to deposit and withdraw TWD using bank account below once approved.</p>
                                 <p class="bank-account-under-review-sheet__desc-note" data-bank-account-under-review-desc-highlight>Verification usually takes 1–3 business days.</p>
                             </div>
                         </div>
@@ -5368,7 +5368,7 @@
                                         <span data-bank-status-sheet-bank-name>Bank Name : CTBC Bank</span>
                                         <span data-bank-status-sheet-account-number>Account number : 12345678999</span>
                                     </span>
-                                    <span class="bank-account-status-sheet__card-status bank-account-status-sheet__card-status--submitted" data-bank-status-sheet-status>Submitted</span>
+                                    <span class="bank-account-status-sheet__card-status bank-account-status-sheet__card-status--submitted" data-bank-status-sheet-status>Processing</span>
                                 </span>
                             </div>
                         </div>
@@ -5400,7 +5400,7 @@
                         <div class="bank-account-rejected-sheet__intro">
                             <h2 class="bank-account-rejected-sheet__title" data-bank-account-rejected-title>Bank account rejected</h2>
                             <p class="bank-account-rejected-sheet__desc" data-bank-account-rejected-desc>
-                                We couldn't verify the bank account below, so it can't be used on XREX. Delete it first, then link a different account.
+                                We couldn't verify the TWD bank account below, so it can't be used on XREX. Delete it first, then link a different account.
                             </p>
                         </div>
                         <div class="bank-account-status-sheet__card-wrap">
@@ -5424,6 +5424,51 @@
                 <div class="currency-sheet__footer bank-account-status-sheet__footer">
                     <button class="bank-account-status-sheet__primary" type="button" data-bank-account-rejected-dismiss>Got it</button>
                     <button class="bank-account-status-sheet__manage" type="button" data-bank-account-rejected-go-bank-accounts>Manage my bank accounts</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Figma 8075:46354 — Bank account resubmit bottom sheet -->
+        <div
+            class="currency-sheet bank-account-resubmit-sheet"
+            data-bank-account-resubmit-sheet
+            hidden
+            aria-modal="true"
+            role="dialog"
+            aria-label="Action required"
+        >
+            <button class="currency-sheet__backdrop" type="button" data-bank-account-resubmit-close aria-label="Close"></button>
+            <div class="currency-sheet__panel bank-account-resubmit-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body bank-account-resubmit-sheet__body">
+                    <div class="bank-account-resubmit-sheet__content">
+                        <div class="bank-account-resubmit-sheet__intro">
+                            <h2 class="bank-account-resubmit-sheet__title" data-bank-account-resubmit-title>Action required</h2>
+                            <p class="bank-account-resubmit-sheet__desc" data-bank-account-resubmit-desc>
+                                Some of your TWD bank details couldn't be verified. Please review and resubmit.
+                            </p>
+                        </div>
+                        <div class="bank-account-status-sheet__card-wrap">
+                            <div class="bank-account-status-sheet__card" data-bank-account-resubmit-account>
+                                <span class="bank-account-status-sheet__card-icon" aria-hidden="true">
+                                    <img src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" data-bank-status-sheet-icon />
+                                </span>
+                                <span class="bank-account-status-sheet__card-copy">
+                                    <span class="bank-account-status-sheet__card-title" data-bank-status-sheet-title>My CTBC bank</span>
+                                    <span class="bank-account-status-sheet__card-meta">
+                                        <span data-bank-status-sheet-bank-name>Bank Name : CTBC Bank</span>
+                                        <span data-bank-status-sheet-account-number>Account number : 12345678999</span>
+                                    </span>
+                                    <span class="bank-account-status-sheet__card-status bank-account-status-sheet__card-status--issues" data-bank-status-sheet-status>{ResubmitReason}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="currency-sheet__footer bank-account-resubmit-sheet__footer">
+                    <button class="bank-account-status-sheet__primary" type="button" data-bank-account-resubmit-continue>Continue to resubmit</button>
                 </div>
             </div>
         </div>

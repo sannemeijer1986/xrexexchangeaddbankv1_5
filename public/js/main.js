@@ -327,6 +327,9 @@
     };
   };
 
+  const getBankSheetCurLabel = (currency) =>
+    currency === "usd" ? "USD" : "TWD";
+
   const populateBankAccountStatusSheetCard = (cardEl, data, statusModifier) => {
     if (!cardEl) return;
     const iconEl = cardEl.querySelector("[data-bank-status-sheet-icon]");
@@ -342,17 +345,21 @@
     if (bankNameEl) bankNameEl.textContent = data.bankNameLabel;
     if (accountNumberEl) accountNumberEl.textContent = data.accountNumberLabel;
     if (statusEl) {
-      statusEl.textContent =
-        statusModifier === "rejected" ? tr("Rejected") : tr("Submitted");
       statusEl.classList.remove(
         "bank-account-status-sheet__card-status--submitted",
         "bank-account-status-sheet__card-status--rejected",
+        "bank-account-status-sheet__card-status--issues",
       );
-      statusEl.classList.add(
-        statusModifier === "rejected"
-          ? "bank-account-status-sheet__card-status--rejected"
-          : "bank-account-status-sheet__card-status--submitted",
-      );
+      if (statusModifier === "rejected") {
+        statusEl.textContent = tr("Rejected");
+        statusEl.classList.add("bank-account-status-sheet__card-status--rejected");
+      } else if (statusModifier === "issues") {
+        statusEl.textContent = tr("{ResubmitReason}");
+        statusEl.classList.add("bank-account-status-sheet__card-status--issues");
+      } else {
+        statusEl.textContent = tr("Processing");
+        statusEl.classList.add("bank-account-status-sheet__card-status--submitted");
+      }
     }
   };
 
@@ -9557,7 +9564,8 @@
       if (titleEl) titleEl.textContent = title;
       if (bodyEl) {
         bodyEl.textContent = tr(
-          "You'll be able to deposit and withdraw using the bank account below once it's approved.",
+          "You'll be able to deposit and withdraw {cur} using bank account below once approved.",
+          { cur: getBankSheetCurLabel(sheetCurrency) },
         );
       }
       if (highlightEl) {
@@ -9647,7 +9655,8 @@
       if (titleEl) titleEl.textContent = title;
       if (descEl) {
         descEl.textContent = tr(
-          "We couldn't verify the bank account below, so it can't be used on XREX. Delete it first, then link a different account.",
+          "We couldn't verify the {cur} bank account below, so it can't be used on XREX. Delete it first, then link a different account.",
+          { cur: getBankSheetCurLabel(sheetCurrency) },
         );
       }
       populateBankAccountStatusSheetCard(
@@ -9706,6 +9715,81 @@
     return {
       open: ({ currency = "twd" } = {}) => {
         sheetCurrency = currency === "usd" ? "usd" : "twd";
+        populate({ currency: sheetCurrency });
+        setOpen(true);
+      },
+      close: () => setOpen(false),
+    };
+  };
+
+  const initBankAccountResubmitSheet = ({
+    onContinueToResubmit = () => {},
+  } = {}) => {
+    const sheet = document.querySelector("[data-bank-account-resubmit-sheet]");
+    if (!sheet) return { open: () => {}, close: () => {} };
+
+    const titleEl = sheet.querySelector("[data-bank-account-resubmit-title]");
+    const descEl = sheet.querySelector("[data-bank-account-resubmit-desc]");
+    const accountCard = sheet.querySelector("[data-bank-account-resubmit-account]");
+    const continueBtn = sheet.querySelector("[data-bank-account-resubmit-continue]");
+    const backdropBtn = sheet.querySelector("[data-bank-account-resubmit-close]");
+    let sheetCurrency = "twd";
+    let sheetSource = "add-send";
+
+    const populate = ({ currency = sheetCurrency } = {}) => {
+      sheetCurrency = currency === "usd" ? "usd" : "twd";
+      const title = tr("Action required");
+      if (titleEl) titleEl.textContent = title;
+      if (descEl) {
+        descEl.textContent = tr(
+          "Some of your {cur} bank details couldn't be verified. Please review and resubmit.",
+          { cur: getBankSheetCurLabel(sheetCurrency) },
+        );
+      }
+      populateBankAccountStatusSheetCard(
+        accountCard,
+        getLinkedBankAccountSheetData(sheetCurrency),
+        "issues",
+      );
+      sheet.setAttribute("aria-label", title);
+      if (continueBtn) continueBtn.textContent = tr("Continue to resubmit");
+    };
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        populate({ currency: sheetCurrency });
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+        return;
+      }
+      const sheetPanel = sheet.querySelector(".currency-sheet__panel");
+      sheet.classList.remove("is-open");
+      const onEnd = () => {
+        if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+        sheetPanel?.removeEventListener("transitionend", onEnd);
+      };
+      sheetPanel?.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 300);
+    };
+
+    const dismiss = () => setOpen(false);
+
+    backdropBtn?.addEventListener("click", dismiss);
+    continueBtn?.addEventListener("click", () => {
+      const currency = sheetCurrency;
+      const source = sheetSource;
+      dismiss();
+      onContinueToResubmit({ currency, source });
+    });
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!sheet.classList.contains("is-open")) return;
+      populate({ currency: sheetCurrency });
+    });
+
+    return {
+      open: ({ currency = "twd", source = "add-send" } = {}) => {
+        sheetCurrency = currency === "usd" ? "usd" : "twd";
+        sheetSource = source || "add-send";
         populate({ currency: sheetCurrency });
         setOpen(true);
       },
@@ -13048,6 +13132,7 @@
     onGoToBankAccounts: () => bankAccountsSheetNavigation.goToBankAccounts(),
     openDeleteBankAccountSheet: (opts) => deleteBankAccountSheetApi.open(opts),
   });
+  let bankAccountResubmitSheetApi = { open: () => {}, close: () => {} };
   bankAccountsSheetNavigation.goToBankAccounts = () => {
     addSendPanelApi?.close?.({ instant: true });
     fiatFlowPlaceholderApi?.close?.({ instant: true });
@@ -13160,12 +13245,17 @@
     custodianApplySheetApi,
     usdCustodianPanelApi,
   );
+  bankAccountResubmitSheetApi = initBankAccountResubmitSheet({
+    onContinueToResubmit: ({ currency, source } = {}) => {
+      if (currency === "twd") linkTwdApi.openResubmit?.({ source });
+      else linkUsdApi.openResubmit?.({ source });
+    },
+  });
   openBankResubmit = ({ currency, source } = {}) => {
-    if (currency === "twd") {
-      linkTwdApi.openResubmit?.({ source });
-      return;
-    }
-    linkUsdApi.openResubmit?.({ source });
+    bankAccountResubmitSheetApi.open({
+      currency: currency === "usd" ? "usd" : "twd",
+      source: source || "add-send",
+    });
   };
   baWizardApi.setOnHowContinue?.(() => {
     if (baWizardApi.getSelectedCurrency() === "usd") {
