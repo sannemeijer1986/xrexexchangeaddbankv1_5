@@ -6496,11 +6496,19 @@
       }, 2200);
     };
 
+    const syncAddSendPanelCopy = (mode = panel.dataset.addSendMode || "add") => {
+      const normalizedMode = mode === "send" ? "send" : "add";
+      if (titleEl) {
+        titleEl.textContent = tr(normalizedMode === "send" ? "Withdraw" : "Deposit");
+      }
+      panel.setAttribute("aria-label", tr("Deposit or withdraw assets"));
+    };
+
     const setOpen = (nextOpen, mode = "add", opts = {}) => {
       if (nextOpen) {
         const normalizedMode = mode === "send" ? "send" : "add";
-        if (titleEl) titleEl.textContent = normalizedMode === "send" ? "Send" : "Add";
         panel.dataset.addSendMode = normalizedMode;
+        syncAddSendPanelCopy(normalizedMode);
         panel.hidden = false;
         const scrollBody = panel.querySelector(".add-send-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
@@ -6579,6 +6587,10 @@
     });
 
     document.addEventListener("prototype-region-change", syncAddSendRegionUi);
+    document.addEventListener("prototype-locale-changed", () => {
+      if (!panel.classList.contains("is-open")) return;
+      syncAddSendPanelCopy();
+    });
     syncAddSendRegionUi();
 
     return {

@@ -145,6 +145,7 @@
   "Default: Bal Ok": "預設：餘額充足",
   "DeFi": "DeFi",
   "Deposit": "入金", // changed: 充值 → 入金
+  "Deposit or withdraw assets": "入金或出金",
   "Deposit funds into your XREX wallet": "將資金入金至您的 XREX 錢包", // changed: 充值 → 入金
   "Designed for long-term investing": "專為長期投資設計",
   "Details": "詳情",
