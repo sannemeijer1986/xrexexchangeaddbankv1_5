@@ -4456,79 +4456,55 @@
                 <div class="fiat-withdraw-confirm__divider" aria-hidden="true"></div>
                 <div class="fiat-withdraw-confirm__scroll">
                     <div class="fiat-withdraw-confirm__hero">
-                        <p class="fiat-withdraw-confirm__hero-label" data-fiat-withdraw-confirm-label-withdrawing>Withdrawing</p>
-                        <div class="fiat-withdraw-confirm__hero-amount">
+                        <div class="fiat-withdraw-confirm__hero-main">
+                            <div class="fiat-withdraw-confirm__hero-copy">
+                                <p class="fiat-withdraw-confirm__hero-label" data-fiat-withdraw-confirm-label-withdraw>Withdraw</p>
+                                <p class="fiat-withdraw-confirm__hero-value" data-fiat-withdraw-confirm-amount>5,000.00 TWD</p>
+                            </div>
                             <img class="fiat-withdraw-confirm__hero-icon" src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" data-fiat-withdraw-confirm-icon />
-                            <span class="fiat-withdraw-confirm__hero-value" data-fiat-withdraw-confirm-amount>5,000.00 TWD</span>
                         </div>
+                        <p class="fiat-withdraw-confirm__hero-arrival" data-fiat-withdraw-confirm-arrival>Expected to arrive in 1-3 business days</p>
                     </div>
                     <div class="fiat-withdraw-confirm__cards">
                         <div class="fiat-withdraw-confirm__route-card">
-                            <div class="fiat-withdraw-confirm__route-vertical" data-fiat-withdraw-confirm-route-vertical>
-                                <p class="fiat-withdraw-confirm__route-section-label" data-fiat-withdraw-confirm-label-from>From</p>
-                                <div class="fiat-withdraw-confirm__route-list-card">
-                                    <div class="fiat-withdraw-confirm__route-list-row">
-                                        <div class="fiat-withdraw-confirm__route-icon" aria-hidden="true">
+                            <div class="fiat-withdraw-confirm__route">
+                                <div class="fiat-withdraw-confirm__route-step">
+                                    <div class="fiat-withdraw-confirm__route-rail" aria-hidden="true">
+                                        <div class="fiat-withdraw-confirm__route-icon">
                                             <img src="assets/social/xrex.svg" alt="" width="20" height="20" />
                                         </div>
-                                        <div class="fiat-withdraw-confirm__route-copy">
-                                            <span class="fiat-withdraw-confirm__route-title">XREX</span>
-                                            <span class="fiat-withdraw-confirm__route-meta" data-fiat-withdraw-confirm-xrex-handle>@SANNEMEIJER123</span>
-                                        </div>
+                                        <span class="fiat-withdraw-confirm__route-line"></span>
+                                    </div>
+                                    <div class="fiat-withdraw-confirm__route-copy">
+                                        <span class="fiat-withdraw-confirm__route-kicker" data-fiat-withdraw-confirm-label-from>From</span>
+                                        <span class="fiat-withdraw-confirm__route-title" data-fiat-withdraw-confirm-from-balance>XREX · TWD balance</span>
+                                        <span class="fiat-withdraw-confirm__route-meta" data-fiat-withdraw-confirm-xrex-handle>@SANNEMEIJER123</span>
                                     </div>
                                 </div>
-                                <div class="fiat-withdraw-confirm__route-arrow-row" aria-hidden="true">
-                                    <span class="fiat-withdraw-confirm__route-arrow-label" data-fiat-withdraw-confirm-label-to>To</span>
-                                    <img class="fiat-withdraw-confirm__route-arrow-icon" src="assets/icon_arrow_down_white.svg" alt="" width="32" height="32" />
-                                    <span class="fiat-withdraw-confirm__route-arrow-label fiat-withdraw-confirm__route-arrow-label--spacer" data-fiat-withdraw-confirm-label-from-spacer>From</span>
-                                </div>
-                                <div class="fiat-withdraw-confirm__route-list-card">
-                                    <div class="fiat-withdraw-confirm__route-list-row">
-                                        <div class="fiat-withdraw-confirm__route-icon" aria-hidden="true">
+                                <div class="fiat-withdraw-confirm__route-step fiat-withdraw-confirm__route-step--last">
+                                    <div class="fiat-withdraw-confirm__route-rail" aria-hidden="true">
+                                        <div class="fiat-withdraw-confirm__route-icon">
                                             <img src="assets/icon_bankaccounts.svg" alt="" width="20" height="20" data-fiat-withdraw-confirm-bank-icon />
                                         </div>
-                                        <div class="fiat-withdraw-confirm__route-copy">
-                                            <span class="fiat-withdraw-confirm__route-title" data-fiat-withdraw-confirm-bank-name>KGI Bank</span>
-                                            <span class="fiat-withdraw-confirm__route-meta" data-fiat-withdraw-confirm-account-number>12345678999</span>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="fiat-withdraw-confirm__route-horizontal" data-fiat-withdraw-confirm-route-horizontal>
-                                <div class="fiat-withdraw-confirm__route-endpoint">
-                                    <div class="fiat-withdraw-confirm__route-icon fiat-withdraw-confirm__route-icon--lg" aria-hidden="true">
-                                        <img src="assets/social/xrex.svg" alt="" width="24" height="24" />
-                                    </div>
-                                    <div class="fiat-withdraw-confirm__route-endpoint-copy">
-                                        <span class="fiat-withdraw-confirm__route-endpoint-label">From</span>
-                                        <span class="fiat-withdraw-confirm__route-endpoint-title">XREX</span>
-                                        <span class="fiat-withdraw-confirm__route-endpoint-meta" data-fiat-withdraw-confirm-xrex-handle-h>@SANNEMEIJER123</span>
-                                    </div>
-                                </div>
-                                <img class="fiat-withdraw-confirm__route-arrow-forward" src="assets/icon_chevron_right_white.svg" alt="" width="24" height="24" aria-hidden="true" />
-                                <div class="fiat-withdraw-confirm__route-endpoint">
-                                    <div class="fiat-withdraw-confirm__route-icon fiat-withdraw-confirm__route-icon--lg" aria-hidden="true">
-                                        <img src="assets/icon_bankaccounts.svg" alt="" width="24" height="24" data-fiat-withdraw-confirm-bank-icon-h />
-                                    </div>
-                                    <div class="fiat-withdraw-confirm__route-endpoint-copy">
-                                        <span class="fiat-withdraw-confirm__route-endpoint-label">To</span>
-                                        <span class="fiat-withdraw-confirm__route-endpoint-title" data-fiat-withdraw-confirm-bank-name-h>KGI Bank</span>
-                                        <span class="fiat-withdraw-confirm__route-endpoint-meta" data-fiat-withdraw-confirm-account-number-h>12345678999</span>
+                                    <div class="fiat-withdraw-confirm__route-copy">
+                                        <span class="fiat-withdraw-confirm__route-kicker" data-fiat-withdraw-confirm-label-to>To</span>
+                                        <span class="fiat-withdraw-confirm__route-title" data-fiat-withdraw-confirm-bank-name>KGI Bank</span>
+                                        <span class="fiat-withdraw-confirm__route-meta" data-fiat-withdraw-confirm-account-number>12345678999</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="fiat-withdraw-confirm__summary">
                             <div class="fiat-withdraw-confirm__summary-row">
-                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-arrival>Expected arrival</span>
-                                <span class="fiat-withdraw-confirm__summary-value fiat-withdraw-confirm__summary-value--highlight" data-fiat-withdraw-confirm-arrival>1–3 business days</span>
+                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-total>Total to deduct</span>
+                                <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-total>5,150.00 TWD</span>
                             </div>
                             <div class="fiat-withdraw-confirm__summary-row">
-                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-fee>Fee, from balance</span>
-                                <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-fee>150 TWD</span>
+                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-fee>Fee</span>
+                                <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-fee>150.00 TWD</span>
                             </div>
-                            <div class="fiat-withdraw-confirm__summary-divider" aria-hidden="true"></div>
-                            <div class="fiat-withdraw-confirm__summary-row fiat-withdraw-confirm__summary-row--total">
+                            <div class="fiat-withdraw-confirm__summary-row">
                                 <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-receive>You will receive</span>
                                 <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-receive>5,000.00 TWD</span>
                             </div>
@@ -4536,7 +4512,7 @@
                     </div>
                 </div>
                 <footer class="fiat-withdraw-confirm__footer">
-                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-confirm-submit>Withdraw</button>
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-confirm-submit>Withdraw 5,000.00 TWD</button>
                 </footer>
             </section>
         </section>
@@ -8865,7 +8841,11 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                                 <button type="button" data-fake-keyboard-withdraw-pct="100">100%</button>
                             </div>
                         </div>
-                        <button class="fake-keyboard__preview" type="button" data-fake-keyboard-withdraw-continue disabled>Continue</button>
+                        <button
+                            class="fake-keyboard__preview"
+                            type="button"
+                            data-fake-keyboard-withdraw-done
+                        >Done</button>
                     </div>
                 </div>
                 <div class="fake-keyboard__keys" aria-hidden="true">
@@ -9079,15 +9059,6 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" data-prototype-usd-custodian aria-label="USD custodian">
                         <option value="kgi-active" selected>KGI active</option>
-                    </select>
-                </div>
-            </div>
-            <div class="build-badge__section-row" data-prototype-withdraw-confirm-layout-row hidden>
-                <div class="build-badge__section-title">Withdraw confirm</div>
-                <div class="build-badge__checkbox-group">
-                    <select class="build-badge__select" data-prototype-withdraw-confirm-layout aria-label="Withdraw confirm layout">
-                        <option value="vertical" selected>Vertical</option>
-                        <option value="horizontal">Horizontal</option>
                     </select>
                 </div>
             </div>

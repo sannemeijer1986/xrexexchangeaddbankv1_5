@@ -320,6 +320,23 @@
     }
   }
 
+  .fake-keyboard--withdraw {
+    .fake-keyboard__dismiss {
+      display: none;
+    }
+
+    .fake-keyboard__preview {
+      min-width: 56px;
+      background: #2d2f2f;
+      color: #ffffff;
+
+      &:disabled {
+        background: #2d2f2f;
+        color: #58595a;
+      }
+    }
+  }
+
   .fake-keyboard--convert .fake-keyboard__pct-bar button {
     padding: 2px;
   }
@@ -3223,7 +3240,7 @@ html[data-active-tab="wallet"] {
   gap: 16px;
   padding: 16px;
   border-radius: 16px;
-  background: #1b1d1d;
+  background: #151718;
 }
 
 .fiat-withdraw-page__summary-row {
@@ -3256,7 +3273,7 @@ html[data-active-tab="wallet"] {
 }
 
 .fiat-withdraw-page__summary-value--highlight {
-  color: #8fb8ff;
+  color: #ffffff;
 }
 
 .fiat-withdraw-page__summary-divider {
@@ -3307,7 +3324,7 @@ html[data-active-tab="wallet"] {
   }
 }
 
-// Fiat withdraw confirm — Figma 8075:34492 (vertical) / 8090:55492 (horizontal)
+// Fiat withdraw confirm — Figma 8075:34492
 .fiat-withdraw-confirm {
   position: absolute;
   inset: 0;
@@ -3385,18 +3402,42 @@ html[data-active-tab="wallet"] {
   }
 }
 
+.fiat-withdraw-confirm__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .phone-container p.fiat-withdraw-confirm__hero-label {
-  margin: 0 0 6px;
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
   line-height: normal;
-  color: #9b9c9c;
+  color: #ffffff;
 }
 
-.fiat-withdraw-confirm__hero-amount {
+.fiat-withdraw-confirm__hero-main {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
+  width: 100%;
+}
+
+.fiat-withdraw-confirm__hero-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.phone-container p.fiat-withdraw-confirm__hero-value {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  white-space: nowrap;
 }
 
 .fiat-withdraw-confirm__hero-icon {
@@ -3407,19 +3448,19 @@ html[data-active-tab="wallet"] {
   border-radius: 50%;
 }
 
-.fiat-withdraw-confirm__hero-value {
-  font-size: 22px;
-  font-weight: 700;
+.phone-container p.fiat-withdraw-confirm__hero-arrival {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
   line-height: normal;
-  color: #ffffff;
-  white-space: nowrap;
+  color: #8fb8ff;
 }
 
 .fiat-withdraw-confirm__cards {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .fiat-withdraw-confirm__route-card {
@@ -3428,54 +3469,36 @@ html[data-active-tab="wallet"] {
   padding: 16px;
 }
 
-.fiat-withdraw-confirm__route-vertical {
+.fiat-withdraw-confirm__route {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  align-items: stretch;
+  gap: 0;
 }
 
-html[data-prototype-withdraw-confirm-layout="horizontal"] {
-  .fiat-withdraw-confirm__route-vertical {
-    display: none;
-  }
-
-  .fiat-withdraw-confirm__route-horizontal {
-    display: flex;
-  }
-}
-
-html[data-prototype-withdraw-confirm-layout="vertical"] {
-  .fiat-withdraw-confirm__route-horizontal {
-    display: none;
-  }
-
-  .fiat-withdraw-confirm__route-vertical {
-    display: flex;
-  }
-}
-
-// Beat `.phone-container p` from _base.scss (16px / secondary color / margin).
-.phone-container p.fiat-withdraw-confirm__route-section-label {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  color: #9b9c9c;
-  text-align: center;
-}
-
-.fiat-withdraw-confirm__route-list-card {
-  background: #1b1d1d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-}
-
-.fiat-withdraw-confirm__route-list-row {
+.fiat-withdraw-confirm__route-step {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  padding: 16px;
+}
+
+.fiat-withdraw-confirm__route-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 3px;
+}
+
+.fiat-withdraw-confirm__route-line {
+  width: 2px;
+  height: 32px;
+  margin-top: 0;
+  background: #47494a;
+  flex-shrink: 0;
+}
+
+.fiat-withdraw-confirm__route-step--last .fiat-withdraw-confirm__route-line {
+  display: none;
 }
 
 .fiat-withdraw-confirm__route-icon {
@@ -3484,7 +3507,6 @@ html[data-prototype-withdraw-confirm-layout="vertical"] {
   flex-shrink: 0;
   border-radius: 50%;
   background: #2d2f2f;
-  border: 1px solid rgba(255, 255, 255, 0.08);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3498,21 +3520,24 @@ html[data-prototype-withdraw-confirm-layout="vertical"] {
   }
 }
 
-.fiat-withdraw-confirm__route-icon--lg {
-  width: 40px;
-  height: 40px;
-
-  img {
-    width: 24px;
-    height: 24px;
-  }
-}
-
 .fiat-withdraw-confirm__route-copy {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  padding-bottom: 5px;
+}
+
+.fiat-withdraw-confirm__route-step--last .fiat-withdraw-confirm__route-copy {
+  padding-bottom: 0;
+}
+
+.fiat-withdraw-confirm__route-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
 }
 
 .fiat-withdraw-confirm__route-title {
@@ -3533,97 +3558,6 @@ html[data-prototype-withdraw-confirm-layout="vertical"] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.fiat-withdraw-confirm__route-arrow-row {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.fiat-withdraw-confirm__route-arrow-label {
-  flex: 1;
-  min-width: 0;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  color: #9b9c9c;
-}
-
-.fiat-withdraw-confirm__route-arrow-label--spacer {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.fiat-withdraw-confirm__route-arrow-icon {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  display: block;
-}
-
-.fiat-withdraw-confirm__route-horizontal {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding-block: 4px;
-}
-
-.fiat-withdraw-confirm__route-endpoint {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 133px;
-  min-width: 0;
-}
-
-.fiat-withdraw-confirm__route-endpoint-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  width: 100%;
-  min-width: 0;
-  text-align: center;
-}
-
-.fiat-withdraw-confirm__route-endpoint-label {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: normal;
-  color: #9b9c9c;
-}
-
-.fiat-withdraw-confirm__route-endpoint-title {
-  max-width: 100%;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: normal;
-  color: #ffffff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fiat-withdraw-confirm__route-endpoint-meta {
-  max-width: 100%;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: normal;
-  color: #9b9c9c;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fiat-withdraw-confirm__route-arrow-forward {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  display: block;
-  opacity: 0.9;
 }
 
 .fiat-withdraw-confirm__summary {
@@ -3659,23 +3593,6 @@ html[data-prototype-withdraw-confirm-layout="vertical"] {
   color: #ffffff;
   text-align: right;
   white-space: nowrap;
-}
-
-.fiat-withdraw-confirm__summary-value--highlight {
-  color: #8fb8ff;
-}
-
-.fiat-withdraw-confirm__summary-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.fiat-withdraw-confirm__summary-row--total {
-  .fiat-withdraw-confirm__summary-label,
-  .fiat-withdraw-confirm__summary-value {
-    font-size: 16px;
-    color: #ffffff;
-  }
 }
 
 .fiat-withdraw-confirm__footer {

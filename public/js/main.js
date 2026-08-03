@@ -6670,35 +6670,6 @@
 
   const PROTOTYPE_XREX_HANDLE = "@SANNEMEIJER123";
 
-  const syncPrototypeWithdrawConfirmLayoutToDocument = () => {
-    const sel = document.querySelector("[data-prototype-withdraw-confirm-layout]");
-    const v = String(sel?.value || "vertical");
-    document.documentElement.dataset.prototypeWithdrawConfirmLayout =
-      v === "horizontal" ? "horizontal" : "vertical";
-  };
-
-  /** Prototype control: show layout select only on Confirm withdrawal step. */
-  const syncPrototypeWithdrawConfirmLayoutRowVisible = (nextOpen) => {
-    const row = document.querySelector(
-      "[data-prototype-withdraw-confirm-layout-row]",
-    );
-    if (!row) return;
-    if (typeof nextOpen === "boolean") {
-      row.hidden = !nextOpen;
-      return;
-    }
-    const confirmPanel = document.querySelector("[data-fiat-withdraw-confirm]");
-    row.hidden = !confirmPanel?.classList.contains("is-open");
-  };
-
-  const initPrototypeWithdrawConfirmLayoutControls = () => {
-    const sel = document.querySelector("[data-prototype-withdraw-confirm-layout]");
-    if (!sel) return;
-    syncPrototypeWithdrawConfirmLayoutToDocument();
-    syncPrototypeWithdrawConfirmLayoutRowVisible(false);
-    sel.addEventListener("change", syncPrototypeWithdrawConfirmLayoutToDocument);
-  };
-
   const parseWithdrawAmount = (raw) => {
     const parsed = parseInt(String(raw || "").replace(/[^0-9]/g, ""), 10);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
@@ -6748,33 +6719,22 @@
       title: panel.querySelector("[data-fiat-withdraw-confirm-title]"),
       icon: panel.querySelector("[data-fiat-withdraw-confirm-icon]"),
       amount: panel.querySelector("[data-fiat-withdraw-confirm-amount]"),
-      bankName: panel.querySelector("[data-fiat-withdraw-confirm-bank-name]"),
-      bankNameH: panel.querySelector("[data-fiat-withdraw-confirm-bank-name-h]"),
-      accountNumber: panel.querySelector("[data-fiat-withdraw-confirm-account-number]"),
-      accountNumberH: panel.querySelector(
-        "[data-fiat-withdraw-confirm-account-number-h]",
-      ),
-      xrexHandle: panel.querySelector("[data-fiat-withdraw-confirm-xrex-handle]"),
-      xrexHandleH: panel.querySelector("[data-fiat-withdraw-confirm-xrex-handle-h]"),
       arrival: panel.querySelector("[data-fiat-withdraw-confirm-arrival]"),
+      bankName: panel.querySelector("[data-fiat-withdraw-confirm-bank-name]"),
+      accountNumber: panel.querySelector("[data-fiat-withdraw-confirm-account-number]"),
+      fromBalance: panel.querySelector("[data-fiat-withdraw-confirm-from-balance]"),
+      xrexHandle: panel.querySelector("[data-fiat-withdraw-confirm-xrex-handle]"),
       fee: panel.querySelector("[data-fiat-withdraw-confirm-fee]"),
       receive: panel.querySelector("[data-fiat-withdraw-confirm-receive]"),
-      labelWithdrawing: panel.querySelector(
-        "[data-fiat-withdraw-confirm-label-withdrawing]",
-      ),
-      labelArrival: panel.querySelector("[data-fiat-withdraw-confirm-label-arrival]"),
+      total: panel.querySelector("[data-fiat-withdraw-confirm-total]"),
+      submit: panel.querySelector("[data-fiat-withdraw-confirm-submit]"),
+      labelWithdraw: panel.querySelector("[data-fiat-withdraw-confirm-label-withdraw]"),
       labelFee: panel.querySelector("[data-fiat-withdraw-confirm-label-fee]"),
       labelReceive: panel.querySelector("[data-fiat-withdraw-confirm-label-receive]"),
+      labelTotal: panel.querySelector("[data-fiat-withdraw-confirm-label-total]"),
       labelFrom: panel.querySelector("[data-fiat-withdraw-confirm-label-from]"),
       labelTo: panel.querySelector("[data-fiat-withdraw-confirm-label-to]"),
-      labelFromSpacer: panel.querySelector(
-        "[data-fiat-withdraw-confirm-label-from-spacer]",
-      ),
     };
-
-    const keyboardContinueBtn = document.querySelector(
-      "[data-fake-keyboard-withdraw-continue]",
-    );
 
     let withdrawCurrency = "twd";
     let withdrawConfig = WITHDRAW_PROTOTYPE.twd;
@@ -6785,30 +6745,30 @@
       const curLabel = getBankSheetCurLabel(withdrawCurrency);
       const bankData = withdrawBankData;
       const amountLabel = `${formatWithdrawConfirmAmount(withdrawConfirmAmount)} ${curLabel}`;
-      const feeLabel = `${formatWithdrawAmount(withdrawConfig.fee)} ${curLabel}`;
+      const feeLabel = `${formatWithdrawConfirmAmount(withdrawConfig.fee)} ${curLabel}`;
+      const totalLabel = `${formatWithdrawConfirmAmount(
+        withdrawConfirmAmount + withdrawConfig.fee,
+      )} ${curLabel}`;
 
       if (confirmEls.title) {
         confirmEls.title.textContent = tr("Confirm withdrawal");
       }
-      if (confirmEls.labelWithdrawing) {
-        confirmEls.labelWithdrawing.textContent = tr("Withdrawing");
-      }
-      if (confirmEls.labelArrival) {
-        confirmEls.labelArrival.textContent = tr("Expected arrival");
+      if (confirmEls.labelWithdraw) {
+        confirmEls.labelWithdraw.textContent = tr("Withdraw");
       }
       if (confirmEls.labelFee) {
-        confirmEls.labelFee.textContent = tr("Fee, from balance");
+        confirmEls.labelFee.textContent = tr("Fee");
       }
       if (confirmEls.labelReceive) {
         confirmEls.labelReceive.textContent = tr("You will receive");
+      }
+      if (confirmEls.labelTotal) {
+        confirmEls.labelTotal.textContent = tr("Total to deduct");
       }
       const fromLabel = tr("From");
       const toLabel = tr("To");
       if (confirmEls.labelFrom) confirmEls.labelFrom.textContent = fromLabel;
       if (confirmEls.labelTo) confirmEls.labelTo.textContent = toLabel;
-      if (confirmEls.labelFromSpacer) {
-        confirmEls.labelFromSpacer.textContent = fromLabel;
-      }
       if (confirmEls.icon) {
         confirmEls.icon.src =
           withdrawCurrency === "usd"
@@ -6817,26 +6777,30 @@
       }
       if (confirmEls.amount) confirmEls.amount.textContent = amountLabel;
       if (confirmEls.arrival) {
-        confirmEls.arrival.textContent = tr("1–3 business days");
+        confirmEls.arrival.textContent = tr("Expected to arrive in 1-3 business days");
+      }
+      if (confirmEls.fromBalance) {
+        confirmEls.fromBalance.textContent = tr("XREX · {cur} balance", {
+          cur: curLabel,
+        });
       }
       if (confirmEls.fee) confirmEls.fee.textContent = feeLabel;
       if (confirmEls.receive) confirmEls.receive.textContent = amountLabel;
+      if (confirmEls.total) confirmEls.total.textContent = totalLabel;
+      if (confirmEls.submit) {
+        confirmEls.submit.textContent = tr("Withdraw {amount}", {
+          amount: amountLabel,
+        });
+      }
 
       const bankName = bankData.bankName;
       const accountNumber = bankData.accountNumber;
       if (confirmEls.bankName) confirmEls.bankName.textContent = bankName;
-      if (confirmEls.bankNameH) confirmEls.bankNameH.textContent = bankName;
       if (confirmEls.accountNumber) {
         confirmEls.accountNumber.textContent = accountNumber;
       }
-      if (confirmEls.accountNumberH) {
-        confirmEls.accountNumberH.textContent = accountNumber;
-      }
       if (confirmEls.xrexHandle) {
         confirmEls.xrexHandle.textContent = PROTOTYPE_XREX_HANDLE;
-      }
-      if (confirmEls.xrexHandleH) {
-        confirmEls.xrexHandleH.textContent = PROTOTYPE_XREX_HANDLE;
       }
     };
 
@@ -6846,11 +6810,9 @@
         hideWithdrawKeyboard();
         syncConfirmUi();
         confirmPanel.hidden = false;
-        syncPrototypeWithdrawConfirmLayoutRowVisible(true);
         requestAnimationFrame(() => confirmPanel.classList.add("is-open"));
         return;
       }
-      syncPrototypeWithdrawConfirmLayoutRowVisible(false);
       if (opts.instant) {
         confirmPanel.classList.add("is-instant");
         confirmPanel.classList.remove("is-open");
@@ -6968,7 +6930,6 @@
       const canContinue =
         hasAmount && !exceedsBalance && !exceedsMaxPerTx;
       if (withdrawEls.continueBtn) withdrawEls.continueBtn.disabled = !canContinue;
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !canContinue;
     };
 
     const populateWithdraw = ({ currency }) => {
@@ -31420,7 +31381,6 @@
   initPrototypeRegionControls();
   initPrototypeCustodianControls();
   initPrototypeBankAccountsStyleControls();
-  initPrototypeWithdrawConfirmLayoutControls();
   syncPrototypeFinanceCurrencySelectorVisible();
 
   // Drag-to-scroll for spotlight crypto grid.
@@ -32091,17 +32051,12 @@
       });
 
     withdrawKeyboard
-      .querySelector("[data-fake-keyboard-withdraw-continue]")
+      .querySelector("[data-fake-keyboard-withdraw-done]")
       ?.addEventListener("click", () => {
-        const continueBtn = withdrawPanel.querySelector(
-          "[data-fiat-withdraw-continue]",
-        );
-        if (!continueBtn || continueBtn.disabled) return;
-        hideWithdrawKeyboard({ scrollToTop: false });
+        hideWithdrawKeyboard();
         if (document.activeElement instanceof HTMLElement) {
           document.activeElement.blur();
         }
-        requestAnimationFrame(() => continueBtn.click());
       });
 
     withdrawKeyboard.querySelectorAll(".fake-keyboard__key").forEach((key) => {
