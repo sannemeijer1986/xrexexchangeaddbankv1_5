@@ -6678,6 +6678,8 @@
   const getWithdrawMaxAmount = (config) =>
     Math.max(0, Math.min(config.avail - config.fee, config.maxPerTx));
 
+  const getWithdrawMinAmount = (config) => config.fee + 1;
+
   const applyWithdrawAmountInput = (input) => {
     if (!(input instanceof HTMLInputElement)) return 0;
     const parsed = parseWithdrawAmount(input.value);
@@ -6910,23 +6912,31 @@
 
       const amount = parseWithdrawAmount(withdrawEls.amount?.value);
       const hasAmount = amount > 0;
+      const minWithdrawAmount = getWithdrawMinAmount(withdrawConfig);
       const maxWithdrawAmount = getWithdrawMaxAmount(withdrawConfig);
+      const belowMinimum = hasAmount && amount < minWithdrawAmount;
       const exceedsBalance = hasAmount && amount > maxWithdrawAmount;
       const exceedsMaxPerTx = hasAmount && amount > withdrawConfig.maxPerTx;
+      const showAmountError = belowMinimum || exceedsBalance;
 
       if (withdrawEls.hint) withdrawEls.hint.hidden = hasAmount;
       if (withdrawEls.amountError) {
-        withdrawEls.amountError.textContent = tr("Exceeds available balance");
-        withdrawEls.amountError.classList.toggle("is-visible", exceedsBalance);
+        withdrawEls.amountError.textContent = belowMinimum
+          ? tr("Minimum withdrawal is {amount} {cur}", {
+              amount: formatWithdrawConfirmAmount(minWithdrawAmount),
+              cur: curLabel,
+            })
+          : tr("Exceeds available balance");
+        withdrawEls.amountError.classList.toggle("is-visible", showAmountError);
         withdrawEls.amountError.setAttribute(
           "aria-hidden",
-          exceedsBalance ? "false" : "true",
+          showAmountError ? "false" : "true",
         );
       }
       if (withdrawEls.amount instanceof HTMLInputElement) {
         withdrawEls.amount.setAttribute(
           "aria-invalid",
-          exceedsBalance ? "true" : "false",
+          showAmountError ? "true" : "false",
         );
       }
       if (withdrawEls.receive) {
@@ -6936,7 +6946,10 @@
       }
 
       const canContinue =
-        hasAmount && !exceedsBalance && !exceedsMaxPerTx;
+        hasAmount &&
+        !belowMinimum &&
+        !exceedsBalance &&
+        !exceedsMaxPerTx;
       if (withdrawEls.continueBtn) withdrawEls.continueBtn.disabled = !canContinue;
     };
 
