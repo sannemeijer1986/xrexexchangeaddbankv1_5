@@ -3086,6 +3086,10 @@ html[data-active-tab=wallet] .app-header__top {
   color: #ffffff;
 }
 
+.fiat-withdraw-page__lead-highlight {
+  color: #8fb8ff;
+}
+
 .fiat-withdraw-page__amount-section {
   display: flex;
   flex-direction: column;
@@ -3099,15 +3103,27 @@ html[data-active-tab=wallet] .app-header__top {
   gap: 0;
 }
 
-.fiat-withdraw-page .plan-detail-panel__amount-error,
+.fiat-withdraw-page__max-row .fiat-withdraw-page__amount-error,
 .phone-container p.fiat-withdraw-page__amount-error {
-  display: none;
-  margin: 4px 0 0;
-  opacity: 1;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #eb5347;
+  opacity: 0;
+  visibility: hidden;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.fiat-withdraw-page .plan-detail-panel__amount-error.is-visible,
+.fiat-withdraw-page__max-row .fiat-withdraw-page__amount-error.is-visible,
 .phone-container p.fiat-withdraw-page__amount-error.is-visible {
-  display: block;
+  opacity: 1;
+  visibility: visible;
 }
 
 .fiat-withdraw-page__amount-row {
@@ -3153,20 +3169,24 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .fiat-withdraw-page__max-row {
+  display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: flex-end;
-  padding: 8px 0 0;
+  justify-content: flex-start;
+  height: 28px;
+  margin-top: 8px;
+  flex-shrink: 0;
 }
 .fiat-withdraw-page__max-row .plan-buffer-funding-input__max-btn {
   margin-right: 0;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .fiat-withdraw-page__limit-row {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
   gap: 4px;
   padding-top: 16px;
 }
@@ -3245,7 +3265,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .fiat-withdraw-page__summary-value--highlight {
-  color: #8fb8ff;
+  color: #ffffff;
 }
 
 .fiat-withdraw-page__summary-divider {
@@ -3418,7 +3438,7 @@ html[data-active-tab=wallet] .app-header__top {
 .fiat-withdraw-confirm__route-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   background: #151718;
   border-radius: 12px;
   padding: 16px;
@@ -3529,25 +3549,32 @@ html[data-active-tab=wallet] .app-header__top {
   white-space: nowrap;
 }
 
-.fiat-withdraw-confirm__route-footer {
+.fiat-withdraw-confirm__route-info {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 6px;
   width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.fiat-withdraw-confirm__route-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
+.fiat-withdraw-confirm__route-info-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  display: block;
 }
 
-.phone-container p.fiat-withdraw-confirm__route-arrival {
+.phone-container p.fiat-withdraw-confirm__route-info-text {
   margin: 0;
+  flex: 1;
+  min-width: 0;
   font-size: 14px;
   font-weight: 600;
   line-height: normal;
   color: #8fb8ff;
-  text-align: left;
 }
 
 .fiat-withdraw-confirm__summary {
@@ -3760,6 +3787,222 @@ html[data-active-tab=wallet] .app-header__top {
 .fiat-withdraw-2fa__loader.plan-submit-loader .plan-submit-loader__card {
   width: 168px;
   height: 168px;
+}
+
+.fiat-withdraw-success {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  background: #0d0e0f;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+  overflow: hidden;
+}
+
+.fiat-withdraw-success.is-open {
+  transform: translateX(0);
+}
+
+.fiat-withdraw-success.is-instant {
+  transition: none !important;
+}
+
+.fiat-withdraw-success__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 56px 16px 16px;
+}
+
+.fiat-withdraw-success__icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+.fiat-withdraw-success__icon-btn img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.fiat-withdraw-success__header-spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+.fiat-withdraw-success__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.fiat-withdraw-success__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 328px;
+}
+
+.fiat-withdraw-success__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.fiat-withdraw-success__hero-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.fiat-withdraw-success__icon {
+  display: block;
+  width: 70px;
+  height: 70px;
+}
+
+.fiat-withdraw-success__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.phone-container p.fiat-withdraw-success__sub {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #9b9c9c;
+}
+
+.fiat-withdraw-success__card {
+  width: 100%;
+  padding: 20px 16px;
+  border-radius: 16px;
+  background: #151718;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fiat-withdraw-success__amount-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.fiat-withdraw-success__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.fiat-withdraw-success__amount-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.fiat-withdraw-success__currency-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.fiat-withdraw-success__amount {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.fiat-withdraw-success__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fiat-withdraw-success__detail-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fiat-withdraw-success__detail-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+  white-space: nowrap;
+}
+
+.fiat-withdraw-success__detail-value {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.fiat-withdraw-success__detail-value--highlight {
+  color: #8fb8ff;
+}
+
+.phone-container p.fiat-withdraw-success__custodian {
+  margin: 0;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #58595a;
+  text-align: center;
+}
+
+.fiat-withdraw-success__footer {
+  flex-shrink: 0;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: #0d0e0f;
+}
+
+.fiat-withdraw-success__footer-btns {
+  display: flex;
+  gap: 16px;
+}
+.fiat-withdraw-success__footer-btns .schedule-time-sheet__btn {
+  flex: 1;
+  min-width: 0;
 }
 
 .ba-wizard-intro,

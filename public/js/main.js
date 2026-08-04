@@ -6653,10 +6653,23 @@
     },
   };
 
-  const maskWithdrawAccountNumber = (accountNumber) => {
-    const digits = String(accountNumber || "").replace(/\D/g, "");
-    if (digits.length <= 6) return digits;
-    return `${digits.slice(0, 3)}***${digits.slice(-3)}`;
+  const WITHDRAW_PROTOTYPE_ACCOUNT_MASK = "••••8999";
+
+  const formatWithdrawDestinationLabel = (bankName) =>
+    `${bankName} ${WITHDRAW_PROTOTYPE_ACCOUNT_MASK}`;
+
+  const getWithdrawCustodianName = (currency) => {
+    const normalized = currency === "usd" ? "usd" : "twd";
+    const custodianKey =
+      document.documentElement.dataset[
+        normalized === "twd"
+          ? "prototypeTwdCustodianActive"
+          : "prototypeUsdCustodianActive"
+      ] || "kgi-active";
+    return tr(
+      PROTOTYPE_CUSTODIAN_LABELS[custodianKey] ||
+        PROTOTYPE_CUSTODIAN_LABELS["kgi-active"],
+    );
   };
 
   const formatWithdrawAmount = (value) =>
@@ -6669,6 +6682,7 @@
     });
 
   const PROTOTYPE_XREX_HANDLE = "@SANNEMEIJER123";
+  const WITHDRAW_SUCCESS_DELAY_MS = 1250;
 
   const parseWithdrawAmount = (raw) => {
     const parsed = parseInt(String(raw || "").replace(/[^0-9]/g, ""), 10);
@@ -6679,6 +6693,11 @@
     Math.max(0, Math.min(config.avail - config.fee, config.maxPerTx));
 
   const getWithdrawMinAmount = (config) => config.fee + 1;
+
+  const formatWithdrawRequestedAt = (date = new Date()) => {
+    const pad = (value) => String(value).padStart(2, "0");
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}, ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  };
 
   const applyWithdrawAmountInput = (input) => {
     if (!(input instanceof HTMLInputElement)) return 0;
@@ -6700,6 +6719,7 @@
     const withdrawView = panel.querySelector("[data-fiat-flow-withdraw-view]");
     const confirmPanel = panel.querySelector("[data-fiat-withdraw-confirm]");
     const twoFaPanel = panel.querySelector("[data-fiat-withdraw-2fa]");
+    const successPanel = panel.querySelector("[data-fiat-withdraw-success]");
     const closeButtons = panel.querySelectorAll(
       "[data-fiat-flow-placeholder-close]",
     );
@@ -6712,7 +6732,6 @@
       hint: panel.querySelector("[data-fiat-withdraw-amount-hint]"),
       currency: panel.querySelector("[data-fiat-withdraw-currency]"),
       remainingLimit: panel.querySelector("[data-fiat-withdraw-remaining-limit]"),
-      to: panel.querySelector("[data-fiat-withdraw-to]"),
       arrival: panel.querySelector("[data-fiat-withdraw-arrival]"),
       fee: panel.querySelector("[data-fiat-withdraw-fee]"),
       receive: panel.querySelector("[data-fiat-withdraw-receive]"),
@@ -6753,8 +6772,41 @@
       loader: panel.querySelector("[data-fiat-withdraw-2fa-loader]"),
     };
 
+    const successEls = {
+      title: panel.querySelector("[data-fiat-withdraw-success-title]"),
+      sub: panel.querySelector("[data-fiat-withdraw-success-sub]"),
+      icon: panel.querySelector("[data-fiat-withdraw-success-icon]"),
+      amount: panel.querySelector("[data-fiat-withdraw-success-amount]"),
+      to: panel.querySelector("[data-fiat-withdraw-success-to]"),
+      fee: panel.querySelector("[data-fiat-withdraw-success-fee]"),
+      total: panel.querySelector("[data-fiat-withdraw-success-total]"),
+      requestedOn: panel.querySelector("[data-fiat-withdraw-success-requested-on]"),
+      arrival: panel.querySelector("[data-fiat-withdraw-success-arrival]"),
+      status: panel.querySelector("[data-fiat-withdraw-success-status]"),
+      custodian: panel.querySelector("[data-fiat-withdraw-success-custodian]"),
+      labelTotalWithdrawal: panel.querySelector(
+        "[data-fiat-withdraw-success-label-total-withdrawal]",
+      ),
+      labelTo: panel.querySelector("[data-fiat-withdraw-success-label-to]"),
+      labelFee: panel.querySelector("[data-fiat-withdraw-success-label-fee]"),
+      labelTotalDeducted: panel.querySelector(
+        "[data-fiat-withdraw-success-label-total-deducted]",
+      ),
+      labelRequested: panel.querySelector(
+        "[data-fiat-withdraw-success-label-requested]",
+      ),
+      labelArrival: panel.querySelector(
+        "[data-fiat-withdraw-success-label-arrival]",
+      ),
+      labelStatus: panel.querySelector("[data-fiat-withdraw-success-label-status]"),
+      detailsBtn: panel.querySelector("[data-fiat-withdraw-success-details]"),
+      doneBtn: panel.querySelector("[data-fiat-withdraw-success-done]"),
+    };
+
     const WITHDRAW_2FA_PROTOTYPE_CODE = "123456";
     let twoFaSubmitted = false;
+    let twoFaSubmitGeneration = 0;
+    let twoFaSuccessTimeout = null;
 
     let withdrawCurrency = "twd";
     let withdrawConfig = WITHDRAW_PROTOTYPE.twd;
@@ -6841,10 +6893,9 @@
       }
 
       const bankName = bankData.bankName;
-      const accountNumber = bankData.accountNumber;
       if (confirmEls.bankName) confirmEls.bankName.textContent = bankName;
       if (confirmEls.accountNumber) {
-        confirmEls.accountNumber.textContent = accountNumber;
+        confirmEls.accountNumber.textContent = WITHDRAW_PROTOTYPE_ACCOUNT_MASK;
       }
       if (confirmEls.xrexHandle) {
         confirmEls.xrexHandle.textContent = PROTOTYPE_XREX_HANDLE;
@@ -6875,9 +6926,99 @@
     };
 
     const resetTwoFa = () => {
+      twoFaSubmitGeneration += 1;
+      if (twoFaSuccessTimeout) {
+        clearTimeout(twoFaSuccessTimeout);
+        twoFaSuccessTimeout = null;
+      }
       twoFaSubmitted = false;
       if (twoFaEls.code instanceof HTMLInputElement) twoFaEls.code.value = "";
       if (twoFaEls.loader) twoFaEls.loader.hidden = true;
+    };
+
+    const syncSuccessUi = () => {
+      const curLabel = getBankSheetCurLabel(withdrawCurrency);
+      const bankData = withdrawBankData;
+      const amountLabel = `${formatWithdrawConfirmAmount(withdrawConfirmAmount)} ${curLabel}`;
+      const feeLabel = `${formatWithdrawConfirmAmount(withdrawConfig.fee)} ${curLabel}`;
+      const totalLabel = `${formatWithdrawConfirmAmount(
+        withdrawConfirmAmount + withdrawConfig.fee,
+      )} ${curLabel}`;
+      const toLabel = formatWithdrawDestinationLabel(bankData.bankName);
+
+      if (successEls.title) {
+        successEls.title.textContent = tr("Withdrawal requested!");
+      }
+      if (successEls.sub) {
+        successEls.sub.textContent = tr("We'll notify you when it's sent.");
+      }
+      if (successEls.icon) {
+        successEls.icon.src =
+          withdrawCurrency === "usd"
+            ? "assets/icon_currency_USD.svg"
+            : "assets/icon_currency_TWD.svg";
+      }
+      if (successEls.amount) successEls.amount.textContent = amountLabel;
+      if (successEls.to) successEls.to.textContent = toLabel;
+      if (successEls.fee) successEls.fee.textContent = feeLabel;
+      if (successEls.total) successEls.total.textContent = totalLabel;
+      if (successEls.requestedOn) {
+        successEls.requestedOn.textContent = formatWithdrawRequestedAt();
+      }
+      if (successEls.arrival) {
+        successEls.arrival.textContent = tr("1–3 business days");
+      }
+      if (successEls.status) successEls.status.textContent = tr("Processing");
+      if (successEls.custodian) {
+        successEls.custodian.textContent = tr("Via custodian: {name}", {
+          name: getWithdrawCustodianName(withdrawCurrency),
+        });
+      }
+      if (successEls.labelTotalWithdrawal) {
+        successEls.labelTotalWithdrawal.textContent = tr("Total withdrawal");
+      }
+      if (successEls.labelTo) successEls.labelTo.textContent = tr("To");
+      if (successEls.labelFee) {
+        successEls.labelFee.textContent = tr("Fee (deducted from balance)");
+      }
+      if (successEls.labelTotalDeducted) {
+        successEls.labelTotalDeducted.textContent = tr("Total deducted");
+      }
+      if (successEls.labelRequested) {
+        successEls.labelRequested.textContent = tr("Requested on");
+      }
+      if (successEls.labelArrival) {
+        successEls.labelArrival.textContent = tr("Estimated arrival");
+      }
+      if (successEls.labelStatus) successEls.labelStatus.textContent = tr("Status");
+      if (successEls.detailsBtn) {
+        successEls.detailsBtn.textContent = tr("View details");
+      }
+      if (successEls.doneBtn) successEls.doneBtn.textContent = tr("Done");
+    };
+
+    const setSuccessOpen = (nextOpen, opts = {}) => {
+      if (!successPanel) return;
+      if (nextOpen) {
+        syncSuccessUi();
+        setTwoFaOpen(false, { instant: true });
+        setSlidePanelOpen(successPanel, true);
+        return;
+      }
+      setSlidePanelOpen(successPanel, false, opts);
+    };
+
+    const returnToWithdrawEntrypoint = () => {
+      resetTwoFa();
+      setSuccessOpen(false, { instant: true });
+      setTwoFaOpen(false, { instant: true });
+      setConfirmOpen(false, { instant: true });
+      setOpen(false, { instant: true });
+      twdDepositApi?.closeAll?.({ instant: true });
+      twdDepositApi?.clearEntrySource?.();
+      usdDepositApi?.closeAll?.({ instant: true });
+      usdDepositApi?.clearEntrySource?.();
+      addSendPanelApi?.close?.({ instant: true });
     };
 
     const submitTwoFaPrototype = () => {
@@ -6887,6 +7028,14 @@
         twoFaEls.code.value = WITHDRAW_2FA_PROTOTYPE_CODE;
       }
       if (twoFaEls.loader) twoFaEls.loader.hidden = false;
+      const gen = (twoFaSubmitGeneration += 1);
+      if (twoFaSuccessTimeout) clearTimeout(twoFaSuccessTimeout);
+      twoFaSuccessTimeout = window.setTimeout(() => {
+        if (gen !== twoFaSubmitGeneration) return;
+        twoFaSuccessTimeout = null;
+        if (twoFaEls.loader) twoFaEls.loader.hidden = true;
+        setSuccessOpen(true);
+      }, WITHDRAW_SUCCESS_DELAY_MS);
     };
 
     const setTwoFaOpen = (nextOpen, opts = {}) => {
@@ -6914,16 +7063,19 @@
       if (!confirmPanel) return;
       if (nextOpen) {
         hideWithdrawKeyboard();
+        setSuccessOpen(false, { instant: true });
         setTwoFaOpen(false, { instant: true });
         syncConfirmUi();
         setSlidePanelOpen(confirmPanel, true);
         return;
       }
       if (opts.instant) {
+        setSuccessOpen(false, { instant: true });
         setTwoFaOpen(false, { instant: true });
         setSlidePanelOpen(confirmPanel, false, { instant: true });
         return;
       }
+      setSuccessOpen(false, { instant: true });
       setTwoFaOpen(false, { instant: true });
       setSlidePanelOpen(confirmPanel, false);
     };
@@ -6939,15 +7091,23 @@
     const syncWithdrawUi = () => {
       const curLabel = getBankSheetCurLabel(withdrawCurrency);
       const bankData = withdrawBankData;
-      const maskedAccount = maskWithdrawAccountNumber(bankData.accountNumber);
-      const bankDisplay = maskedAccount
-        ? `${bankData.bankName} (${maskedAccount})`
-        : bankData.bankName;
 
       if (withdrawEls.lead) {
-        withdrawEls.lead.textContent = tr(
-          "How much {cur} would you like to withdraw to {bankName}?",
-          { cur: curLabel, bankName: bankData.bankName },
+        const destinationMarker = "{{DESTINATION}}";
+        const bankName = bankData.bankName;
+        const leadText = tr(
+          "How much {cur} do you want to withdraw to {destination}?",
+          { cur: curLabel, destination: destinationMarker },
+        );
+        const destinationLabel = formatWithdrawDestinationLabel(bankName);
+        const escapedDestination = String(destinationLabel)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+        withdrawEls.lead.innerHTML = leadText.replace(
+          destinationMarker,
+          `<span class="fiat-withdraw-page__lead-highlight">${escapedDestination}</span>`,
         );
       }
       if (withdrawEls.avail) {
@@ -6977,16 +7137,13 @@
           },
         );
       }
-      if (withdrawEls.to) withdrawEls.to.textContent = bankDisplay;
 
-      const labelTo = panel.querySelector("[data-fiat-withdraw-label-to]");
       const labelArrival = panel.querySelector("[data-fiat-withdraw-label-arrival]");
       const labelFee = panel.querySelector("[data-fiat-withdraw-label-fee]");
       const labelReceive = panel.querySelector("[data-fiat-withdraw-label-receive]");
       const amountLabel = panel.querySelector(
         ".fiat-withdraw-page__amount-section .plan-buffer-funding-input__title",
       );
-      if (labelTo) labelTo.textContent = tr("To");
       if (labelArrival) labelArrival.textContent = tr("Estimated arrival");
       if (labelFee) labelFee.textContent = tr("Fee (deducted from balance)");
       if (labelReceive) labelReceive.textContent = tr("You will receive");
@@ -7166,6 +7323,14 @@
       }
     });
 
+    successPanel
+      ?.querySelector("[data-fiat-withdraw-success-close]")
+      ?.addEventListener("click", () => returnToWithdrawEntrypoint());
+    successEls.doneBtn?.addEventListener("click", () => returnToWithdrawEntrypoint());
+    successEls.detailsBtn?.addEventListener("click", () =>
+      showSnackbar("Not in prototype"),
+    );
+
     document.addEventListener("prototype-locale-changed", () => {
       if (!panel.classList.contains("is-open")) return;
       const currency = panel.dataset.fiatFlowCurrency || "twd";
@@ -7173,6 +7338,7 @@
       populate({ currency, mode });
       if (confirmPanel?.classList.contains("is-open")) syncConfirmUi();
       if (twoFaPanel?.classList.contains("is-open")) syncTwoFaUi();
+      if (successPanel?.classList.contains("is-open")) syncSuccessUi();
     });
 
     withdrawEls.amount?.addEventListener("input", () => {

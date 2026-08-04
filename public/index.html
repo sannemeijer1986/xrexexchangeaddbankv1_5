@@ -4372,7 +4372,7 @@
             </div>
             <div class="fiat-withdraw-page" data-fiat-flow-withdraw-view hidden>
                 <div class="fiat-withdraw-page__scroll">
-                    <p class="fiat-withdraw-page__lead" data-fiat-withdraw-lead>How much TWD would you like to withdraw to KGI Bank?</p>
+                    <p class="fiat-withdraw-page__lead" data-fiat-withdraw-lead>How much TWD do you want to withdraw to <span class="fiat-withdraw-page__lead-highlight">KGI Bank ••••8999</span>?</p>
                     <section class="fiat-withdraw-page__amount-section" aria-label="Withdraw amount">
                         <div class="plan-buffer-funding-input__head">
                             <div class="plan-buffer-funding-input__title">Amount</div>
@@ -4402,9 +4402,9 @@
                             </div>
                             <div class="plan-buffer-funding-input__divider"></div>
                             <div class="plan-buffer-funding-input__max-row fiat-withdraw-page__max-row">
+                                <p class="fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
                                 <button class="plan-buffer-funding-input__max-btn" type="button" data-fiat-withdraw-max>Max</button>
                             </div>
-                            <p class="plan-detail-panel__amount-error fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
                         </div>
                         <div class="fiat-withdraw-page__limit-row">
                             <span class="fiat-withdraw-page__limit-text" data-fiat-withdraw-remaining-limit>Remaining limit 200,000.00 TWD</span>
@@ -4417,12 +4417,8 @@
                 <footer class="fiat-withdraw-page__footer">
                     <div class="fiat-withdraw-page__summary">
                         <div class="fiat-withdraw-page__summary-row">
-                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-to>To</span>
-                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-to>KGI Bank (123***234)</span>
-                        </div>
-                        <div class="fiat-withdraw-page__summary-row">
                             <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-arrival>Estimated arrival</span>
-                            <span class="fiat-withdraw-page__summary-value fiat-withdraw-page__summary-value--highlight" data-fiat-withdraw-arrival>1–3 business days</span>
+                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-arrival>1–3 business days</span>
                         </div>
                         <div class="fiat-withdraw-page__summary-row">
                             <span class="fiat-withdraw-page__summary-label">
@@ -4489,13 +4485,13 @@
                                     <div class="fiat-withdraw-confirm__route-copy">
                                         <span class="fiat-withdraw-confirm__route-kicker" data-fiat-withdraw-confirm-label-to>To</span>
                                         <span class="fiat-withdraw-confirm__route-title" data-fiat-withdraw-confirm-bank-name>KGI Bank</span>
-                                        <span class="fiat-withdraw-confirm__route-meta" data-fiat-withdraw-confirm-account-number>12345678999</span>
+                                        <span class="fiat-withdraw-confirm__route-meta" data-fiat-withdraw-confirm-account-number>••••8999</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="fiat-withdraw-confirm__route-footer">
-                                <div class="fiat-withdraw-confirm__route-divider" aria-hidden="true"></div>
-                                <p class="fiat-withdraw-confirm__route-arrival" data-fiat-withdraw-confirm-arrival>Estimated arrival : 1–3 business days</p>
+                            <div class="fiat-withdraw-confirm__route-info" role="note">
+                                <img class="fiat-withdraw-confirm__route-info-icon" src="assets/icon_info_circle_blue.svg" alt="" width="16" height="16" aria-hidden="true" />
+                                <p class="fiat-withdraw-confirm__route-info-text" data-fiat-withdraw-confirm-arrival>Estimated arrival : 1–3 business days</p>
                             </div>
                         </div>
                         <div class="fiat-withdraw-confirm__summary">
@@ -4568,6 +4564,68 @@
                             <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
                         </div>
                     </div>
+                </section>
+
+                <section class="fiat-withdraw-success" data-fiat-withdraw-success hidden aria-label="Withdrawal requested">
+                    <header class="fiat-withdraw-success__header">
+                        <button class="fiat-withdraw-success__icon-btn" type="button" data-fiat-withdraw-success-close aria-label="Close">
+                            <img src="assets/icon_close.svg" alt="" width="24" height="24" />
+                        </button>
+                        <div class="fiat-withdraw-success__header-spacer" aria-hidden="true"></div>
+                    </header>
+                    <div class="fiat-withdraw-success__body">
+                        <div class="fiat-withdraw-success__content">
+                            <div class="fiat-withdraw-success__hero">
+                                <div class="fiat-withdraw-success__hero-head">
+                                    <img class="fiat-withdraw-success__icon" src="assets/icon_success_screen.svg" alt="" width="70" height="70" aria-hidden="true" />
+                                    <h2 class="fiat-withdraw-success__title" data-fiat-withdraw-success-title>Withdrawal requested!</h2>
+                                </div>
+                                <p class="fiat-withdraw-success__sub" data-fiat-withdraw-success-sub>We'll notify you when it's sent.</p>
+                            </div>
+                            <div class="fiat-withdraw-success__card">
+                                <div class="fiat-withdraw-success__amount-block">
+                                    <span class="fiat-withdraw-success__label" data-fiat-withdraw-success-label-total-withdrawal>Total withdrawal</span>
+                                    <div class="fiat-withdraw-success__amount-row">
+                                        <img class="fiat-withdraw-success__currency-icon" src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" data-fiat-withdraw-success-icon />
+                                        <span class="fiat-withdraw-success__amount" data-fiat-withdraw-success-amount>5,000.00 TWD</span>
+                                    </div>
+                                </div>
+                                <div class="fiat-withdraw-success__detail-row">
+                                    <span class="fiat-withdraw-success__detail-label" data-fiat-withdraw-success-label-to>To</span>
+                                    <span class="fiat-withdraw-success__detail-value" data-fiat-withdraw-success-to>KGI Bank ••••8999</span>
+                                </div>
+                                <div class="fiat-withdraw-success__divider" aria-hidden="true"></div>
+                                <div class="fiat-withdraw-success__detail-row">
+                                    <span class="fiat-withdraw-success__detail-label" data-fiat-withdraw-success-label-fee>Fee (deducted from balance)</span>
+                                    <span class="fiat-withdraw-success__detail-value" data-fiat-withdraw-success-fee>150.00 TWD</span>
+                                </div>
+                                <div class="fiat-withdraw-success__detail-row">
+                                    <span class="fiat-withdraw-success__detail-label" data-fiat-withdraw-success-label-total-deducted>Total deducted</span>
+                                    <span class="fiat-withdraw-success__detail-value" data-fiat-withdraw-success-total>5,150.00 TWD</span>
+                                </div>
+                                <div class="fiat-withdraw-success__divider" aria-hidden="true"></div>
+                                <div class="fiat-withdraw-success__detail-row">
+                                    <span class="fiat-withdraw-success__detail-label" data-fiat-withdraw-success-label-requested>Requested on</span>
+                                    <span class="fiat-withdraw-success__detail-value" data-fiat-withdraw-success-requested-on>31/08/2022, 12:00:00</span>
+                                </div>
+                                <div class="fiat-withdraw-success__detail-row">
+                                    <span class="fiat-withdraw-success__detail-label" data-fiat-withdraw-success-label-arrival>Estimated arrival</span>
+                                    <span class="fiat-withdraw-success__detail-value" data-fiat-withdraw-success-arrival>1–3 business days</span>
+                                </div>
+                                <div class="fiat-withdraw-success__detail-row">
+                                    <span class="fiat-withdraw-success__detail-label" data-fiat-withdraw-success-label-status>Status</span>
+                                    <span class="fiat-withdraw-success__detail-value fiat-withdraw-success__detail-value--highlight" data-fiat-withdraw-success-status>Processing</span>
+                                </div>
+                            </div>
+                            <p class="fiat-withdraw-success__custodian" data-fiat-withdraw-success-custodian>Via custodian: KGI Bank</p>
+                        </div>
+                    </div>
+                    <footer class="fiat-withdraw-success__footer">
+                        <div class="fiat-withdraw-success__footer-btns">
+                            <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-fiat-withdraw-success-details>View details</button>
+                            <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-success-done>Done</button>
+                        </div>
+                    </footer>
                 </section>
             </section>
         </section>
