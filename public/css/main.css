@@ -3152,10 +3152,21 @@ html[data-active-tab=wallet] .app-header__top {
   background: rgba(255, 255, 255, 0.24);
 }
 
+.fiat-withdraw-page__max-row {
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 8px 0 0;
+}
+.fiat-withdraw-page__max-row .plan-buffer-funding-input__max-btn {
+  margin-right: 0;
+  margin-left: auto;
+}
+
 .fiat-withdraw-page__limit-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 4px;
   padding-top: 16px;
 }
@@ -3165,7 +3176,7 @@ html[data-active-tab=wallet] .app-header__top {
   font-weight: 600;
   line-height: normal;
   color: #9b9c9c;
-  text-align: right;
+  text-align: left;
 }
 
 .fiat-withdraw-page__limit-info {
@@ -3405,6 +3416,9 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .fiat-withdraw-confirm__route-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   background: #151718;
   border-radius: 12px;
   padding: 16px;
@@ -3513,6 +3527,27 @@ html[data-active-tab=wallet] .app-header__top {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.fiat-withdraw-confirm__route-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.fiat-withdraw-confirm__route-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.phone-container p.fiat-withdraw-confirm__route-arrival {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+  text-align: right;
 }
 
 .fiat-withdraw-confirm__summary {

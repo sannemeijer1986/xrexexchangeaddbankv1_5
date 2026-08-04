@@ -4401,6 +4401,9 @@
                                 <div class="plan-buffer-funding-input__cur" data-fiat-withdraw-currency aria-hidden="true">TWD</div>
                             </div>
                             <div class="plan-buffer-funding-input__divider"></div>
+                            <div class="plan-buffer-funding-input__max-row fiat-withdraw-page__max-row">
+                                <button class="plan-buffer-funding-input__max-btn" type="button" data-fiat-withdraw-max>Max</button>
+                            </div>
                             <p class="plan-detail-panel__amount-error fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
                         </div>
                         <div class="fiat-withdraw-page__limit-row">
@@ -4454,7 +4457,7 @@
                 <div class="fiat-withdraw-confirm__scroll">
                     <div class="fiat-withdraw-confirm__hero">
                         <div class="fiat-withdraw-confirm__hero-copy">
-                            <p class="fiat-withdraw-confirm__hero-lead" data-fiat-withdraw-confirm-label-withdraw>You will withdraw</p>
+                            <p class="fiat-withdraw-confirm__hero-lead" data-fiat-withdraw-confirm-label-receive>You will receive</p>
                             <div class="fiat-withdraw-confirm__hero-amount">
                                 <img class="fiat-withdraw-confirm__hero-icon" src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" data-fiat-withdraw-confirm-icon />
                                 <p class="fiat-withdraw-confirm__hero-value" data-fiat-withdraw-confirm-amount>5,000.00 TWD</p>
@@ -4467,7 +4470,7 @@
                                 <div class="fiat-withdraw-confirm__route-step">
                                     <div class="fiat-withdraw-confirm__route-rail" aria-hidden="true">
                                         <div class="fiat-withdraw-confirm__route-icon fiat-withdraw-confirm__route-icon--xrex">
-                                            <img src="assets/icon_xrex_logo_nolabel.svg" alt="" width="20" height="20" />
+                                            <img src="assets/icon_confirm_xrex.svg" alt="" width="20" height="20" />
                                         </div>
                                         <span class="fiat-withdraw-confirm__route-line"></span>
                                     </div>
@@ -4480,7 +4483,7 @@
                                 <div class="fiat-withdraw-confirm__route-step fiat-withdraw-confirm__route-step--last">
                                     <div class="fiat-withdraw-confirm__route-rail" aria-hidden="true">
                                         <div class="fiat-withdraw-confirm__route-icon fiat-withdraw-confirm__route-icon--bank">
-                                            <img src="assets/icon_bank_white.svg" alt="" width="20" height="20" data-fiat-withdraw-confirm-bank-icon />
+                                            <img src="assets/icon_confirm_bank.svg" alt="" width="20" height="20" data-fiat-withdraw-confirm-bank-icon />
                                         </div>
                                     </div>
                                     <div class="fiat-withdraw-confirm__route-copy">
@@ -4490,15 +4493,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="fiat-withdraw-confirm__route-footer">
+                                <div class="fiat-withdraw-confirm__route-divider" aria-hidden="true"></div>
+                                <p class="fiat-withdraw-confirm__route-arrival" data-fiat-withdraw-confirm-arrival>Estimated arrival : 1–3 business days</p>
+                            </div>
                         </div>
                         <div class="fiat-withdraw-confirm__summary">
                             <div class="fiat-withdraw-confirm__summary-row">
                                 <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-amount>Withdrawal amount</span>
                                 <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-amount-summary>5,000.00 TWD</span>
-                            </div>
-                            <div class="fiat-withdraw-confirm__summary-row">
-                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-arrival>Estimated arrival</span>
-                                <span class="fiat-withdraw-confirm__summary-value fiat-withdraw-confirm__summary-value--highlight" data-fiat-withdraw-confirm-arrival>1–3 business days</span>
                             </div>
                             <div class="fiat-withdraw-confirm__summary-row">
                                 <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-fee>Fee (deducted from balance)</span>

@@ -6675,6 +6675,9 @@
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   };
 
+  const getWithdrawMaxAmount = (config) =>
+    Math.max(0, Math.min(config.avail - config.fee, config.maxPerTx));
+
   const applyWithdrawAmountInput = (input) => {
     if (!(input instanceof HTMLInputElement)) return 0;
     const parsed = parseWithdrawAmount(input.value);
@@ -6713,6 +6716,7 @@
       continueBtn: panel.querySelector("[data-fiat-withdraw-continue]"),
       amountRow: panel.querySelector(".fiat-withdraw-page__amount-row"),
       amountError: panel.querySelector("[data-fiat-withdraw-amount-error]"),
+      maxBtn: panel.querySelector("[data-fiat-withdraw-max]"),
     };
 
     const confirmEls = {
@@ -6728,9 +6732,8 @@
       fee: panel.querySelector("[data-fiat-withdraw-confirm-fee]"),
       total: panel.querySelector("[data-fiat-withdraw-confirm-total]"),
       submit: panel.querySelector("[data-fiat-withdraw-confirm-submit]"),
-      labelWithdraw: panel.querySelector("[data-fiat-withdraw-confirm-label-withdraw]"),
+      labelReceive: panel.querySelector("[data-fiat-withdraw-confirm-label-receive]"),
       labelAmount: panel.querySelector("[data-fiat-withdraw-confirm-label-amount]"),
-      labelArrival: panel.querySelector("[data-fiat-withdraw-confirm-label-arrival]"),
       labelFee: panel.querySelector("[data-fiat-withdraw-confirm-label-fee]"),
       labelTotal: panel.querySelector("[data-fiat-withdraw-confirm-label-total]"),
       labelFrom: panel.querySelector("[data-fiat-withdraw-confirm-label-from]"),
@@ -6754,14 +6757,11 @@
       if (confirmEls.title) {
         confirmEls.title.textContent = tr("Confirm withdrawal");
       }
-      if (confirmEls.labelWithdraw) {
-        confirmEls.labelWithdraw.textContent = tr("You will withdraw");
+      if (confirmEls.labelReceive) {
+        confirmEls.labelReceive.textContent = tr("You will receive");
       }
       if (confirmEls.labelAmount) {
         confirmEls.labelAmount.textContent = tr("Withdrawal amount");
-      }
-      if (confirmEls.labelArrival) {
-        confirmEls.labelArrival.textContent = tr("Estimated arrival");
       }
       if (confirmEls.labelFee) {
         confirmEls.labelFee.textContent = tr("Fee (deducted from balance)");
@@ -6784,7 +6784,9 @@
         confirmEls.amountSummary.textContent = amountLabel;
       }
       if (confirmEls.arrival) {
-        confirmEls.arrival.textContent = tr("1–3 business days");
+        confirmEls.arrival.textContent = tr("Estimated arrival : {time}", {
+          time: tr("1–3 business days"),
+        });
       }
       if (confirmEls.fromBalance) {
         confirmEls.fromBalance.textContent = tr("XREX · {cur} balance", {
@@ -6897,6 +6899,7 @@
       if (labelFee) labelFee.textContent = tr("Fee (deducted from balance)");
       if (labelReceive) labelReceive.textContent = tr("You will receive");
       if (amountLabel) amountLabel.textContent = tr("Amount");
+      if (withdrawEls.maxBtn) withdrawEls.maxBtn.textContent = tr("Max");
 
       if (withdrawEls.arrival) {
         withdrawEls.arrival.textContent = tr("1–3 business days");
@@ -6907,7 +6910,8 @@
 
       const amount = parseWithdrawAmount(withdrawEls.amount?.value);
       const hasAmount = amount > 0;
-      const exceedsBalance = hasAmount && amount > withdrawConfig.avail;
+      const maxWithdrawAmount = getWithdrawMaxAmount(withdrawConfig);
+      const exceedsBalance = hasAmount && amount > maxWithdrawAmount;
       const exceedsMaxPerTx = hasAmount && amount > withdrawConfig.maxPerTx;
 
       if (withdrawEls.hint) withdrawEls.hint.hidden = hasAmount;
@@ -7002,6 +7006,15 @@
     panel
       .querySelector("[data-fiat-withdraw-limit-info]")
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    withdrawEls.maxBtn?.addEventListener("click", () => {
+      const maxAmount = getWithdrawMaxAmount(withdrawConfig);
+      if (!(withdrawEls.amount instanceof HTMLInputElement)) return;
+      withdrawEls.amount.value =
+        maxAmount > 0 ? formatWithdrawAmount(maxAmount) : "";
+      withdrawEls.amount.dispatchEvent(new Event("input", { bubbles: true }));
+      withdrawEls.amount.focus();
+    });
 
     withdrawEls.continueBtn?.addEventListener("click", () => {
       if (withdrawEls.continueBtn?.disabled) return;
