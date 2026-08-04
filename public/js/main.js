@@ -6922,7 +6922,7 @@
       if (withdrawEls.hint) withdrawEls.hint.hidden = hasAmount;
       if (withdrawEls.amountError) {
         withdrawEls.amountError.textContent = belowMinimum
-          ? tr("Minimum withdrawal is {amount} {cur}", {
+          ? tr("Minimum amount is {amount} {cur}", {
               amount: formatWithdrawConfirmAmount(minWithdrawAmount),
               cur: curLabel,
             })
