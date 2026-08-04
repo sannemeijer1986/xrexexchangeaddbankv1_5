@@ -3620,6 +3620,148 @@ html[data-active-tab=wallet] .app-header__top {
   width: 100%;
 }
 
+.fiat-withdraw-2fa {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background: #0d0e0f;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+  overflow: hidden;
+}
+
+.fiat-withdraw-2fa.is-open {
+  transform: translateX(0);
+}
+
+.fiat-withdraw-2fa.is-instant {
+  transition: none !important;
+}
+
+.fiat-withdraw-2fa__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 16px 16px;
+}
+
+.fiat-withdraw-2fa__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 24px;
+}
+
+.phone-container p.fiat-withdraw-2fa__lead {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.fiat-withdraw-2fa__help {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+  text-align: left;
+}
+.fiat-withdraw-2fa__help img {
+  flex-shrink: 0;
+  display: block;
+}
+
+.fiat-withdraw-2fa__field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.fiat-withdraw-2fa__label-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.fiat-withdraw-2fa__label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.fiat-withdraw-2fa__input-wrap {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #1b1d1d;
+  box-sizing: border-box;
+}
+
+.fiat-withdraw-2fa__input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+  outline: none;
+}
+.fiat-withdraw-2fa__input::placeholder {
+  color: #58595a;
+}
+
+.fiat-withdraw-2fa__paste {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: #2d2f2f;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}
+.fiat-withdraw-2fa__paste img {
+  display: block;
+  flex-shrink: 0;
+}
+
+.fiat-withdraw-2fa__loader.plan-submit-loader {
+  z-index: 10;
+}
+.fiat-withdraw-2fa__loader.plan-submit-loader .plan-submit-loader__card {
+  width: 168px;
+  height: 168px;
+}
+
 .ba-wizard-intro,
 .ba-wizard-currency,
 .ba-wizard-how,

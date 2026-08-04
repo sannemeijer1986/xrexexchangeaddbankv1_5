@@ -4520,6 +4520,55 @@
                 <footer class="fiat-withdraw-confirm__footer">
                     <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-confirm-submit>Withdraw</button>
                 </footer>
+
+                <section class="fiat-withdraw-2fa" data-fiat-withdraw-2fa hidden aria-label="Two-factor authentication">
+                    <header class="fiat-withdraw-confirm__header">
+                        <button class="fiat-withdraw-confirm__icon-btn" type="button" data-fiat-withdraw-2fa-back aria-label="Back">
+                            <img src="assets/icon_back.svg" alt="" width="24" height="24" />
+                        </button>
+                        <h1 class="fiat-withdraw-confirm__title" data-fiat-withdraw-2fa-title>Two-factor authentication</h1>
+                        <button class="fiat-withdraw-confirm__icon-btn" type="button" aria-label="Support">
+                            <img src="assets/icon_intercom.svg" alt="" width="24" height="24" />
+                        </button>
+                    </header>
+                    <div class="fiat-withdraw-confirm__divider" aria-hidden="true"></div>
+                    <div class="fiat-withdraw-2fa__body">
+                        <div class="fiat-withdraw-2fa__intro">
+                            <p class="fiat-withdraw-2fa__lead" data-fiat-withdraw-2fa-lead>Please enter the 6 digit code from your authenticator app</p>
+                            <button class="fiat-withdraw-2fa__help" type="button" data-fiat-withdraw-2fa-help>
+                                <img src="assets/icon_info_circle_blue.svg" alt="" width="16" height="16" aria-hidden="true" />
+                                <span data-fiat-withdraw-2fa-help-text>How to enter your authenticator code?</span>
+                            </button>
+                        </div>
+                        <div class="fiat-withdraw-2fa__field">
+                            <label class="fiat-withdraw-2fa__label-wrap">
+                                <span class="fiat-withdraw-2fa__label" data-fiat-withdraw-2fa-label-code>Authentication code</span>
+                                <div class="fiat-withdraw-2fa__input-wrap">
+                                    <input
+                                        class="fiat-withdraw-2fa__input"
+                                        type="text"
+                                        inputmode="numeric"
+                                        pattern="[0-9]*"
+                                        maxlength="6"
+                                        autocomplete="one-time-code"
+                                        aria-label="Authentication code"
+                                        data-fiat-withdraw-2fa-code
+                                    />
+                                </div>
+                            </label>
+                            <button class="fiat-withdraw-2fa__paste" type="button" data-fiat-withdraw-2fa-paste>
+                                <img src="assets/icon_n_copy.svg" alt="" width="16" height="16" aria-hidden="true" />
+                                <span data-fiat-withdraw-2fa-paste-text>Paste</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="fiat-withdraw-2fa__loader plan-submit-loader" data-fiat-withdraw-2fa-loader hidden>
+                        <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
+                        <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Submitting">
+                            <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
+                        </div>
+                    </div>
+                </section>
             </section>
         </section>
 

@@ -6699,6 +6699,7 @@
     const depositView = panel.querySelector("[data-fiat-flow-deposit-view]");
     const withdrawView = panel.querySelector("[data-fiat-flow-withdraw-view]");
     const confirmPanel = panel.querySelector("[data-fiat-withdraw-confirm]");
+    const twoFaPanel = panel.querySelector("[data-fiat-withdraw-2fa]");
     const closeButtons = panel.querySelectorAll(
       "[data-fiat-flow-placeholder-close]",
     );
@@ -6742,10 +6743,48 @@
       labelTo: panel.querySelector("[data-fiat-withdraw-confirm-label-to]"),
     };
 
+    const twoFaEls = {
+      title: panel.querySelector("[data-fiat-withdraw-2fa-title]"),
+      lead: panel.querySelector("[data-fiat-withdraw-2fa-lead]"),
+      helpText: panel.querySelector("[data-fiat-withdraw-2fa-help-text]"),
+      labelCode: panel.querySelector("[data-fiat-withdraw-2fa-label-code]"),
+      pasteText: panel.querySelector("[data-fiat-withdraw-2fa-paste-text]"),
+      code: panel.querySelector("[data-fiat-withdraw-2fa-code]"),
+      loader: panel.querySelector("[data-fiat-withdraw-2fa-loader]"),
+    };
+
+    const WITHDRAW_2FA_PROTOTYPE_CODE = "123456";
+    let twoFaSubmitted = false;
+
     let withdrawCurrency = "twd";
     let withdrawConfig = WITHDRAW_PROTOTYPE.twd;
     let withdrawBankData = getLinkedBankAccountSheetData("twd");
     let withdrawConfirmAmount = 0;
+
+    const setSlidePanelOpen = (slidePanel, nextOpen, opts = {}) => {
+      if (!slidePanel) return;
+      if (nextOpen) {
+        slidePanel.hidden = false;
+        requestAnimationFrame(() => slidePanel.classList.add("is-open"));
+        return;
+      }
+      if (opts.instant) {
+        slidePanel.classList.add("is-instant");
+        slidePanel.classList.remove("is-open");
+        slidePanel.hidden = true;
+        void slidePanel.offsetWidth;
+        slidePanel.classList.remove("is-instant");
+        return;
+      }
+      slidePanel.classList.remove("is-open");
+      const onEnd = () => {
+        if (!slidePanel.classList.contains("is-open")) slidePanel.hidden = true;
+        slidePanel.removeEventListener("transitionend", onEnd);
+        opts.onClosed?.();
+      };
+      slidePanel.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 400);
+    };
 
     const syncConfirmUi = () => {
       const curLabel = getBankSheetCurLabel(withdrawCurrency);
@@ -6812,30 +6851,81 @@
       }
     };
 
+    const syncTwoFaUi = () => {
+      if (twoFaEls.title) {
+        twoFaEls.title.textContent = tr("Two-factor authentication");
+      }
+      if (twoFaEls.lead) {
+        twoFaEls.lead.textContent = tr(
+          "Please enter the 6 digit code from your authenticator app",
+        );
+      }
+      if (twoFaEls.helpText) {
+        twoFaEls.helpText.textContent = tr(
+          "How to enter your authenticator code?",
+        );
+      }
+      if (twoFaEls.labelCode) {
+        twoFaEls.labelCode.textContent = tr("Authentication code");
+      }
+      if (twoFaEls.pasteText) twoFaEls.pasteText.textContent = tr("Paste");
+      if (twoFaEls.code instanceof HTMLInputElement) {
+        twoFaEls.code.setAttribute("aria-label", tr("Authentication code"));
+      }
+    };
+
+    const resetTwoFa = () => {
+      twoFaSubmitted = false;
+      if (twoFaEls.code instanceof HTMLInputElement) twoFaEls.code.value = "";
+      if (twoFaEls.loader) twoFaEls.loader.hidden = true;
+    };
+
+    const submitTwoFaPrototype = () => {
+      if (twoFaSubmitted || !twoFaPanel?.classList.contains("is-open")) return;
+      twoFaSubmitted = true;
+      if (twoFaEls.code instanceof HTMLInputElement) {
+        twoFaEls.code.value = WITHDRAW_2FA_PROTOTYPE_CODE;
+      }
+      if (twoFaEls.loader) twoFaEls.loader.hidden = false;
+    };
+
+    const setTwoFaOpen = (nextOpen, opts = {}) => {
+      if (!twoFaPanel) return;
+      if (nextOpen) {
+        resetTwoFa();
+        syncTwoFaUi();
+        setSlidePanelOpen(twoFaPanel, true);
+        const focusCode = () => twoFaEls.code?.focus();
+        twoFaPanel.addEventListener("transitionend", focusCode, { once: true });
+        window.setTimeout(focusCode, 360);
+        return;
+      }
+      if (opts.instant) {
+        setSlidePanelOpen(twoFaPanel, false, { instant: true });
+        resetTwoFa();
+        return;
+      }
+      setSlidePanelOpen(twoFaPanel, false, {
+        onClosed: () => resetTwoFa(),
+      });
+    };
+
     const setConfirmOpen = (nextOpen, opts = {}) => {
       if (!confirmPanel) return;
       if (nextOpen) {
         hideWithdrawKeyboard();
+        setTwoFaOpen(false, { instant: true });
         syncConfirmUi();
-        confirmPanel.hidden = false;
-        requestAnimationFrame(() => confirmPanel.classList.add("is-open"));
+        setSlidePanelOpen(confirmPanel, true);
         return;
       }
       if (opts.instant) {
-        confirmPanel.classList.add("is-instant");
-        confirmPanel.classList.remove("is-open");
-        confirmPanel.hidden = true;
-        void confirmPanel.offsetWidth;
-        confirmPanel.classList.remove("is-instant");
+        setTwoFaOpen(false, { instant: true });
+        setSlidePanelOpen(confirmPanel, false, { instant: true });
         return;
       }
-      confirmPanel.classList.remove("is-open");
-      const onEnd = () => {
-        if (!confirmPanel.classList.contains("is-open")) confirmPanel.hidden = true;
-        confirmPanel.removeEventListener("transitionend", onEnd);
-      };
-      confirmPanel.addEventListener("transitionend", onEnd);
-      setTimeout(onEnd, 400);
+      setTwoFaOpen(false, { instant: true });
+      setSlidePanelOpen(confirmPanel, false);
     };
 
     const populateDeposit = ({ currency, mode }) => {
@@ -6968,6 +7058,7 @@
 
       if (withdrawEls.amount) withdrawEls.amount.value = "";
       withdrawConfirmAmount = 0;
+      setTwoFaOpen(false, { instant: true });
       setConfirmOpen(false, { instant: true });
       syncWithdrawUi();
     };
@@ -6991,6 +7082,7 @@
         return;
       }
       hideWithdrawKeyboard();
+      setTwoFaOpen(false, opts);
       setConfirmOpen(false, opts);
       if (opts.instant) {
         panel.classList.add("is-instant");
@@ -7044,7 +7136,35 @@
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
     confirmPanel
       ?.querySelector("[data-fiat-withdraw-confirm-submit]")
+      ?.addEventListener("click", () => setTwoFaOpen(true));
+
+    twoFaPanel?.querySelector("[data-fiat-withdraw-2fa-back]")?.addEventListener(
+      "click",
+      () => setTwoFaOpen(false),
+    );
+    twoFaPanel
+      ?.querySelector('[aria-label="Support"]')
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    twoFaPanel
+      ?.querySelector("[data-fiat-withdraw-2fa-help]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    twoFaPanel
+      ?.querySelector("[data-fiat-withdraw-2fa-paste]")
+      ?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        submitTwoFaPrototype();
+      });
+    twoFaPanel?.addEventListener("click", (event) => {
+      if (!twoFaPanel.classList.contains("is-open") || twoFaSubmitted) return;
+      if (event.target.closest("[data-fiat-withdraw-2fa-back]")) return;
+      submitTwoFaPrototype();
+    });
+    twoFaEls.code?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitTwoFaPrototype();
+      }
+    });
 
     document.addEventListener("prototype-locale-changed", () => {
       if (!panel.classList.contains("is-open")) return;
@@ -7052,6 +7172,7 @@
       const mode = panel.dataset.fiatFlowMode || "add";
       populate({ currency, mode });
       if (confirmPanel?.classList.contains("is-open")) syncConfirmUi();
+      if (twoFaPanel?.classList.contains("is-open")) syncTwoFaUi();
     });
 
     withdrawEls.amount?.addEventListener("input", () => {
