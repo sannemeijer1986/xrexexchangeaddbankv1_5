@@ -6640,15 +6640,15 @@
 
   const WITHDRAW_PROTOTYPE = {
     twd: {
-      avail: 5000,
+      avail: 7000,
       maxPerTx: 100000,
-      remainingLimit: 2000000,
+      remainingLimit: 200000,
       fee: 150,
     },
     usd: {
-      avail: 5000,
+      avail: 7000,
       maxPerTx: 100000,
-      remainingLimit: 2000000,
+      remainingLimit: 200000,
       fee: 5,
     },
   };
@@ -6719,18 +6719,19 @@
       title: panel.querySelector("[data-fiat-withdraw-confirm-title]"),
       icon: panel.querySelector("[data-fiat-withdraw-confirm-icon]"),
       amount: panel.querySelector("[data-fiat-withdraw-confirm-amount]"),
+      amountSummary: panel.querySelector("[data-fiat-withdraw-confirm-amount-summary]"),
       arrival: panel.querySelector("[data-fiat-withdraw-confirm-arrival]"),
       bankName: panel.querySelector("[data-fiat-withdraw-confirm-bank-name]"),
       accountNumber: panel.querySelector("[data-fiat-withdraw-confirm-account-number]"),
       fromBalance: panel.querySelector("[data-fiat-withdraw-confirm-from-balance]"),
       xrexHandle: panel.querySelector("[data-fiat-withdraw-confirm-xrex-handle]"),
       fee: panel.querySelector("[data-fiat-withdraw-confirm-fee]"),
-      receive: panel.querySelector("[data-fiat-withdraw-confirm-receive]"),
       total: panel.querySelector("[data-fiat-withdraw-confirm-total]"),
       submit: panel.querySelector("[data-fiat-withdraw-confirm-submit]"),
       labelWithdraw: panel.querySelector("[data-fiat-withdraw-confirm-label-withdraw]"),
+      labelAmount: panel.querySelector("[data-fiat-withdraw-confirm-label-amount]"),
+      labelArrival: panel.querySelector("[data-fiat-withdraw-confirm-label-arrival]"),
       labelFee: panel.querySelector("[data-fiat-withdraw-confirm-label-fee]"),
-      labelReceive: panel.querySelector("[data-fiat-withdraw-confirm-label-receive]"),
       labelTotal: panel.querySelector("[data-fiat-withdraw-confirm-label-total]"),
       labelFrom: panel.querySelector("[data-fiat-withdraw-confirm-label-from]"),
       labelTo: panel.querySelector("[data-fiat-withdraw-confirm-label-to]"),
@@ -6754,16 +6755,19 @@
         confirmEls.title.textContent = tr("Confirm withdrawal");
       }
       if (confirmEls.labelWithdraw) {
-        confirmEls.labelWithdraw.textContent = tr("Withdraw");
+        confirmEls.labelWithdraw.textContent = tr("You will withdraw");
+      }
+      if (confirmEls.labelAmount) {
+        confirmEls.labelAmount.textContent = tr("Withdrawal amount");
+      }
+      if (confirmEls.labelArrival) {
+        confirmEls.labelArrival.textContent = tr("Estimated arrival");
       }
       if (confirmEls.labelFee) {
-        confirmEls.labelFee.textContent = tr("Fee");
-      }
-      if (confirmEls.labelReceive) {
-        confirmEls.labelReceive.textContent = tr("You will receive");
+        confirmEls.labelFee.textContent = tr("Fee (deducted from balance)");
       }
       if (confirmEls.labelTotal) {
-        confirmEls.labelTotal.textContent = tr("Total to deduct");
+        confirmEls.labelTotal.textContent = tr("Total deducted");
       }
       const fromLabel = tr("From");
       const toLabel = tr("To");
@@ -6776,8 +6780,11 @@
             : "assets/icon_currency_TWD.svg";
       }
       if (confirmEls.amount) confirmEls.amount.textContent = amountLabel;
+      if (confirmEls.amountSummary) {
+        confirmEls.amountSummary.textContent = amountLabel;
+      }
       if (confirmEls.arrival) {
-        confirmEls.arrival.textContent = tr("Expected to arrive in 1-3 business days");
+        confirmEls.arrival.textContent = tr("1–3 business days");
       }
       if (confirmEls.fromBalance) {
         confirmEls.fromBalance.textContent = tr("XREX · {cur} balance", {
@@ -6785,12 +6792,9 @@
         });
       }
       if (confirmEls.fee) confirmEls.fee.textContent = feeLabel;
-      if (confirmEls.receive) confirmEls.receive.textContent = amountLabel;
       if (confirmEls.total) confirmEls.total.textContent = totalLabel;
       if (confirmEls.submit) {
-        confirmEls.submit.textContent = tr("Withdraw {amount}", {
-          amount: amountLabel,
-        });
+        confirmEls.submit.textContent = tr("Withdraw");
       }
 
       const bankName = bankData.bankName;
@@ -6854,7 +6858,7 @@
       }
       if (withdrawEls.avail) {
         withdrawEls.avail.textContent = tr("Avail. {amount} {cur}", {
-          amount: formatWithdrawAmount(withdrawConfig.avail),
+          amount: formatWithdrawConfirmAmount(withdrawConfig.avail),
           cur: curLabel,
         });
       }
@@ -6874,7 +6878,7 @@
         withdrawEls.remainingLimit.textContent = tr(
           "Remaining limit {amount} {cur}",
           {
-            amount: formatWithdrawAmount(withdrawConfig.remainingLimit),
+            amount: formatWithdrawConfirmAmount(withdrawConfig.remainingLimit),
             cur: curLabel,
           },
         );
@@ -6890,15 +6894,15 @@
       );
       if (labelTo) labelTo.textContent = tr("To");
       if (labelArrival) labelArrival.textContent = tr("Estimated arrival");
-      if (labelFee) labelFee.textContent = tr("Fee (from balance)");
-      if (labelReceive) labelReceive.textContent = tr("You receive");
+      if (labelFee) labelFee.textContent = tr("Fee (deducted from balance)");
+      if (labelReceive) labelReceive.textContent = tr("You will receive");
       if (amountLabel) amountLabel.textContent = tr("Amount");
 
       if (withdrawEls.arrival) {
         withdrawEls.arrival.textContent = tr("1–3 business days");
       }
       if (withdrawEls.fee) {
-        withdrawEls.fee.textContent = `${formatWithdrawAmount(withdrawConfig.fee)} ${curLabel}`;
+        withdrawEls.fee.textContent = `${formatWithdrawConfirmAmount(withdrawConfig.fee)} ${curLabel}`;
       }
 
       const amount = parseWithdrawAmount(withdrawEls.amount?.value);
@@ -6923,7 +6927,7 @@
       }
       if (withdrawEls.receive) {
         withdrawEls.receive.textContent = hasAmount
-          ? `${formatWithdrawAmount(amount)} ${curLabel}`
+          ? `${formatWithdrawConfirmAmount(amount)} ${curLabel}`
           : `- - ${curLabel}`;
       }
 
@@ -6997,9 +7001,6 @@
 
     panel
       .querySelector("[data-fiat-withdraw-limit-info]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
-    panel
-      .querySelector("[data-fiat-withdraw-fee-info]")
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
 
     withdrawEls.continueBtn?.addEventListener("click", () => {

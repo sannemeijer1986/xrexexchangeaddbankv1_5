@@ -4377,7 +4377,7 @@
                         <div class="plan-buffer-funding-input__head">
                             <div class="plan-buffer-funding-input__title">Amount</div>
                             <div class="plan-buffer-funding-input__avail">
-                                <span data-fiat-withdraw-avail>Avail. 5,000 TWD</span>
+                                <span data-fiat-withdraw-avail>Avail. 7,000.00 TWD</span>
                             </div>
                         </div>
                         <div class="plan-buffer-funding-input fiat-withdraw-page__amount-input">
@@ -4404,7 +4404,7 @@
                             <p class="plan-detail-panel__amount-error fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
                         </div>
                         <div class="fiat-withdraw-page__limit-row">
-                            <span class="fiat-withdraw-page__limit-text" data-fiat-withdraw-remaining-limit>Remaining limit 2,000,000 TWD</span>
+                            <span class="fiat-withdraw-page__limit-text" data-fiat-withdraw-remaining-limit>Remaining limit 200,000.00 TWD</span>
                             <button class="fiat-withdraw-page__limit-info" type="button" aria-label="About remaining limit" data-fiat-withdraw-limit-info>
                                 <img src="assets/icon_info_circle_gray.svg" alt="" width="12" height="12" aria-hidden="true" />
                             </button>
@@ -4423,16 +4423,13 @@
                         </div>
                         <div class="fiat-withdraw-page__summary-row">
                             <span class="fiat-withdraw-page__summary-label">
-                                <span data-fiat-withdraw-label-fee>Fee (from balance)</span>
-                                <button class="fiat-withdraw-page__fee-info" type="button" aria-label="About fee" data-fiat-withdraw-fee-info>
-                                    <img src="assets/icon_info_circle_gray.svg" alt="" width="12" height="12" aria-hidden="true" />
-                                </button>
+                                <span data-fiat-withdraw-label-fee>Fee (deducted from balance)</span>
                             </span>
-                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-fee>150 TWD</span>
+                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-fee>150.00 TWD</span>
                         </div>
                         <div class="fiat-withdraw-page__summary-divider" aria-hidden="true"></div>
                         <div class="fiat-withdraw-page__summary-row fiat-withdraw-page__summary-row--total">
-                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-receive>You receive</span>
+                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-receive>You will receive</span>
                             <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-receive>- - TWD</span>
                         </div>
                     </div>
@@ -4456,22 +4453,21 @@
                 <div class="fiat-withdraw-confirm__divider" aria-hidden="true"></div>
                 <div class="fiat-withdraw-confirm__scroll">
                     <div class="fiat-withdraw-confirm__hero">
-                        <div class="fiat-withdraw-confirm__hero-main">
-                            <div class="fiat-withdraw-confirm__hero-copy">
-                                <p class="fiat-withdraw-confirm__hero-label" data-fiat-withdraw-confirm-label-withdraw>Withdraw</p>
+                        <div class="fiat-withdraw-confirm__hero-copy">
+                            <p class="fiat-withdraw-confirm__hero-lead" data-fiat-withdraw-confirm-label-withdraw>You will withdraw</p>
+                            <div class="fiat-withdraw-confirm__hero-amount">
+                                <img class="fiat-withdraw-confirm__hero-icon" src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" data-fiat-withdraw-confirm-icon />
                                 <p class="fiat-withdraw-confirm__hero-value" data-fiat-withdraw-confirm-amount>5,000.00 TWD</p>
                             </div>
-                            <img class="fiat-withdraw-confirm__hero-icon" src="assets/icon_currency_TWD.svg" alt="" width="32" height="32" data-fiat-withdraw-confirm-icon />
                         </div>
-                        <p class="fiat-withdraw-confirm__hero-arrival" data-fiat-withdraw-confirm-arrival>Expected to arrive in 1-3 business days</p>
                     </div>
                     <div class="fiat-withdraw-confirm__cards">
                         <div class="fiat-withdraw-confirm__route-card">
                             <div class="fiat-withdraw-confirm__route">
                                 <div class="fiat-withdraw-confirm__route-step">
                                     <div class="fiat-withdraw-confirm__route-rail" aria-hidden="true">
-                                        <div class="fiat-withdraw-confirm__route-icon">
-                                            <img src="assets/social/xrex.svg" alt="" width="20" height="20" />
+                                        <div class="fiat-withdraw-confirm__route-icon fiat-withdraw-confirm__route-icon--xrex">
+                                            <img src="assets/icon_xrex_logo_nolabel.svg" alt="" width="20" height="20" />
                                         </div>
                                         <span class="fiat-withdraw-confirm__route-line"></span>
                                     </div>
@@ -4483,8 +4479,8 @@
                                 </div>
                                 <div class="fiat-withdraw-confirm__route-step fiat-withdraw-confirm__route-step--last">
                                     <div class="fiat-withdraw-confirm__route-rail" aria-hidden="true">
-                                        <div class="fiat-withdraw-confirm__route-icon">
-                                            <img src="assets/icon_bankaccounts.svg" alt="" width="20" height="20" data-fiat-withdraw-confirm-bank-icon />
+                                        <div class="fiat-withdraw-confirm__route-icon fiat-withdraw-confirm__route-icon--bank">
+                                            <img src="assets/icon_bank_white.svg" alt="" width="20" height="20" data-fiat-withdraw-confirm-bank-icon />
                                         </div>
                                     </div>
                                     <div class="fiat-withdraw-confirm__route-copy">
@@ -4497,22 +4493,29 @@
                         </div>
                         <div class="fiat-withdraw-confirm__summary">
                             <div class="fiat-withdraw-confirm__summary-row">
-                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-total>Total to deduct</span>
-                                <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-total>5,150.00 TWD</span>
+                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-amount>Withdrawal amount</span>
+                                <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-amount-summary>5,000.00 TWD</span>
                             </div>
                             <div class="fiat-withdraw-confirm__summary-row">
-                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-fee>Fee</span>
+                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-arrival>Estimated arrival</span>
+                                <span class="fiat-withdraw-confirm__summary-value fiat-withdraw-confirm__summary-value--highlight" data-fiat-withdraw-confirm-arrival>1–3 business days</span>
+                            </div>
+                            <div class="fiat-withdraw-confirm__summary-row">
+                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-fee>Fee (deducted from balance)</span>
                                 <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-fee>150.00 TWD</span>
                             </div>
-                            <div class="fiat-withdraw-confirm__summary-row">
-                                <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-receive>You will receive</span>
-                                <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-receive>5,000.00 TWD</span>
+                            <div class="fiat-withdraw-confirm__summary-total">
+                                <div class="fiat-withdraw-confirm__summary-divider" aria-hidden="true"></div>
+                                <div class="fiat-withdraw-confirm__summary-row fiat-withdraw-confirm__summary-row--total">
+                                    <span class="fiat-withdraw-confirm__summary-label" data-fiat-withdraw-confirm-label-total>Total deducted</span>
+                                    <span class="fiat-withdraw-confirm__summary-value" data-fiat-withdraw-confirm-total>5,150.00 TWD</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <footer class="fiat-withdraw-confirm__footer">
-                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-confirm-submit>Withdraw 5,000.00 TWD</button>
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-confirm-submit>Withdraw</button>
                 </footer>
             </section>
         </section>
