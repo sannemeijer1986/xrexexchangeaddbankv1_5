@@ -7821,7 +7821,7 @@
       const shareBtn = instructionsPanel?.querySelector(
         "[data-twd-deposit-instructions-share-all] span",
       );
-      if (shareBtn) shareBtn.textContent = tr("Share / Copy all details");
+      if (shareBtn) shareBtn.textContent = tr("Copy all details");
       const arrivalTitle = instructionsPanel?.querySelector(
         ".twd-deposit-instructions__arrival-title",
       );
@@ -8227,7 +8227,9 @@
       });
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-share-all]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+      ?.addEventListener("click", () => {
+        showSnackbar(tr("All details copied to clipboard"), { variant: "copy" });
+      });
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-see-limits]")
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));

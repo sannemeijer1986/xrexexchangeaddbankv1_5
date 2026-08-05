@@ -3496,6 +3496,13 @@ html[data-active-tab=wallet] .app-header__top {
   color: #5ac47d;
 }
 
+.twd-deposit-instructions__step-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .twd-deposit-instructions__limit-card {
   padding: 20px 16px;
   border-radius: 16px;
@@ -3656,10 +3663,9 @@ html[data-active-tab=wallet] .app-header__top {
   line-height: normal;
   color: #fff;
 }
-.twd-deposit-instructions__share-btn img {
+.twd-deposit-instructions__share-btn .twd-deposit-instructions__copy-icon {
   width: 20px;
   height: 20px;
-  display: block;
 }
 
 .twd-deposit-instructions__arrival-card {
