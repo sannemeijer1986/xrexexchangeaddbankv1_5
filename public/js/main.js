@@ -7129,21 +7129,23 @@
         });
       }
       if (withdrawEls.remainingLimit) {
-        withdrawEls.remainingLimit.textContent = tr(
-          "Remaining limit {amount} {cur}",
-          {
-            amount: formatWithdrawConfirmAmount(withdrawConfig.remainingLimit),
-            cur: curLabel,
-          },
-        );
+        withdrawEls.remainingLimit.textContent = `${formatWithdrawConfirmAmount(
+          withdrawConfig.remainingLimit,
+        )} ${curLabel}`;
       }
 
+      const labelRemainingLimit = panel.querySelector(
+        "[data-fiat-withdraw-label-remaining-limit]",
+      );
       const labelArrival = panel.querySelector("[data-fiat-withdraw-label-arrival]");
       const labelFee = panel.querySelector("[data-fiat-withdraw-label-fee]");
       const labelReceive = panel.querySelector("[data-fiat-withdraw-label-receive]");
       const amountLabel = panel.querySelector(
         ".fiat-withdraw-page__amount-section .plan-buffer-funding-input__title",
       );
+      if (labelRemainingLimit) {
+        labelRemainingLimit.textContent = tr("Remaining limit");
+      }
       if (labelArrival) labelArrival.textContent = tr("Estimated arrival");
       if (labelFee) labelFee.textContent = tr("Fee (deducted from balance)");
       if (labelReceive) labelReceive.textContent = tr("You will receive");

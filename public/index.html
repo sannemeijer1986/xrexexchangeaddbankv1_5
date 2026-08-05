@@ -4372,50 +4372,53 @@
             </div>
             <div class="fiat-withdraw-page" data-fiat-flow-withdraw-view hidden>
                 <div class="fiat-withdraw-page__scroll">
-                    <p class="fiat-withdraw-page__lead" data-fiat-withdraw-lead>How much TWD do you want to withdraw to <span class="fiat-withdraw-page__lead-highlight">KGI Bank ••••8999</span>?</p>
-                    <section class="fiat-withdraw-page__amount-section" aria-label="Withdraw amount">
-                        <div class="plan-buffer-funding-input__head">
-                            <div class="plan-buffer-funding-input__title">Amount</div>
-                            <div class="plan-buffer-funding-input__avail">
-                                <span data-fiat-withdraw-avail>Avail. 7,000.00 TWD</span>
-                            </div>
-                        </div>
-                        <div class="plan-buffer-funding-input fiat-withdraw-page__amount-input">
-                            <div class="plan-buffer-funding-input__row fiat-withdraw-page__amount-row">
-                                <div class="plan-buffer-funding-input__left">
-                                    <img class="plan-buffer-funding-input__icon" src="assets/icon_currency_TWD.svg" width="32" height="32" alt="" data-fiat-withdraw-icon />
-                                    <div class="fiat-withdraw-page__amount-input-wrap">
-                                        <input
-                                            class="plan-buffer-funding-input__field"
-                                            type="text"
-                                            inputmode="numeric"
-                                            pattern="[0-9]*"
-                                            autocomplete="off"
-                                            placeholder="0"
-                                            aria-label="Withdraw amount"
-                                            data-fiat-withdraw-amount
-                                        />
-                                        <span class="plan-buffer-funding-input__hint" data-fiat-withdraw-amount-hint>Max 100,000</span>
-                                    </div>
+                    <div class="fiat-withdraw-page__top">
+                        <p class="fiat-withdraw-page__lead" data-fiat-withdraw-lead>How much TWD do you want to withdraw to <span class="fiat-withdraw-page__lead-highlight">KGI Bank ••••8999</span>?</p>
+                        <section class="fiat-withdraw-page__amount-section" aria-label="Withdraw amount">
+                            <div class="plan-buffer-funding-input__head">
+                                <div class="plan-buffer-funding-input__title">Amount</div>
+                                <div class="plan-buffer-funding-input__avail">
+                                    <span data-fiat-withdraw-avail>Avail. 7,000.00 TWD</span>
                                 </div>
-                                <div class="plan-buffer-funding-input__cur" data-fiat-withdraw-currency aria-hidden="true">TWD</div>
                             </div>
-                            <div class="plan-buffer-funding-input__divider"></div>
-                            <div class="plan-buffer-funding-input__max-row fiat-withdraw-page__max-row">
-                                <p class="fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
-                                <button class="plan-buffer-funding-input__max-btn" type="button" data-fiat-withdraw-max>Max</button>
+                            <div class="plan-buffer-funding-input fiat-withdraw-page__amount-input">
+                                <div class="plan-buffer-funding-input__row fiat-withdraw-page__amount-row">
+                                    <div class="plan-buffer-funding-input__left">
+                                        <img class="plan-buffer-funding-input__icon" src="assets/icon_currency_TWD.svg" width="32" height="32" alt="" data-fiat-withdraw-icon />
+                                        <div class="fiat-withdraw-page__amount-input-wrap">
+                                            <input
+                                                class="plan-buffer-funding-input__field"
+                                                type="text"
+                                                inputmode="numeric"
+                                                pattern="[0-9]*"
+                                                autocomplete="off"
+                                                placeholder="0"
+                                                aria-label="Withdraw amount"
+                                                data-fiat-withdraw-amount
+                                            />
+                                            <span class="plan-buffer-funding-input__hint" data-fiat-withdraw-amount-hint>Max 100,000</span>
+                                        </div>
+                                    </div>
+                                    <div class="plan-buffer-funding-input__cur" data-fiat-withdraw-currency aria-hidden="true">TWD</div>
+                                </div>
+                                <div class="plan-buffer-funding-input__divider"></div>
+                                <div class="plan-buffer-funding-input__max-row fiat-withdraw-page__max-row">
+                                    <p class="fiat-withdraw-page__amount-error" data-fiat-withdraw-amount-error aria-hidden="true">Exceeds available balance</p>
+                                    <button class="plan-buffer-funding-input__max-btn" type="button" data-fiat-withdraw-max>Max</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="fiat-withdraw-page__limit-row">
-                            <span class="fiat-withdraw-page__limit-text" data-fiat-withdraw-remaining-limit>Remaining limit 200,000.00 TWD</span>
-                            <button class="fiat-withdraw-page__limit-info" type="button" aria-label="About remaining limit" data-fiat-withdraw-limit-info>
-                                <img src="assets/icon_info_circle_gray.svg" alt="" width="12" height="12" aria-hidden="true" />
-                            </button>
-                        </div>
-                    </section>
-                </div>
-                <footer class="fiat-withdraw-page__footer">
+                        </section>
+                    </div>
                     <div class="fiat-withdraw-page__summary">
+                        <div class="fiat-withdraw-page__summary-row">
+                            <span class="fiat-withdraw-page__summary-label">
+                                <span data-fiat-withdraw-label-remaining-limit>Remaining limit</span>
+                                <button class="fiat-withdraw-page__limit-info" type="button" aria-label="About remaining limit" data-fiat-withdraw-limit-info>
+                                    <img src="assets/icon_info_circle_gray.svg" alt="" width="12" height="12" aria-hidden="true" />
+                                </button>
+                            </span>
+                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-remaining-limit>200,000.00 TWD</span>
+                        </div>
                         <div class="fiat-withdraw-page__summary-row">
                             <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-arrival>Estimated arrival</span>
                             <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-arrival>1–3 business days</span>
@@ -4426,12 +4429,16 @@
                             </span>
                             <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-fee>150.00 TWD</span>
                         </div>
-                        <div class="fiat-withdraw-page__summary-divider" aria-hidden="true"></div>
-                        <div class="fiat-withdraw-page__summary-row fiat-withdraw-page__summary-row--total">
-                            <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-receive>You will receive</span>
-                            <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-receive>- - TWD</span>
+                        <div class="fiat-withdraw-page__summary-total">
+                            <div class="fiat-withdraw-page__summary-divider" aria-hidden="true"></div>
+                            <div class="fiat-withdraw-page__summary-row fiat-withdraw-page__summary-row--total">
+                                <span class="fiat-withdraw-page__summary-label" data-fiat-withdraw-label-receive>You will receive</span>
+                                <span class="fiat-withdraw-page__summary-value" data-fiat-withdraw-receive>- - TWD</span>
+                            </div>
                         </div>
                     </div>
+                </div>
+                <footer class="fiat-withdraw-page__footer">
                     <div class="fiat-withdraw-page__footer-btns">
                         <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-fiat-flow-placeholder-close>Back</button>
                         <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-fiat-withdraw-continue disabled>Continue</button>

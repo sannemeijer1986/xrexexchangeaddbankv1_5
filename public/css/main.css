@@ -3072,10 +3072,19 @@ html[data-active-tab=wallet] .app-header__top {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   padding: 24px 16px 16px;
 }
 .fiat-withdraw-page__scroll::-webkit-scrollbar {
   display: none;
+}
+
+.fiat-withdraw-page__top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .phone-container p.fiat-withdraw-page__lead {
@@ -3183,42 +3192,25 @@ html[data-active-tab=wallet] .app-header__top {
   flex-shrink: 0;
 }
 
-.fiat-withdraw-page__limit-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  padding-top: 16px;
-}
-
-.fiat-withdraw-page__limit-text {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  color: #9b9c9c;
-  text-align: left;
-}
-
 .fiat-withdraw-page__limit-info {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   vertical-align: middle;
-  margin-left: 2px;
 }
 .fiat-withdraw-page__limit-info img {
   display: block;
+  width: 12px;
+  height: 12px;
 }
 
 .fiat-withdraw-page__footer {
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   padding: 16px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   background: #0d0e0f;
@@ -3271,6 +3263,12 @@ html[data-active-tab=wallet] .app-header__top {
 .fiat-withdraw-page__summary-divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.08);
+}
+
+.fiat-withdraw-page__summary-total {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .fiat-withdraw-page__summary-row--total .fiat-withdraw-page__summary-label,
@@ -3498,7 +3496,7 @@ html[data-active-tab=wallet] .app-header__top {
   height: 32px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #47494a;
+  background: #2D2F2F;
   display: inline-flex;
   align-items: center;
   justify-content: center;
