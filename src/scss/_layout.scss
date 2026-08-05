@@ -2959,6 +2959,14 @@ html[data-active-tab="wallet"] {
   color: #ffffff;
 }
 
+.phone-container span.twd-deposit-instructions__header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
 // Beat `.phone-container p` from _base.scss (16px / white / margin).
 .phone-container p.twd-deposit-select__lead {
   margin: 0;
@@ -3031,6 +3039,7 @@ html[data-active-tab="wallet"] {
 }
 
 .twd-deposit-instructions__header-title {
+  display: block;
   margin: 0;
   min-width: 0;
   font-size: 18px;
@@ -3125,16 +3134,24 @@ html[data-active-tab="wallet"] {
 .twd-first-time-deposit__cards {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  width: 100%;
+  padding: 4px 0;
+  border-radius: 16px;
+  background: #151718;
+  overflow: hidden;
 }
 
 .twd-first-time-deposit__card {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   padding: 16px;
-  border-radius: 16px;
-  background: #151718;
+  background: transparent;
+}
+
+.twd-first-time-deposit__card-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .twd-first-time-deposit__card-icon {
@@ -3195,7 +3212,6 @@ html[data-active-tab="wallet"] {
     width: 20px;
     height: 20px;
     display: block;
-    transform: rotate(180deg);
   }
 }
 
@@ -3243,7 +3259,7 @@ html[data-active-tab="wallet"] {
 }
 
 .twd-first-time-deposit__consent-highlight {
-  color: #5ac47d;
+  color: #ffffff;
 }
 
 .twd-first-time-deposit__consent-hint {
@@ -3253,7 +3269,6 @@ html[data-active-tab="wallet"] {
   line-height: 20px;
   color: #9b9c9c;
   text-align: center;
-  transition: color 0.2s ease;
 
   &--checked {
     color: #58595a;
@@ -3269,6 +3284,168 @@ html[data-active-tab="wallet"] {
     color: #58595a;
     cursor: not-allowed;
   }
+}
+
+.twd-deposit-guide-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2190;
+  background: #0d0e0f;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+}
+
+.twd-deposit-guide-panel.is-open {
+  transform: translateY(0);
+}
+
+.twd-deposit-guide-panel__header {
+  height: 88px;
+  padding: 24px 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.twd-deposit-guide-panel__close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.twd-deposit-guide-panel__close img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.twd-deposit-guide-panel__stepper {
+  flex: 1 1 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.twd-deposit-guide-panel__step {
+  height: 4px;
+  border-radius: 999px;
+  background: #2d2f2f;
+}
+
+.twd-deposit-guide-panel__step.is-active {
+  background: #275cfd;
+}
+
+.twd-deposit-guide-panel__help {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.twd-deposit-guide-panel__help img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.twd-deposit-guide-panel__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 80px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.twd-deposit-guide-panel__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  text-align: center;
+}
+
+.phone-container .twd-deposit-guide-panel__title {
+  margin: 0 !important;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.twd-deposit-guide-panel__visual {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #151718;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.twd-deposit-guide-panel__visual-img {
+  width: 120px;
+  height: 120px;
+  display: block;
+  object-fit: contain;
+}
+
+.phone-container .twd-deposit-guide-panel__desc {
+  margin: 0 !important;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #9b9c9c;
+}
+
+.twd-deposit-guide-panel__footer {
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+}
+
+.twd-deposit-guide-panel__btn {
+  flex: 1 1 0;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.twd-deposit-guide-panel__btn--secondary {
+  background: #2d2f2f;
+  color: #ffffff;
+}
+
+.twd-deposit-guide-panel__btn--primary {
+  background: #275cfd;
+  color: #ffffff;
 }
 
 .twd-deposit-instructions__step {
@@ -3433,6 +3610,21 @@ html[data-active-tab="wallet"] {
   display: flex;
   align-items: center;
   gap: 24px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.twd-deposit-instructions__copy-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: block;
 }
 
 .twd-deposit-instructions__trust-field {
@@ -3468,30 +3660,12 @@ html[data-active-tab="wallet"] {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.twd-deposit-instructions__copy-btn {
-  width: 18px;
-  height: 18px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  flex-shrink: 0;
-
-  img {
-    width: 18px;
-    height: 18px;
-    display: block;
-  }
-}
-
 .twd-deposit-instructions__trust-alert {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  margin-top: 16px;
-  padding: 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  margin-top: 8px;
+  margin-bottom: 12px;
 }
 
 .twd-deposit-instructions__trust-alert-icon {
@@ -3545,7 +3719,6 @@ html[data-active-tab="wallet"] {
   padding: 16px;
   border-radius: 16px;
   background: #151718;
-  box-shadow: 0 0 7.5px rgba(0, 0, 0, 0.85);
 }
 
 .twd-deposit-instructions__arrival-copy {
@@ -3567,8 +3740,13 @@ html[data-active-tab="wallet"] {
 .twd-deposit-instructions__arrival-subtitle {
   margin: 0;
   font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+
+.twd-deposit-instructions__arrival-subtitle-highlight {
   font-weight: 600;
-  line-height: normal;
   color: #5ac47d;
 }
 
@@ -3583,18 +3761,20 @@ html[data-active-tab="wallet"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 0;
   padding-bottom: 0;
+  margin-top: 20px;
 }
 
 .twd-deposit-instructions__help-illu {
   width: 100px;
   height: auto;
   display: block;
+  margin-bottom: 12px;
 }
 
 .twd-deposit-instructions__help-title {
-  margin: 0 0 16px;
+  margin: 0 0 24px;
   width: 100%;
   font-size: 18px;
   font-weight: 700;
@@ -3608,6 +3788,7 @@ html[data-active-tab="wallet"] {
   border-radius: 16px;
   background: #151718;
   overflow: hidden;
+  margin-bottom: 16px;
 }
 
 .twd-deposit-instructions__help-item {
@@ -3684,7 +3865,7 @@ html[data-active-tab="wallet"] {
 }
 
 .phone-container h1.twd-deposit-instructions__title {
-  margin: 0 0 24px;
+  margin: 0 0 32px;
   font-size: 22px;
   font-weight: 700;
   line-height: normal;
@@ -3698,7 +3879,7 @@ html[data-active-tab="wallet"] {
 }
 
 .phone-container h2.twd-deposit-instructions__help-title {
-  margin: 0 0 16px;
+  margin: 0 0 24px;
   font-weight: 700;
   color: #fff;
 }
@@ -3734,8 +3915,8 @@ html[data-active-tab="wallet"] {
 }
 
 .phone-container span.twd-first-time-deposit__consent-copy {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   line-height: normal;
   color: #fff;
 }
@@ -3775,9 +3956,9 @@ html[data-active-tab="wallet"] {
 .phone-container p.twd-deposit-instructions__arrival-subtitle {
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
-  line-height: normal;
-  color: #5ac47d;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
 }
 
 .phone-container p.twd-deposit-instructions__trust-alert-text {

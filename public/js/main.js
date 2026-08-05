@@ -7485,7 +7485,7 @@
         account: "1234 5678 9012 3456",
         branch: "營業部 (0012)",
         accountName: "凱基受託鏈科信託財產專戶",
-        note: "This is XREX's trust account at KGI Bank.",
+        note: "This is XREX's trust account at<br />KGI Bank.",
         remainingLimit: "2,000,000.00",
       },
       fareastern: {
@@ -7493,7 +7493,7 @@
         account: "1032 1695 1918 2206",
         branch: "營業部 (0012)",
         accountName: "遠銀受託鏈科信託財產專戶",
-        note: "This is XREX's trust account at Far Eastern Bank.",
+        note: "This is XREX's trust account at<br />Far Eastern Bank.",
         remainingLimit: "2,000,000.00",
       },
     };
@@ -7684,7 +7684,7 @@
             null,
           ];
           if (index === 2) {
-            el.innerHTML = `<span class="twd-first-time-deposit__card-desc-highlight">${tr("No fee.")}</span> ${tr("We'll notify you when it lands.")}`;
+            el.innerHTML = `<span class="twd-first-time-deposit__card-desc-highlight">${tr("No deposit fee.")}</span> ${tr("We'll notify you when it lands.")}`;
             return;
           }
           if (keys[index]) el.textContent = tr(keys[index]);
@@ -7693,10 +7693,16 @@
         ?.querySelectorAll(".twd-first-time-deposit__card-title")
         .forEach((el, index) => {
           if (index === 0) return;
+          if (index === 2) {
+            el.innerHTML = tr(
+              "Usually arrives instant ~<br />within 1 hour after sending",
+            );
+            return;
+          }
           const keys = [
             null,
             "Use online banking or an ATM",
-            "Usually arrives within an hour",
+            null,
           ];
           if (keys[index]) el.textContent = tr(keys[index]);
         });
@@ -7770,7 +7776,7 @@
         instructionsEls.trustAccountName.textContent = trust.accountName;
       }
       if (instructionsEls.trustNote) {
-        instructionsEls.trustNote.textContent = tr(trust.note);
+        instructionsEls.trustNote.innerHTML = tr(trust.note);
       }
       if (instructionsPanel) {
         instructionsPanel.setAttribute("aria-label", tr("How to deposit TWD"));
@@ -7820,17 +7826,15 @@
         ".twd-deposit-instructions__arrival-title",
       );
       if (arrivalTitle) {
-        arrivalTitle.textContent = tr(
-          "Usually arrives instant · within 1 hour after sending",
+        arrivalTitle.innerHTML = tr(
+          "Usually arrives instant ~<br />within 1 hour after sending",
         );
       }
       const arrivalSubtitle = instructionsPanel?.querySelector(
         ".twd-deposit-instructions__arrival-subtitle",
       );
       if (arrivalSubtitle) {
-        arrivalSubtitle.textContent = tr(
-          "No fee. We'll notify you when it lands.",
-        );
+        arrivalSubtitle.innerHTML = `<span class="twd-deposit-instructions__arrival-subtitle-highlight">${tr("No deposit fee.")}</span> ${tr("We'll notify you when it lands.")}`;
       }
       const helpTitle = instructionsPanel?.querySelector(
         ".twd-deposit-instructions__help-title",
@@ -8014,6 +8018,115 @@
       setPanelOpen(selectPanel, true);
     };
 
+    const initTwdDepositGuidePanel = () => {
+      const panelEl = document.querySelector("[data-twd-deposit-guide-panel]");
+      if (!panelEl) return { open: () => {}, close: () => {} };
+
+      const titleEl = panelEl.querySelector("[data-twd-deposit-guide-title]");
+      const descEl = panelEl.querySelector("[data-twd-deposit-guide-desc]");
+      const visualEl = panelEl.querySelector("[data-twd-deposit-guide-visual]");
+      const stepEls = Array.from(
+        panelEl.querySelectorAll("[data-twd-deposit-guide-step]"),
+      );
+      const backBtn = panelEl.querySelector("[data-twd-deposit-guide-back]");
+      const nextBtn = panelEl.querySelector("[data-twd-deposit-guide-next]");
+      const slides = [
+        {
+          title: "Send from your linked bank account",
+          desc: "Use online banking or an ATM from the bank account you linked to XREX.",
+          visual: "assets/gfx_firstdepo_yourbank_twd.svg",
+        },
+        {
+          title: "Send to this XREX bank account",
+          desc: "Copy the trust account details and paste them into your bank's transfer form.",
+          visual: "assets/gfx_firstdepo_methods.svg",
+        },
+        {
+          title: "When it arrives",
+          desc: "Usually arrives instant within 1 hour after sending. No deposit fee. We'll notify you when it lands.",
+          visual: "assets/gfx_firstdepo_clock.svg",
+        },
+      ];
+      let activeStep = 0;
+
+      const renderStep = () => {
+        const safe = Math.max(0, Math.min(slides.length - 1, activeStep));
+        activeStep = safe;
+        const slide = slides[safe];
+        if (titleEl) titleEl.textContent = tr(slide.title);
+        if (descEl) descEl.textContent = tr(slide.desc);
+        if (visualEl && slide.visual) visualEl.setAttribute("src", slide.visual);
+        stepEls.forEach((el, idx) =>
+          el.classList.toggle("is-active", idx === safe),
+        );
+        if (backBtn) {
+          backBtn.hidden = false;
+          backBtn.disabled = false;
+          backBtn.textContent =
+            safe === 0 ? tr("Cancel") : tr("Back");
+        }
+        if (nextBtn) {
+          nextBtn.textContent =
+            safe === slides.length - 1 ? tr("Done") : tr("Next");
+        }
+      };
+
+      const open = () => {
+        activeStep = 0;
+        renderStep();
+        panelEl.hidden = false;
+        requestAnimationFrame(() => panelEl.classList.add("is-open"));
+      };
+
+      const close = (opts = {}) => {
+        if (opts.instant) {
+          panelEl.classList.remove("is-open");
+          panelEl.hidden = true;
+          return;
+        }
+        panelEl.classList.remove("is-open");
+        const onEnd = () => {
+          if (!panelEl.classList.contains("is-open")) panelEl.hidden = true;
+          panelEl.removeEventListener("transitionend", onEnd);
+        };
+        panelEl.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 380);
+      };
+
+      backBtn?.addEventListener("click", () => {
+        if (activeStep <= 0) {
+          close();
+          return;
+        }
+        activeStep -= 1;
+        renderStep();
+      });
+      nextBtn?.addEventListener("click", () => {
+        if (activeStep >= slides.length - 1) {
+          close();
+          return;
+        }
+        activeStep += 1;
+        renderStep();
+      });
+      panelEl
+        .querySelectorAll("[data-twd-deposit-guide-close]")
+        .forEach((btn) => btn.addEventListener("click", () => close()));
+      panelEl
+        .querySelector(".twd-deposit-guide-panel__help")
+        ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+      document.addEventListener("prototype-locale-changed", () => {
+        if (panelEl.classList.contains("is-open") && !panelEl.hidden) {
+          renderStep();
+        }
+      });
+
+      return { open, close };
+    };
+
+    const twdDepositGuidePanel = initTwdDepositGuidePanel();
+
     setupPanel
       ?.querySelector("[data-twd-deposit-setup-close]")
       ?.addEventListener("click", () => {
@@ -8077,7 +8190,7 @@
     firstTimePanel
       ?.querySelector("[data-twd-first-time-deposit-guide]")
       ?.addEventListener("click", () => {
-        openDepositInstructions({ backTarget: "first-time" });
+        twdDepositGuidePanel.open();
       });
     firstTimeEls.continueBtn?.addEventListener("click", () => {
       if (firstTimeEls.continueBtn?.disabled) return;
@@ -8097,10 +8210,20 @@
         closeAll();
         clearEntrySource();
       });
+    const showTrustFieldCopiedSnackbar = (row) => {
+      const label =
+        row
+          ?.querySelector(".twd-deposit-instructions__trust-label")
+          ?.textContent?.trim() || "";
+      showSnackbar(tr("{Label} copied to clipboard", { Label: label }), {
+        variant: "copy",
+      });
+    };
+
     instructionsPanel
       ?.querySelectorAll("[data-twd-deposit-copy]")
-      .forEach((btn) => {
-        btn.addEventListener("click", () => showSnackbar("Not in prototype"));
+      .forEach((row) => {
+        row.addEventListener("click", () => showTrustFieldCopiedSnackbar(row));
       });
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-share-all]")
@@ -8110,7 +8233,9 @@
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-walkthrough]")
-      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+      ?.addEventListener("click", () => {
+        twdDepositGuidePanel.open();
+      });
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-support]")
       ?.addEventListener("click", () => showSnackbar("Not in prototype"));
@@ -11434,11 +11559,20 @@
     let onOpenTwdCustodian = () => {};
     let onOpenUsdCustodian = () => {};
 
-    const showSnackbar = (message) => {
+    const showSnackbar = (message, opts = {}) => {
       const snackbar = container?.querySelector("[data-snackbar]");
       if (!snackbar) return;
       const text = snackbar.querySelector("[data-snackbar-text]");
+      const iconImg = snackbar.querySelector(".snackbar__icon img");
       if (text) text.textContent = message;
+      if (iconImg) {
+        iconImg.src =
+          opts.variant === "success"
+            ? "assets/icon_success_screen.svg"
+            : opts.variant === "copy"
+              ? "assets/icon_deposit_copy.svg"
+              : "assets/icon_info_circle_blue.svg";
+      }
       if (snackbarTimeout) {
         clearTimeout(snackbarTimeout);
         snackbarTimeout = null;

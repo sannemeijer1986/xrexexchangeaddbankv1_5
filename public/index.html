@@ -4250,6 +4250,7 @@
                             <p class="twd-first-time-deposit__card-desc">Money from any other account is returned, sometimes with a fee.</p>
                         </div>
                     </article>
+                    <div class="twd-first-time-deposit__card-divider" aria-hidden="true"></div>
                     <article class="twd-first-time-deposit__card">
                         <img class="twd-first-time-deposit__card-icon" src="assets/gfx_firstdepo_methods.svg" alt="" width="48" height="48" aria-hidden="true" />
                         <div class="twd-first-time-deposit__card-copy">
@@ -4257,17 +4258,18 @@
                             <p class="twd-first-time-deposit__card-desc">Don&rsquo;t use counter transfers, Taiwan Pay, LINE Pay, JKoPay, they can&rsquo;t reach us and will be returned.</p>
                         </div>
                     </article>
+                    <div class="twd-first-time-deposit__card-divider" aria-hidden="true"></div>
                     <article class="twd-first-time-deposit__card">
                         <img class="twd-first-time-deposit__card-icon" src="assets/gfx_firstdepo_clock.svg" alt="" width="48" height="48" aria-hidden="true" />
                         <div class="twd-first-time-deposit__card-copy">
-                            <p class="twd-first-time-deposit__card-title">Usually arrives within an hour</p>
-                            <p class="twd-first-time-deposit__card-desc"><span class="twd-first-time-deposit__card-desc-highlight">No fee.</span> We&rsquo;ll notify you when it lands.</p>
+                            <p class="twd-first-time-deposit__card-title">Usually arrives instant ~<br />within 1 hour after sending</p>
+                            <p class="twd-first-time-deposit__card-desc"><span class="twd-first-time-deposit__card-desc-highlight">No deposit fee.</span> We&rsquo;ll notify you when it lands.</p>
                         </div>
                     </article>
                 </div>
                 <button class="twd-first-time-deposit__guide-link" type="button" data-twd-first-time-deposit-guide>
                     <span>See step-by-step guide</span>
-                    <img src="assets/icon_firstdedposit_chevron.svg" alt="" width="20" height="20" aria-hidden="true" />
+                    <img src="assets/icon_deposit_chevronblue.svg" alt="" width="20" height="20" aria-hidden="true" />
                 </button>
                 </div>
                 <footer class="twd-first-time-deposit__footer">
@@ -4289,7 +4291,7 @@
                     <button class="twd-deposit-instructions__icon-btn" type="button" data-twd-deposit-instructions-back aria-label="Back">
                         <img src="assets/icon_back.svg" alt="" width="24" height="24" />
                     </button>
-                    <p class="twd-deposit-instructions__header-title" data-twd-deposit-instructions-header-title aria-hidden="true">How to deposit TWD</p>
+                    <span class="twd-deposit-instructions__header-title" data-twd-deposit-instructions-header-title aria-hidden="true">How to deposit TWD</span>
                 </div>
                 <button class="twd-deposit-instructions__icon-btn twd-deposit-instructions__icon-btn--support" type="button" aria-label="Support">
                     <img src="assets/icon_intercom.svg" alt="" width="24" height="24" />
@@ -4328,52 +4330,44 @@
                     </div>
                     <div class="twd-deposit-instructions__trust-card">
                         <div class="twd-deposit-instructions__trust-rows">
-                            <div class="twd-deposit-instructions__trust-row">
+                            <button class="twd-deposit-instructions__trust-row" type="button" data-twd-deposit-copy="bank" aria-label="Copy bank">
                                 <div class="twd-deposit-instructions__trust-field">
                                     <span class="twd-deposit-instructions__trust-label">Bank</span>
                                     <span class="twd-deposit-instructions__trust-value" data-twd-deposit-instructions-trust-bank>遠東商銀 (805)</span>
                                 </div>
-                                <button class="twd-deposit-instructions__copy-btn" type="button" data-twd-deposit-copy="bank" aria-label="Copy bank">
-                                    <img src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
-                                </button>
-                            </div>
+                                <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
+                            </button>
                             <div class="twd-deposit-instructions__trust-divider" aria-hidden="true"></div>
-                            <div class="twd-deposit-instructions__trust-row">
+                            <button class="twd-deposit-instructions__trust-row" type="button" data-twd-deposit-copy="account" aria-label="Copy account number">
                                 <div class="twd-deposit-instructions__trust-field">
                                     <span class="twd-deposit-instructions__trust-label">Account No.</span>
                                     <span class="twd-deposit-instructions__trust-value twd-deposit-instructions__trust-value--account" data-twd-deposit-instructions-trust-account>1032 1695 1918 2206</span>
                                 </div>
-                                <button class="twd-deposit-instructions__copy-btn" type="button" data-twd-deposit-copy="account" aria-label="Copy account number">
-                                    <img src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
-                                </button>
-                            </div>
+                                <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
+                            </button>
                             <div class="twd-deposit-instructions__trust-divider" aria-hidden="true"></div>
-                            <div class="twd-deposit-instructions__trust-row">
+                            <button class="twd-deposit-instructions__trust-row" type="button" data-twd-deposit-copy="branch" aria-label="Copy branch">
                                 <div class="twd-deposit-instructions__trust-field">
                                     <span class="twd-deposit-instructions__trust-label">Branch</span>
                                     <span class="twd-deposit-instructions__trust-value" data-twd-deposit-instructions-trust-branch>營業部 (0012)</span>
                                 </div>
-                                <button class="twd-deposit-instructions__copy-btn" type="button" data-twd-deposit-copy="branch" aria-label="Copy branch">
-                                    <img src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
-                                </button>
-                            </div>
+                                <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
+                            </button>
                             <div class="twd-deposit-instructions__trust-divider" aria-hidden="true"></div>
-                            <div class="twd-deposit-instructions__trust-row">
+                            <button class="twd-deposit-instructions__trust-row" type="button" data-twd-deposit-copy="accountName" aria-label="Copy account name">
                                 <div class="twd-deposit-instructions__trust-field">
                                     <span class="twd-deposit-instructions__trust-label">Account name</span>
                                     <span class="twd-deposit-instructions__trust-value" data-twd-deposit-instructions-trust-account-name>遠銀受託鏈科信託財產專戶</span>
                                 </div>
-                                <button class="twd-deposit-instructions__copy-btn" type="button" data-twd-deposit-copy="accountName" aria-label="Copy account name">
-                                    <img src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
-                                </button>
-                            </div>
+                                <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
+                            </button>
                         </div>
                         <div class="twd-deposit-instructions__trust-alert" role="note">
-                            <img class="twd-deposit-instructions__trust-alert-icon" src="assets/icon_info_circle_blue.svg" alt="" width="16" height="16" aria-hidden="true" />
-                            <p class="twd-deposit-instructions__trust-alert-text" data-twd-deposit-instructions-trust-note>This is XREX&rsquo;s trust account at Far Eastern Bank.</p>
+                            <img class="twd-deposit-instructions__trust-alert-icon" src="assets/icon_deposit_info.svg" alt="" width="16" height="16" aria-hidden="true" />
+                            <p class="twd-deposit-instructions__trust-alert-text" data-twd-deposit-instructions-trust-note>This is XREX&rsquo;s trust account at<br />Far Eastern Bank.</p>
                         </div>
                         <button class="twd-deposit-instructions__share-btn" type="button" data-twd-deposit-instructions-share-all>
-                            <img src="assets/icon_share_white.svg" alt="" width="20" height="20" aria-hidden="true" />
+                            <img src="assets/icon_deposit_share.svg" alt="" width="20" height="20" aria-hidden="true" />
                             <span>Share / Copy all details</span>
                         </button>
                     </div>
@@ -4385,8 +4379,8 @@
                     </div>
                     <div class="twd-deposit-instructions__arrival-card">
                         <div class="twd-deposit-instructions__arrival-copy">
-                            <p class="twd-deposit-instructions__arrival-title">Usually arrives instant · within 1 hour after sending</p>
-                            <p class="twd-deposit-instructions__arrival-subtitle">No fee. We&rsquo;ll notify you when it lands.</p>
+                            <p class="twd-deposit-instructions__arrival-title">Usually arrives instant ~<br />within 1 hour after sending</p>
+                            <p class="twd-deposit-instructions__arrival-subtitle"><span class="twd-deposit-instructions__arrival-subtitle-highlight">No deposit fee.</span> We&rsquo;ll notify you when it lands.</p>
                         </div>
                         <img class="twd-deposit-instructions__arrival-icon" src="assets/gfx_firstdepo_clock.svg" alt="" width="48" height="48" aria-hidden="true" />
                     </div>
@@ -4401,7 +4395,7 @@
                                 <span class="twd-deposit-instructions__help-item-title">Walk me through it</span>
                                 <span class="twd-deposit-instructions__help-item-desc">See step-by-step guide</span>
                             </span>
-                            <img class="twd-deposit-instructions__help-item-chevron" src="assets/icon_firstdedposit_chevron.svg" alt="" width="20" height="20" aria-hidden="true" />
+                            <img class="twd-deposit-instructions__help-item-chevron" src="assets/icon_deposit_chevronwhite.svg" alt="" width="20" height="20" aria-hidden="true" />
                         </button>
                         <div class="twd-deposit-instructions__help-divider" aria-hidden="true"></div>
                         <button class="twd-deposit-instructions__help-item" type="button" data-twd-deposit-instructions-support>
@@ -4410,7 +4404,7 @@
                                 <span class="twd-deposit-instructions__help-item-title">Contact live support</span>
                                 <span class="twd-deposit-instructions__help-item-desc">We are happy to help you</span>
                             </span>
-                            <img class="twd-deposit-instructions__help-item-chevron" src="assets/icon_firstdedposit_chevron.svg" alt="" width="20" height="20" aria-hidden="true" />
+                            <img class="twd-deposit-instructions__help-item-chevron" src="assets/icon_deposit_chevronwhite.svg" alt="" width="20" height="20" aria-hidden="true" />
                         </button>
                     </div>
                 </section>
@@ -4418,6 +4412,37 @@
                     <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-twd-deposit-instructions-back-footer>Back</button>
                     <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-twd-deposit-instructions-done>Done</button>
                 </footer>
+            </div>
+        </section>
+
+        <section class="twd-deposit-guide-panel" data-twd-deposit-guide-panel hidden aria-label="TWD deposit guide">
+            <div class="twd-deposit-guide-panel__header">
+                <button class="twd-deposit-guide-panel__close" type="button" data-twd-deposit-guide-close aria-label="Close">
+                    <img src="assets/icon_close.svg" alt="" width="24" height="24" />
+                </button>
+                <div class="twd-deposit-guide-panel__stepper" aria-hidden="true">
+                    <span class="twd-deposit-guide-panel__step is-active" data-twd-deposit-guide-step="1"></span>
+                    <span class="twd-deposit-guide-panel__step" data-twd-deposit-guide-step="2"></span>
+                    <span class="twd-deposit-guide-panel__step" data-twd-deposit-guide-step="3"></span>
+                </div>
+                <button class="twd-deposit-guide-panel__help" type="button" aria-label="Support">
+                    <img src="assets/icon_intercom.svg" alt="" width="24" height="24" />
+                </button>
+            </div>
+            <div class="twd-deposit-guide-panel__body">
+                <div class="twd-deposit-guide-panel__visual" aria-hidden="true">
+                    <img class="twd-deposit-guide-panel__visual-img" data-twd-deposit-guide-visual src="assets/gfx_firstdepo_yourbank_twd.svg" alt="" />
+                </div>
+                <div class="twd-deposit-guide-panel__copy">
+                    <h2 class="twd-deposit-guide-panel__title" data-twd-deposit-guide-title></h2>
+                    <p class="twd-deposit-guide-panel__desc" data-twd-deposit-guide-desc></p>
+                </div>
+            </div>
+            <div class="twd-deposit-guide-panel__footer">
+                <button class="twd-deposit-guide-panel__btn twd-deposit-guide-panel__btn--secondary"
+                    type="button" data-twd-deposit-guide-back>Back</button>
+                <button class="twd-deposit-guide-panel__btn twd-deposit-guide-panel__btn--primary"
+                    type="button" data-twd-deposit-guide-next>Next</button>
             </div>
         </section>
 
@@ -9340,7 +9365,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                     <label class="build-badge__checkbox">
                         <input type="checkbox" data-prototype-first-time-deposit
                             aria-label="First-time deposit completed" />
-                        <span>First-time deposit</span>
+                        <span>Deposit instructions reached</span>
                     </label>
                 </div>
             </div>
