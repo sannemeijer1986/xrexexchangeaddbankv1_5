@@ -2940,6 +2940,800 @@ html[data-active-tab=wallet] .app-header__top {
   color: #9b9c9c;
 }
 
+.twd-first-time-deposit,
+.twd-deposit-instructions {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: #0d0e0f;
+  z-index: 2175;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+  overflow: hidden;
+}
+
+.twd-deposit-instructions {
+  z-index: 2180;
+}
+
+.twd-first-time-deposit.is-open,
+.twd-deposit-instructions.is-open {
+  transform: translateX(0);
+}
+
+.twd-first-time-deposit.is-instant,
+.twd-deposit-instructions.is-instant {
+  transition: none !important;
+}
+
+.twd-first-time-deposit__header,
+.twd-deposit-instructions__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 16px 16px;
+  flex-shrink: 0;
+}
+
+.twd-deposit-instructions__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.twd-deposit-instructions__header-left {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.twd-deposit-instructions__header-title {
+  margin: 0;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.twd-deposit-instructions__header.is-title-visible .twd-deposit-instructions__header-title {
+  opacity: 1;
+}
+
+.twd-first-time-deposit__icon-btn,
+.twd-deposit-instructions__icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.twd-first-time-deposit__icon-btn img,
+.twd-deposit-instructions__icon-btn img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.twd-first-time-deposit__icon-btn--support {
+  margin-left: auto;
+}
+
+.twd-first-time-deposit__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.twd-first-time-deposit__body::-webkit-scrollbar {
+  display: none;
+}
+
+.twd-first-time-deposit__scroll,
+.twd-deposit-instructions__scroll {
+  flex: 1 0 auto;
+  padding: 4px 16px 0;
+}
+
+.twd-deposit-instructions__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 16px 24px;
+  -webkit-overflow-scrolling: touch;
+}
+.twd-deposit-instructions__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.twd-first-time-deposit__title {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-deposit-instructions__title {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-first-time-deposit__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.twd-first-time-deposit__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #151718;
+}
+
+.twd-first-time-deposit__card-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-first-time-deposit__card-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.twd-first-time-deposit__card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-first-time-deposit__card-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+
+.twd-first-time-deposit__card-desc-highlight {
+  font-weight: 600;
+  color: #5ac47d;
+}
+
+.twd-first-time-deposit__guide-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  width: 100%;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.twd-first-time-deposit__guide-link span {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+}
+.twd-first-time-deposit__guide-link img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  transform: rotate(180deg);
+}
+
+.twd-first-time-deposit__footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: auto;
+  padding: 16px;
+}
+
+.twd-first-time-deposit__consent-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+}
+
+.twd-first-time-deposit__consent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.twd-first-time-deposit__consent-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-first-time-deposit__consent-copy {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-first-time-deposit__consent-highlight {
+  color: #5ac47d;
+}
+
+.twd-first-time-deposit__consent-hint {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+.twd-first-time-deposit__consent-hint--checked {
+  color: #58595a;
+}
+
+.twd-first-time-deposit__continue {
+  width: 100%;
+  height: 48px;
+}
+.twd-first-time-deposit__continue:disabled {
+  background: #081b68;
+  color: #58595a;
+  cursor: not-allowed;
+}
+
+.twd-deposit-instructions__step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.twd-deposit-instructions__step-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.twd-deposit-instructions__step-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #1f4caf;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.twd-deposit-instructions__step-title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-deposit-instructions__linked-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #151718;
+  box-shadow: 0 0 7.5px rgba(0, 0, 0, 0.85);
+}
+
+.twd-deposit-instructions__linked-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-deposit-instructions__linked-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+}
+
+.twd-deposit-instructions__linked-bank {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.twd-deposit-instructions__linked-account {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.twd-deposit-instructions__linked-method {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5ac47d;
+}
+
+.twd-deposit-instructions__verified-tag {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+
+.twd-deposit-instructions__limit-card {
+  padding: 20px 16px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(8, 27, 104, 0.25) 0%, rgba(8, 27, 104, 0.25) 100%), #151718;
+}
+
+.twd-deposit-instructions__limit-card-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.twd-deposit-instructions__limit-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.twd-deposit-instructions__limit-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.twd-deposit-instructions__limit-amount {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-deposit-instructions__limit-link {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.twd-deposit-instructions__trust-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(8, 27, 104, 0.25) 0%, rgba(8, 27, 104, 0.25) 100%), #151718;
+}
+
+.twd-deposit-instructions__trust-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.twd-deposit-instructions__trust-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.twd-deposit-instructions__trust-field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.twd-deposit-instructions__trust-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.twd-deposit-instructions__trust-value {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+  word-break: break-word;
+}
+
+.twd-deposit-instructions__trust-value--account {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.twd-deposit-instructions__trust-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.twd-deposit-instructions__copy-btn {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.twd-deposit-instructions__copy-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.twd-deposit-instructions__trust-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.twd-deposit-instructions__trust-alert-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: block;
+}
+
+.twd-deposit-instructions__trust-alert-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.twd-deposit-instructions__share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  margin-top: 16px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: #275cfd;
+  cursor: pointer;
+  align-self: center;
+}
+.twd-deposit-instructions__share-btn span {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+}
+.twd-deposit-instructions__share-btn img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.twd-deposit-instructions__arrival-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #151718;
+  box-shadow: 0 0 7.5px rgba(0, 0, 0, 0.85);
+}
+
+.twd-deposit-instructions__arrival-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.twd-deposit-instructions__arrival-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-deposit-instructions__arrival-subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+
+.twd-deposit-instructions__arrival-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-deposit-instructions__help {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 0;
+}
+
+.twd-deposit-instructions__help-illu {
+  width: 100px;
+  height: auto;
+  display: block;
+}
+
+.twd-deposit-instructions__help-title {
+  margin: 0 0 16px;
+  width: 100%;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+  text-align: center;
+}
+
+.twd-deposit-instructions__help-list {
+  width: 100%;
+  border-radius: 16px;
+  background: #151718;
+  overflow: hidden;
+}
+
+.twd-deposit-instructions__help-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.twd-deposit-instructions__help-item-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-deposit-instructions__help-item-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.twd-deposit-instructions__help-item-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+}
+
+.twd-deposit-instructions__help-item-desc {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.twd-deposit-instructions__help-item-chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.twd-deposit-instructions__help-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.twd-deposit-instructions__footer {
+  display: flex;
+  gap: 16px;
+  padding: 24px 0 16px;
+  margin-top: 8px;
+}
+.twd-deposit-instructions__footer .schedule-time-sheet__btn {
+  flex: 1;
+  height: 48px;
+}
+
+.phone-container h1.twd-first-time-deposit__title {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container h1.twd-deposit-instructions__title {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container h2.twd-deposit-instructions__step-title {
+  margin: 0;
+  font-weight: 700;
+  color: #fff;
+}
+
+.phone-container h2.twd-deposit-instructions__help-title {
+  margin: 0 0 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.phone-container p.twd-first-time-deposit__card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container p.twd-first-time-deposit__card-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+}
+
+.phone-container p.twd-first-time-deposit__consent-hint {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
+  text-align: center;
+}
+.phone-container p.twd-first-time-deposit__consent-hint.twd-first-time-deposit__consent-hint--checked {
+  color: #58595a;
+}
+
+.phone-container span.twd-first-time-deposit__consent-copy {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container p.twd-deposit-instructions__linked-bank {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container p.twd-deposit-instructions__linked-account {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container p.twd-deposit-instructions__linked-method {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+
+.phone-container p.twd-deposit-instructions__arrival-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container p.twd-deposit-instructions__arrival-subtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+
+.phone-container p.twd-deposit-instructions__trust-alert-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
 .fiat-flow-placeholder {
   position: absolute;
   inset: 0;

@@ -367,6 +367,7 @@
     currency,
     mode,
     openFiatFlowPlaceholder,
+    openTwdDepositFlow,
     openBankAccountUnderReviewSheet,
     openBankAccountRejectedSheet,
   }) => {
@@ -374,6 +375,14 @@
 
     const normalizedMode = mode === "send" ? "send" : "add";
     if (isBankAccountVerified(currency)) {
+      if (
+        currency === "twd" &&
+        normalizedMode === "add" &&
+        typeof openTwdDepositFlow === "function"
+      ) {
+        openTwdDepositFlow();
+        return true;
+      }
       openFiatFlowPlaceholder?.open?.({ currency, mode: normalizedMode });
       return true;
     }
@@ -529,6 +538,62 @@
     if (!input) return true;
     return Boolean(input.checked);
   };
+
+  const PROTOTYPE_FIRST_TIME_DEPOSIT_STORAGE_KEY =
+    "xrex-prototype-twd-first-time-deposit-completed";
+
+  const getPrototypeFirstTimeDepositCompleted = () => {
+    const input = document.querySelector("[data-prototype-first-time-deposit]");
+    if (input instanceof HTMLInputElement) {
+      if (!input.checked) return false;
+      return true;
+    }
+    try {
+      return (
+        window.localStorage?.getItem(PROTOTYPE_FIRST_TIME_DEPOSIT_STORAGE_KEY) ===
+        "1"
+      );
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const syncPrototypeFirstTimeDepositCheckbox = () => {
+    const input = document.querySelector("[data-prototype-first-time-deposit]");
+    if (!(input instanceof HTMLInputElement)) return;
+    try {
+      input.checked =
+        window.localStorage?.getItem(PROTOTYPE_FIRST_TIME_DEPOSIT_STORAGE_KEY) ===
+        "1";
+    } catch (_) {
+      input.checked = false;
+    }
+  };
+
+  const setPrototypeFirstTimeDepositCompleted = () => {
+    try {
+      window.localStorage?.setItem(
+        PROTOTYPE_FIRST_TIME_DEPOSIT_STORAGE_KEY,
+        "1",
+      );
+    } catch (_) {
+      // ignore storage errors
+    }
+    const input = document.querySelector("[data-prototype-first-time-deposit]");
+    if (input instanceof HTMLInputElement) input.checked = true;
+  };
+
+  const clearPrototypeFirstTimeDepositCompleted = () => {
+    try {
+      window.localStorage?.removeItem(PROTOTYPE_FIRST_TIME_DEPOSIT_STORAGE_KEY);
+    } catch (_) {
+      // ignore storage errors
+    }
+  };
+
+  const shouldShowTwdFirstTimeDeposit = () =>
+    getPrototypeRegion() === "taiwan" &&
+    !getPrototypeFirstTimeDepositCompleted();
 
   const shouldShowFirstTimeApplyCustodianSheet = () =>
     getPrototypeFirstTimeApplyCustodian() &&
@@ -6531,7 +6596,9 @@
         };
         if (
           !isFiatFlowPanelOpen("[data-twd-deposit-setup]") &&
-          !isFiatFlowPanelOpen("[data-twd-deposit-select]")
+          !isFiatFlowPanelOpen("[data-twd-deposit-select]") &&
+          !isFiatFlowPanelOpen("[data-twd-first-time-deposit]") &&
+          !isFiatFlowPanelOpen("[data-twd-deposit-instructions]")
         ) {
           twdDepositApi?.clearEntrySource?.();
         }
@@ -7395,7 +7462,11 @@
   } = {}) => {
     const setupPanel = document.querySelector("[data-twd-deposit-setup]");
     const selectPanel = document.querySelector("[data-twd-deposit-select]");
-    if (!setupPanel && !selectPanel) {
+    const firstTimePanel = document.querySelector("[data-twd-first-time-deposit]");
+    const instructionsPanel = document.querySelector(
+      "[data-twd-deposit-instructions]",
+    );
+    if (!setupPanel && !selectPanel && !firstTimePanel && !instructionsPanel) {
       return {
         openFromAddSend: () => {},
         openSelect: () => {},
@@ -7407,6 +7478,78 @@
         refreshSelectPanelIfOpen: () => {},
       };
     }
+
+    const TWD_DEPOSIT_TRUST_ACCOUNTS = {
+      kgi: {
+        bank: "凱基商銀 (809)",
+        account: "1234 5678 9012 3456",
+        branch: "營業部 (0012)",
+        accountName: "凱基受託鏈科信託財產專戶",
+        note: "This is XREX's trust account at KGI Bank.",
+        remainingLimit: "2,000,000.00",
+      },
+      fareastern: {
+        bank: "遠東商銀 (805)",
+        account: "1032 1695 1918 2206",
+        branch: "營業部 (0012)",
+        accountName: "遠銀受託鏈科信託財產專戶",
+        note: "This is XREX's trust account at Far Eastern Bank.",
+        remainingLimit: "2,000,000.00",
+      },
+    };
+
+    const firstTimeEls = {
+      cardBankTitle: firstTimePanel?.querySelector(
+        "[data-twd-first-time-card-bank-title]",
+      ),
+      consentBtn: firstTimePanel?.querySelector(
+        "[data-twd-first-time-deposit-consent]",
+      ),
+      consentCopy: firstTimePanel?.querySelector(
+        "[data-twd-first-time-deposit-consent-copy]",
+      ),
+      consentHint: firstTimePanel?.querySelector(
+        "[data-twd-first-time-deposit-hint]",
+      ),
+      continueBtn: firstTimePanel?.querySelector(
+        "[data-twd-first-time-deposit-continue]",
+      ),
+    };
+
+    const instructionsEls = {
+      bankName: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-bank-name]",
+      ),
+      bankAccount: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-bank-account]",
+      ),
+      remainingLimit: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-remaining-limit]",
+      ),
+      trustBank: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-trust-bank]",
+      ),
+      trustAccount: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-trust-account]",
+      ),
+      trustBranch: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-trust-branch]",
+      ),
+      trustAccountName: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-trust-account-name]",
+      ),
+      trustNote: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-trust-note]",
+      ),
+      header: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-header]",
+      ),
+      headerTitle: instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-header-title]",
+      ),
+      scroll: instructionsPanel?.querySelector(".twd-deposit-instructions__scroll"),
+      pageTitle: instructionsPanel?.querySelector(".twd-deposit-instructions__title"),
+    };
 
     const TWD_FIAT_SELECT_COPY = {
       add: {
@@ -7422,7 +7565,17 @@
     };
 
     let entrySource = null;
+    let instructionsBackTarget = "select";
+    let firstTimeConsentChecked = false;
     const hasTwdBank = () => (states.twdBankAccount ?? 1) >= 2;
+
+    const getTwdDepositTrustAccount = () => {
+      const proto =
+        document.documentElement.dataset.prototypeTwdCustodianActive ||
+        "kgi-active";
+      const key = proto === "feb-active" ? "fareastern" : "kgi";
+      return TWD_DEPOSIT_TRUST_ACCOUNTS[key];
+    };
 
     const setPanelOpen = (panel, nextOpen, opts = {}) => {
       if (!panel) return;
@@ -7475,8 +7628,309 @@
       );
     };
 
+    const syncFirstTimeDepositUi = () => {
+      const bankData = getLinkedBankAccountSheetData("twd");
+      const destination = formatWithdrawDestinationLabel(bankData.bankName);
+      if (firstTimeEls.cardBankTitle) {
+        firstTimeEls.cardBankTitle.textContent = tr(
+          "Send only from your {destination}",
+          { destination },
+        );
+      }
+      if (firstTimeEls.consentCopy) {
+        const marker = "{{DESTINATION}}";
+        const consentTemplate = tr(
+          "I'll send from {destination} using {onlineBanking} or {atm} only",
+          {
+            destination: marker,
+            onlineBanking: "{{ONLINE}}",
+            atm: "{{ATM}}",
+          },
+        );
+        const escapedDestination = String(destination)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+        const onlineLabel = tr("online banking");
+        const atmLabel = tr("ATM");
+        firstTimeEls.consentCopy.innerHTML = consentTemplate
+          .replace(
+            marker,
+            `<span class="twd-first-time-deposit__consent-highlight">${escapedDestination}</span>`,
+          )
+          .replace(
+            "{{ONLINE}}",
+            `<span class="twd-first-time-deposit__consent-highlight">${onlineLabel}</span>`,
+          )
+          .replace(
+            "{{ATM}}",
+            `<span class="twd-first-time-deposit__consent-highlight">${atmLabel}</span>`,
+          );
+      }
+      if (firstTimePanel) {
+        firstTimePanel.setAttribute("aria-label", tr("Before depositing TWD"));
+      }
+      const titleEl = firstTimePanel?.querySelector(
+        ".twd-first-time-deposit__title",
+      );
+      if (titleEl) titleEl.textContent = tr("Before depositing TWD");
+      firstTimePanel
+        ?.querySelectorAll(".twd-first-time-deposit__card-desc")
+        .forEach((el, index) => {
+          const keys = [
+            "Money from any other account is returned, sometimes with a fee.",
+            "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, they can't reach us and will be returned.",
+            null,
+          ];
+          if (index === 2) {
+            el.innerHTML = `<span class="twd-first-time-deposit__card-desc-highlight">${tr("No fee.")}</span> ${tr("We'll notify you when it lands.")}`;
+            return;
+          }
+          if (keys[index]) el.textContent = tr(keys[index]);
+        });
+      firstTimePanel
+        ?.querySelectorAll(".twd-first-time-deposit__card-title")
+        .forEach((el, index) => {
+          if (index === 0) return;
+          const keys = [
+            null,
+            "Use online banking or an ATM",
+            "Usually arrives within an hour",
+          ];
+          if (keys[index]) el.textContent = tr(keys[index]);
+        });
+      const guideLink = firstTimePanel?.querySelector(
+        "[data-twd-first-time-deposit-guide] span",
+      );
+      if (guideLink) guideLink.textContent = tr("See step-by-step guide");
+      if (firstTimeEls.consentHint) {
+        firstTimeEls.consentHint.textContent = tr(
+          "Check the box above to continue",
+        );
+      }
+      if (firstTimeEls.continueBtn) {
+        firstTimeEls.continueBtn.textContent = tr("Show deposit instructions");
+      }
+      syncFirstTimeConsentUi();
+    };
+
+    const syncFirstTimeConsentUi = () => {
+      const icon = firstTimeEls.consentBtn?.querySelector(
+        ".twd-first-time-deposit__consent-icon",
+      );
+      if (icon) {
+        icon.src = firstTimeConsentChecked
+          ? "assets/icon_checkbox_on.svg"
+          : "assets/icon_checkbox_off.svg";
+      }
+      firstTimeEls.consentBtn?.setAttribute(
+        "aria-pressed",
+        firstTimeConsentChecked ? "true" : "false",
+      );
+      if (firstTimeEls.consentHint) {
+        firstTimeEls.consentHint.classList.toggle(
+          "twd-first-time-deposit__consent-hint--checked",
+          firstTimeConsentChecked,
+        );
+      }
+      if (firstTimeEls.continueBtn) {
+        firstTimeEls.continueBtn.disabled = !firstTimeConsentChecked;
+      }
+    };
+
+    const syncDepositInstructionsUi = () => {
+      const bankData = getLinkedBankAccountSheetData("twd");
+      const trust = getTwdDepositTrustAccount();
+      if (instructionsEls.bankName) {
+        instructionsEls.bankName.textContent = bankData.bankName;
+      }
+      if (instructionsEls.bankAccount) {
+        instructionsEls.bankAccount.textContent = WITHDRAW_PROTOTYPE_ACCOUNT_MASK;
+      }
+      if (instructionsEls.remainingLimit) {
+        instructionsEls.remainingLimit.textContent = `${trust.remainingLimit} TWD`;
+      }
+      const limitLabel = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-limit-label]",
+      );
+      if (limitLabel) {
+        limitLabel.textContent = tr("Remaining deposit limit");
+      }
+      if (instructionsEls.trustBank) {
+        instructionsEls.trustBank.textContent = trust.bank;
+      }
+      if (instructionsEls.trustAccount) {
+        instructionsEls.trustAccount.textContent = trust.account;
+      }
+      if (instructionsEls.trustBranch) {
+        instructionsEls.trustBranch.textContent = trust.branch;
+      }
+      if (instructionsEls.trustAccountName) {
+        instructionsEls.trustAccountName.textContent = trust.accountName;
+      }
+      if (instructionsEls.trustNote) {
+        instructionsEls.trustNote.textContent = tr(trust.note);
+      }
+      if (instructionsPanel) {
+        instructionsPanel.setAttribute("aria-label", tr("How to deposit TWD"));
+      }
+      const titleEl = instructionsPanel?.querySelector(
+        ".twd-deposit-instructions__title",
+      );
+      if (titleEl) titleEl.textContent = tr("How to deposit TWD");
+      if (instructionsEls.headerTitle) {
+        instructionsEls.headerTitle.textContent = tr("How to deposit TWD");
+      }
+      instructionsPanel
+        ?.querySelectorAll(".twd-deposit-instructions__step-title")
+        .forEach((el, index) => {
+          const keys = [
+            "Send from your linked bank account",
+            "Send to this XREX bank account",
+            "When it arrives",
+          ];
+          if (keys[index]) el.textContent = tr(keys[index]);
+        });
+      const linkedMethod = instructionsPanel?.querySelector(
+        ".twd-deposit-instructions__linked-method",
+      );
+      if (linkedMethod) {
+        linkedMethod.textContent = tr("Use online banking or ATM");
+      }
+      const verifiedTag = instructionsPanel?.querySelector(
+        ".twd-deposit-instructions__verified-tag",
+      );
+      if (verifiedTag) verifiedTag.textContent = tr("Verified");
+      const seeLimits = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-see-limits]",
+      );
+      if (seeLimits) seeLimits.textContent = tr("View limits");
+      instructionsPanel
+        ?.querySelectorAll(".twd-deposit-instructions__trust-label")
+        .forEach((el, index) => {
+          const keys = ["Bank", "Account No.", "Branch", "Account name"];
+          if (keys[index]) el.textContent = tr(keys[index]);
+        });
+      const shareBtn = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-share-all] span",
+      );
+      if (shareBtn) shareBtn.textContent = tr("Share / Copy all details");
+      const arrivalTitle = instructionsPanel?.querySelector(
+        ".twd-deposit-instructions__arrival-title",
+      );
+      if (arrivalTitle) {
+        arrivalTitle.textContent = tr(
+          "Usually arrives instant · within 1 hour after sending",
+        );
+      }
+      const arrivalSubtitle = instructionsPanel?.querySelector(
+        ".twd-deposit-instructions__arrival-subtitle",
+      );
+      if (arrivalSubtitle) {
+        arrivalSubtitle.textContent = tr(
+          "No fee. We'll notify you when it lands.",
+        );
+      }
+      const helpTitle = instructionsPanel?.querySelector(
+        ".twd-deposit-instructions__help-title",
+      );
+      if (helpTitle) helpTitle.textContent = tr("Not sure how to deposit?");
+      instructionsPanel
+        ?.querySelectorAll(".twd-deposit-instructions__help-item-title")
+        .forEach((el, index) => {
+          const keys = ["Walk me through it", "Contact live support"];
+          if (keys[index]) el.textContent = tr(keys[index]);
+        });
+      instructionsPanel
+        ?.querySelectorAll(".twd-deposit-instructions__help-item-desc")
+        .forEach((el, index) => {
+          const keys = [
+            "See step-by-step guide",
+            "We are happy to help you",
+          ];
+          if (keys[index]) el.textContent = tr(keys[index]);
+        });
+      const backFooter = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-back-footer]",
+      );
+      if (backFooter) backFooter.textContent = tr("Back");
+      const doneBtn = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-done]",
+      );
+      if (doneBtn) doneBtn.textContent = tr("Done");
+    };
+
+    let instructionsTitleObserver = null;
+
+    const resetDepositInstructionsScrollState = () => {
+      if (instructionsEls.scroll) instructionsEls.scroll.scrollTop = 0;
+      instructionsEls.header?.classList.remove("is-title-visible");
+    };
+
+    const teardownDepositInstructionsTitleObserver = () => {
+      instructionsTitleObserver?.disconnect();
+      instructionsTitleObserver = null;
+      resetDepositInstructionsScrollState();
+    };
+
+    const setupDepositInstructionsTitleObserver = () => {
+      const { scroll, pageTitle, header } = instructionsEls;
+      if (!scroll || !pageTitle || !header) return;
+
+      teardownDepositInstructionsTitleObserver();
+
+      instructionsTitleObserver = new IntersectionObserver(
+        ([entry]) => {
+          header.classList.toggle("is-title-visible", !entry.isIntersecting);
+        },
+        { root: scroll, threshold: 0 },
+      );
+      instructionsTitleObserver.observe(pageTitle);
+    };
+
+    const openTwdDepositDestination = ({ backTarget = "select" } = {}) => {
+      if (entrySource === "send") {
+        openFiatFlowPlaceholder?.open?.({ currency: "twd", mode: "send" });
+        return;
+      }
+      if (shouldShowTwdFirstTimeDeposit()) {
+        openFirstTimeDeposit({ backTarget });
+        return;
+      }
+      openDepositInstructions({ backTarget });
+    };
+
+    const openFirstTimeDeposit = ({ backTarget = "select" } = {}) => {
+      closeDepositInstructions({ instant: true });
+      instructionsBackTarget = backTarget;
+      firstTimeConsentChecked = false;
+      syncFirstTimeDepositUi();
+      setPanelOpen(firstTimePanel, true);
+    };
+
+    const openDepositInstructions = ({ backTarget = "select" } = {}) => {
+      instructionsBackTarget = backTarget;
+      syncDepositInstructionsUi();
+      resetDepositInstructionsScrollState();
+      setPanelOpen(instructionsPanel, true);
+      requestAnimationFrame(() => setupDepositInstructionsTitleObserver());
+    };
+
+    const closeDepositInstructions = (opts = {}) => {
+      teardownDepositInstructionsTitleObserver();
+      setPanelOpen(instructionsPanel, false, opts);
+    };
+
+    const closeDepositPanels = (opts = {}) => {
+      teardownDepositInstructionsTitleObserver();
+      setPanelOpen(firstTimePanel, false, opts);
+      setPanelOpen(instructionsPanel, false, opts);
+    };
+
     const closeAll = (opts = {}) => {
       openFiatFlowPlaceholder?.close?.({ instant: Boolean(opts.instant) });
+      closeDepositPanels(opts);
       setPanelOpen(setupPanel, false, opts);
       setPanelOpen(selectPanel, false, opts);
     };
@@ -7525,6 +7979,8 @@
           currency: "twd",
           mode: entrySource,
           openFiatFlowPlaceholder,
+          openTwdDepositFlow: () =>
+            openTwdDepositDestination({ backTarget: "direct" }),
           openBankAccountUnderReviewSheet,
           openBankAccountRejectedSheet,
         })
@@ -7540,6 +7996,22 @@
 
     const clearEntrySource = () => {
       entrySource = null;
+    };
+
+    const handleInstructionsBack = () => {
+      closeDepositInstructions();
+      if (instructionsBackTarget === "first-time") {
+        return;
+      }
+      if (instructionsBackTarget === "direct") {
+        closeAll();
+        clearEntrySource();
+        return;
+      }
+      if (isPanelOpen(firstTimePanel)) {
+        setPanelOpen(firstTimePanel, false, { instant: true });
+      }
+      setPanelOpen(selectPanel, true);
     };
 
     setupPanel
@@ -7558,7 +8030,9 @@
       ?.querySelector("[data-twd-deposit-select-close]")
       ?.addEventListener("click", () => {
         openFiatFlowPlaceholder?.close?.({ instant: true });
+        closeDepositPanels({ instant: true });
         setPanelOpen(selectPanel, false);
+        clearEntrySource();
       });
     selectPanel
       ?.querySelector("[data-twd-deposit-bank]")
@@ -7573,19 +8047,81 @@
             openBankAccountRejectedSheet?.open?.({ currency: "twd" }),
           openDetails: () => {
             if (!isBankAccountVerified("twd")) return;
-            openFiatFlowPlaceholder?.open?.({
-              currency: "twd",
-              mode: entrySource === "send" ? "send" : "add",
-            });
+            if (entrySource === "send") {
+              openFiatFlowPlaceholder?.open?.({
+                currency: "twd",
+                mode: "send",
+              });
+              return;
+            }
+            openTwdDepositDestination();
           },
         });
       });
 
-    [setupPanel, selectPanel].forEach((panel) => {
-      panel
-        ?.querySelector('[aria-label="Support"]')
-        ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    firstTimePanel
+      ?.querySelector("[data-twd-first-time-deposit-back]")
+      ?.addEventListener("click", () => {
+        setPanelOpen(firstTimePanel, false);
+        if (instructionsBackTarget === "direct") {
+          closeAll();
+          clearEntrySource();
+          return;
+        }
+        setPanelOpen(selectPanel, true);
+      });
+    firstTimeEls.consentBtn?.addEventListener("click", () => {
+      firstTimeConsentChecked = !firstTimeConsentChecked;
+      syncFirstTimeConsentUi();
     });
+    firstTimePanel
+      ?.querySelector("[data-twd-first-time-deposit-guide]")
+      ?.addEventListener("click", () => {
+        openDepositInstructions({ backTarget: "first-time" });
+      });
+    firstTimeEls.continueBtn?.addEventListener("click", () => {
+      if (firstTimeEls.continueBtn?.disabled) return;
+      setPrototypeFirstTimeDepositCompleted();
+      openDepositInstructions({ backTarget: "direct" });
+    });
+
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-back]")
+      ?.addEventListener("click", handleInstructionsBack);
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-back-footer]")
+      ?.addEventListener("click", handleInstructionsBack);
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-done]")
+      ?.addEventListener("click", () => {
+        closeAll();
+        clearEntrySource();
+      });
+    instructionsPanel
+      ?.querySelectorAll("[data-twd-deposit-copy]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => showSnackbar("Not in prototype"));
+      });
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-share-all]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-see-limits]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-walkthrough]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+    instructionsPanel
+      ?.querySelector("[data-twd-deposit-instructions-support]")
+      ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+
+    [setupPanel, selectPanel, firstTimePanel, instructionsPanel].forEach(
+      (panel) => {
+        panel
+          ?.querySelector('[aria-label="Support"]')
+          ?.addEventListener("click", () => showSnackbar("Not in prototype"));
+      },
+    );
 
     document.addEventListener("prototype-locale-changed", () => {
       if (selectPanel?.classList.contains("is-open") && !selectPanel.hidden) {
@@ -7593,7 +8129,53 @@
           entrySource === "send" || entrySource === "add" ? entrySource : "add",
         );
       }
+      if (firstTimePanel?.classList.contains("is-open") && !firstTimePanel.hidden) {
+        syncFirstTimeDepositUi();
+      }
+      if (
+        instructionsPanel?.classList.contains("is-open") &&
+        !instructionsPanel.hidden
+      ) {
+        syncDepositInstructionsUi();
+      }
     });
+
+    document
+      .querySelector("[data-prototype-first-time-deposit]")
+      ?.addEventListener("change", (event) => {
+        const input = event.target;
+        if (!(input instanceof HTMLInputElement)) return;
+        if (!input.checked) {
+          clearPrototypeFirstTimeDepositCompleted();
+          if (
+            instructionsPanel?.classList.contains("is-open") &&
+            !instructionsPanel.hidden
+          ) {
+            closeDepositInstructions({ instant: true });
+            if (!isPanelOpen(firstTimePanel)) {
+              openFirstTimeDeposit({ backTarget: instructionsBackTarget });
+            }
+          }
+          return;
+        }
+        if (
+          firstTimePanel?.classList.contains("is-open") &&
+          !firstTimePanel.hidden
+        ) {
+          openDepositInstructions({ backTarget: instructionsBackTarget });
+        }
+      });
+
+    document
+      .querySelector("[data-prototype-twd-custodian]")
+      ?.addEventListener("change", () => {
+        if (
+          instructionsPanel?.classList.contains("is-open") &&
+          !instructionsPanel.hidden
+        ) {
+          syncDepositInstructionsUi();
+        }
+      });
 
     return {
       openFromAddSend,
@@ -10950,6 +11532,8 @@
         "[data-usd-deposit-setup]",
         "[data-twd-deposit-select]",
         "[data-usd-deposit-select]",
+        "[data-twd-first-time-deposit]",
+        "[data-twd-deposit-instructions]",
         "[data-ba-wizard-currency]",
         "[data-ba-wizard-how]",
         "[data-ba-wizard-flow]",
@@ -13830,7 +14414,7 @@
   const hideBankLinkStackInstant = () => {
     document
       .querySelectorAll(
-        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-usd-deposit-setup], [data-usd-deposit-select], [data-fiat-flow-placeholder]",
+        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-twd-first-time-deposit], [data-twd-deposit-instructions], [data-usd-deposit-setup], [data-usd-deposit-select], [data-fiat-flow-placeholder]",
       )
       .forEach(hidePanelInstant);
   };
@@ -15059,6 +15643,8 @@
       if (firstTimeApplyCustodian instanceof HTMLInputElement) {
         firstTimeApplyCustodian.checked = true;
       }
+      clearPrototypeFirstTimeDepositCompleted();
+      syncPrototypeFirstTimeDepositCheckbox();
       financeSummaryConfirmedNextBuy = "";
       financeSummaryConfirmedReserved = null;
       myPlansSubmittedPlan = null;
@@ -31697,6 +32283,7 @@
   initPrototypeRegionControls();
   initPrototypeCustodianControls();
   initPrototypeBankAccountsStyleControls();
+  syncPrototypeFirstTimeDepositCheckbox();
   syncPrototypeFinanceCurrencySelectorVisible();
 
   // Drag-to-scroll for spotlight crypto grid.
