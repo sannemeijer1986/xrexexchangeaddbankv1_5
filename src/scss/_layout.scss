@@ -3534,7 +3534,7 @@ html[data-active-tab="wallet"] {
 
 .twd-deposit-instructions__step-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
 }
 
@@ -3544,7 +3544,7 @@ html[data-active-tab="wallet"] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .twd-deposit-instructions__step-head-copy--limits {
