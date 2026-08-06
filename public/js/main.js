@@ -6957,7 +6957,7 @@
       if (confirmEls.fee) confirmEls.fee.textContent = feeLabel;
       if (confirmEls.total) confirmEls.total.textContent = totalLabel;
       if (confirmEls.submit) {
-        confirmEls.submit.textContent = tr("Withdraw");
+        confirmEls.submit.textContent = tr("Withdraw {amount}", { amount: amountLabel });
       }
 
       const bankName = bankData.bankName;
@@ -7268,6 +7268,13 @@
         !exceedsBalance &&
         !exceedsMaxPerTx;
       if (withdrawEls.continueBtn) withdrawEls.continueBtn.disabled = !canContinue;
+      const keyboardContinueBtn = document.querySelector(
+        "[data-fake-keyboard-withdraw-continue]",
+      );
+      if (keyboardContinueBtn) {
+        keyboardContinueBtn.disabled = !canContinue;
+        keyboardContinueBtn.textContent = tr("Continue");
+      }
     };
 
     const populateWithdraw = ({ currency }) => {
@@ -7719,7 +7726,7 @@
         );
       }
       if (firstTimeEls.continueBtn) {
-        firstTimeEls.continueBtn.textContent = tr("Show deposit instructions");
+        firstTimeEls.continueBtn.textContent = tr("Show deposit details");
       }
       syncFirstTimeConsentUi();
     };
@@ -33226,12 +33233,17 @@
       });
 
     withdrawKeyboard
-      .querySelector("[data-fake-keyboard-withdraw-done]")
+      .querySelector("[data-fake-keyboard-withdraw-continue]")
       ?.addEventListener("click", () => {
-        hideWithdrawKeyboard();
+        const continueBtn = withdrawPanel.querySelector(
+          "[data-fiat-withdraw-continue]",
+        );
+        if (!continueBtn || continueBtn.disabled) return;
+        hideWithdrawKeyboard({ scrollToTop: false });
         if (document.activeElement instanceof HTMLElement) {
           document.activeElement.blur();
         }
+        requestAnimationFrame(() => continueBtn.click());
       });
 
     withdrawKeyboard.querySelectorAll(".fake-keyboard__key").forEach((key) => {

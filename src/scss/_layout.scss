@@ -321,19 +321,8 @@
   }
 
   .fake-keyboard--withdraw {
-    .fake-keyboard__dismiss {
-      display: none;
-    }
-
     .fake-keyboard__preview {
       min-width: 56px;
-      background: #2d2f2f;
-      color: #ffffff;
-
-      &:disabled {
-        background: #2d2f2f;
-        color: #58595a;
-      }
     }
   }
 

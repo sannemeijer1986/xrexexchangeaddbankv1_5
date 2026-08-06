@@ -371,17 +371,8 @@ body {
     border-radius: 12px;
     font-size: 12px;
   }
-  .fake-keyboard--withdraw .fake-keyboard__dismiss {
-    display: none;
-  }
   .fake-keyboard--withdraw .fake-keyboard__preview {
     min-width: 56px;
-    background: #2d2f2f;
-    color: #ffffff;
-  }
-  .fake-keyboard--withdraw .fake-keyboard__preview:disabled {
-    background: #2d2f2f;
-    color: #58595a;
   }
   .fake-keyboard--convert .fake-keyboard__pct-bar button {
     padding: 2px;
