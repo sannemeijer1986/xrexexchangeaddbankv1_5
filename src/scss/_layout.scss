@@ -3491,6 +3491,7 @@ html[data-active-tab="wallet"] {
   line-height: normal;
   color: #8fb8ff;
   text-align: center;
+  margin-bottom: -6px;
 }
 
 .phone-container p.twd-deposit-copy-reminder-sheet__desc {
@@ -3507,6 +3508,9 @@ html[data-active-tab="wallet"] {
 .twd-deposit-copy-reminder-sheet__desc-highlight {
   color: #fcd536;
   font-weight: 600;
+  margin-top: 16px;
+  display: block;
+  text-align: center;
 }
 
 .twd-deposit-copy-reminder-sheet__btn {
@@ -3617,7 +3621,6 @@ html[data-active-tab="wallet"] {
   padding: 16px;
   border-radius: 16px;
   background: #151718;
-  box-shadow: 0 0 7.5px rgba(0, 0, 0, 0.85);
 }
 
 .twd-deposit-instructions__linked-icon {
