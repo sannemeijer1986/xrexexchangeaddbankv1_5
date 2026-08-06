@@ -3554,25 +3554,24 @@ html[data-active-tab="wallet"] {
 .twd-deposit-instructions__step-subtitle {
   margin: 0;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 20px;
-  color: #9b9c9c;
+  color: #8FB8FF;
 }
 
 .twd-deposit-instructions__step-limit {
   margin: 0;
   font-size: 14px;
-  line-height: 20px;
+  font-weight: 600;
+  line-height: normal;
 }
 
 .twd-deposit-instructions__step-limit-label {
-  font-weight: 400;
   color: #9b9c9c;
 }
 
 .twd-deposit-instructions__step-limit-amount {
-  font-weight: 600;
-  color: #8fb8ff;
+  color: #fcd536;
 }
 
 .twd-deposit-instructions__step-limit-link {
@@ -3609,7 +3608,7 @@ html[data-active-tab="wallet"] {
   flex: 1;
   min-width: 0;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: normal;
   color: #fff;
 }
@@ -3635,7 +3634,16 @@ html[data-active-tab="wallet"] {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
   line-height: normal;
+}
+
+.twd-deposit-instructions__linked-eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
 }
 
 .twd-deposit-instructions__linked-bank {
@@ -3702,7 +3710,7 @@ html[data-active-tab="wallet"] {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .twd-deposit-instructions__trust-label {
@@ -3725,33 +3733,29 @@ html[data-active-tab="wallet"] {
   font-weight: 700;
 }
 
-.twd-deposit-instructions__trust-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.04);
+.twd-deposit-instructions__trust-row--account-name {
+  padding-bottom: 8px;
 }
 
-.twd-deposit-instructions__trust-alert {
+.twd-deposit-instructions__trust-value-group {
   display: flex;
+  flex-direction: column;
+  gap: 2px;
   align-items: flex-start;
-  gap: 6px;
-  margin-top: 8px;
-  margin-bottom: 12px;
+  width: 100%;
 }
 
-.twd-deposit-instructions__trust-alert-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  margin-top: 2px;
-  display: block;
-}
-
-.twd-deposit-instructions__trust-alert-text {
+.twd-deposit-instructions__trust-note {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: normal;
   color: #8fb8ff;
+}
+
+.twd-deposit-instructions__trust-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .twd-deposit-instructions__share-btn {
@@ -3990,6 +3994,14 @@ html[data-active-tab="wallet"] {
   color: #fff;
 }
 
+.phone-container p.twd-deposit-instructions__linked-eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
 .phone-container p.twd-deposit-instructions__linked-bank {
   margin: 0;
   font-size: 16px;
@@ -4009,17 +4021,16 @@ html[data-active-tab="wallet"] {
 .phone-container p.twd-deposit-instructions__step-subtitle {
   margin: 0;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 20px;
-  color: #9b9c9c;
+  color: #8FB8FF;
 }
 
 .phone-container p.twd-deposit-instructions__step-limit {
   margin: 0;
   font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: #9b9c9c;
+  font-weight: 600;
+  line-height: normal;
 }
 
 .phone-container p.twd-deposit-instructions__arrival-title {
@@ -4038,9 +4049,9 @@ html[data-active-tab="wallet"] {
   color: #9b9c9c;
 }
 
-.phone-container p.twd-deposit-instructions__trust-alert-text {
+.phone-container p.twd-deposit-instructions__trust-note {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: normal;
   color: #8fb8ff;

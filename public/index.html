@@ -4246,7 +4246,7 @@
                     <article class="twd-first-time-deposit__card">
                         <img class="twd-first-time-deposit__card-icon" src="assets/gfx_firstdepo_yourbank_twd.svg" alt="" width="48" height="48" aria-hidden="true" />
                         <div class="twd-first-time-deposit__card-copy">
-                            <p class="twd-first-time-deposit__card-title" data-twd-first-time-card-bank-title>Send only from your KGI Bank account •••• 8999</p>
+                            <p class="twd-first-time-deposit__card-title" data-twd-first-time-card-bank-title>Only send TWD from your KGI Bank account •••• 8999</p>
                             <p class="twd-first-time-deposit__card-desc">Money from any other account is returned, sometimes with a fee.</p>
                         </div>
                     </article>
@@ -4254,7 +4254,7 @@
                     <article class="twd-first-time-deposit__card">
                         <img class="twd-first-time-deposit__card-icon" src="assets/gfx_firstdepo_methods.svg" alt="" width="48" height="48" aria-hidden="true" />
                         <div class="twd-first-time-deposit__card-copy">
-                            <p class="twd-first-time-deposit__card-title">Use online banking or ATM transfer</p>
+                            <p class="twd-first-time-deposit__card-title">Only send via online banking</p>
                             <p class="twd-first-time-deposit__card-desc">Don&rsquo;t use counter transfers, Taiwan Pay, LINE Pay, JKoPay, they can&rsquo;t reach us and will be returned.</p>
                         </div>
                     </article>
@@ -4276,7 +4276,7 @@
                     <div class="twd-first-time-deposit__consent-wrap">
                         <button class="twd-first-time-deposit__consent" type="button" data-twd-first-time-deposit-consent aria-pressed="false">
                             <img class="twd-first-time-deposit__consent-icon" src="assets/icon_checkbox_off.svg" alt="" width="24" height="24" aria-hidden="true" />
-                            <span class="twd-first-time-deposit__consent-copy" data-twd-first-time-deposit-consent-copy>I&rsquo;ll send from <span class="twd-first-time-deposit__consent-highlight">KGI Bank ••••8999</span> using <span class="twd-first-time-deposit__consent-highlight">online banking</span> or <span class="twd-first-time-deposit__consent-highlight">ATM</span> only</span>
+                            <span class="twd-first-time-deposit__consent-copy" data-twd-first-time-deposit-consent-copy>I&rsquo;ll only send TWD from my <span class="twd-first-time-deposit__consent-highlight">KGI Bank account •••• 8999</span> via <span class="twd-first-time-deposit__consent-highlight">online banking</span></span>
                         </button>
                         <p class="twd-first-time-deposit__consent-hint" data-twd-first-time-deposit-hint>Check the box above to continue</p>
                     </div>
@@ -4303,13 +4303,14 @@
                     <div class="twd-deposit-instructions__step-head">
                         <span class="twd-deposit-instructions__step-badge" aria-hidden="true">1</span>
                         <div class="twd-deposit-instructions__step-head-copy">
-                            <h2 class="twd-deposit-instructions__step-title">Send from your linked bank account</h2>
-                            <p class="twd-deposit-instructions__step-subtitle" data-twd-deposit-instructions-linked-subtitle>Via online banking or ATM transfer</p>
+                            <h2 class="twd-deposit-instructions__step-title">Send TWD from your linked bank account via online banking</h2>
+                            <!-- <p class="twd-deposit-instructions__step-subtitle" data-twd-deposit-instructions-linked-subtitle>Use online banking only</p> -->
                         </div>
                     </div>
                     <div class="twd-deposit-instructions__linked-card">
                         <img class="twd-deposit-instructions__linked-icon" src="assets/gfx_firstdepo_yourbank_twd.svg" alt="" width="40" height="40" aria-hidden="true" />
                         <div class="twd-deposit-instructions__linked-copy">
+                            <p class="twd-deposit-instructions__linked-eyebrow" data-twd-deposit-instructions-linked-eyebrow>Linked bank account</p>
                             <p class="twd-deposit-instructions__linked-bank" data-twd-deposit-instructions-bank-name>KGI Bank</p>
                             <p class="twd-deposit-instructions__linked-account" data-twd-deposit-instructions-bank-account>••••8999</p>
                         </div>
@@ -4322,7 +4323,7 @@
                         <div class="twd-deposit-instructions__step-head-copy twd-deposit-instructions__step-head-copy--limits">
                             <h2 class="twd-deposit-instructions__step-title">Send to this XREX bank account</h2>
                             <p class="twd-deposit-instructions__step-limit">
-                                <span class="twd-deposit-instructions__step-limit-label" data-twd-deposit-instructions-limit-label>Remaining limit : </span><span class="twd-deposit-instructions__step-limit-amount" data-twd-deposit-instructions-remaining-limit>2,000,000.00 TWD</span>
+                                <span class="twd-deposit-instructions__step-limit-label" data-twd-deposit-instructions-limit-label>Remaining deposit limit </span><span class="twd-deposit-instructions__step-limit-amount" data-twd-deposit-instructions-remaining-limit>2,000,000.00 TWD</span>
                             </p>
                             <button class="twd-deposit-instructions__step-limit-link" type="button" data-twd-deposit-instructions-see-limits>View your limits</button>
                         </div>
@@ -4353,17 +4354,16 @@
                                 <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
                             </button>
                             <div class="twd-deposit-instructions__trust-divider" aria-hidden="true"></div>
-                            <button class="twd-deposit-instructions__trust-row" type="button" data-twd-deposit-copy="accountName" aria-label="Copy account name">
+                            <button class="twd-deposit-instructions__trust-row twd-deposit-instructions__trust-row--account-name" type="button" data-twd-deposit-copy="accountName" aria-label="Copy account name">
                                 <div class="twd-deposit-instructions__trust-field">
                                     <span class="twd-deposit-instructions__trust-label">Account name</span>
-                                    <span class="twd-deposit-instructions__trust-value" data-twd-deposit-instructions-trust-account-name>遠銀受託鏈科信託財產專戶</span>
+                                    <div class="twd-deposit-instructions__trust-value-group">
+                                        <span class="twd-deposit-instructions__trust-value" data-twd-deposit-instructions-trust-account-name>遠銀受託鏈科信託財產專戶</span>
+                                        <p class="twd-deposit-instructions__trust-note" data-twd-deposit-instructions-trust-note>XREX&rsquo;s trust account at Far Eastern Bank</p>
+                                    </div>
                                 </div>
                                 <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />
                             </button>
-                        </div>
-                        <div class="twd-deposit-instructions__trust-alert" role="note">
-                            <img class="twd-deposit-instructions__trust-alert-icon" src="assets/icon_deposit_info.svg" alt="" width="16" height="16" aria-hidden="true" />
-                            <p class="twd-deposit-instructions__trust-alert-text" data-twd-deposit-instructions-trust-note>This is XREX&rsquo;s trust account at<br />Far Eastern Bank.</p>
                         </div>
                         <button class="twd-deposit-instructions__share-btn" type="button" data-twd-deposit-instructions-share-all>
                             <img class="twd-deposit-instructions__copy-icon" src="assets/icon_n_copy.svg" alt="" width="18" height="18" aria-hidden="true" />

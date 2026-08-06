@@ -7485,7 +7485,7 @@
         account: "1234 5678 9012 3456",
         branch: "營業部 (0012)",
         accountName: "凱基受託鏈科信託財產專戶",
-        note: "This is XREX's trust account at<br />KGI Bank",
+        note: "XREX's trust account at KGI Bank",
         remainingLimit: "2,000,000.00",
       },
       fareastern: {
@@ -7493,7 +7493,7 @@
         account: "1032 1695 1918 2206",
         branch: "營業部 (0012)",
         accountName: "遠銀受託鏈科信託財產專戶",
-        note: "This is XREX's trust account at<br />Far Eastern Bank",
+        note: "XREX's trust account at Far Eastern Bank",
         remainingLimit: "2,000,000.00",
       },
     };
@@ -7633,18 +7633,17 @@
       const destination = formatWithdrawDestinationLabel(bankData.bankName);
       if (firstTimeEls.cardBankTitle) {
         firstTimeEls.cardBankTitle.textContent = tr(
-          "Send only from your {destination}",
+          "Only send TWD from your {destination}",
           { destination },
         );
       }
       if (firstTimeEls.consentCopy) {
         const marker = "{{DESTINATION}}";
         const consentTemplate = tr(
-          "I'll send from {destination} using {onlineBanking} or {atm} only",
+          "I'll only send TWD from my {destination} via {onlineBanking}",
           {
             destination: marker,
             onlineBanking: "{{ONLINE}}",
-            atm: "{{ATM}}",
           },
         );
         const escapedDestination = String(destination)
@@ -7653,7 +7652,6 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
         const onlineLabel = tr("online banking");
-        const atmLabel = tr("ATM");
         firstTimeEls.consentCopy.innerHTML = consentTemplate
           .replace(
             marker,
@@ -7662,10 +7660,6 @@
           .replace(
             "{{ONLINE}}",
             `<span class="twd-first-time-deposit__consent-highlight">${onlineLabel}</span>`,
-          )
-          .replace(
-            "{{ATM}}",
-            `<span class="twd-first-time-deposit__consent-highlight">${atmLabel}</span>`,
           );
       }
       if (firstTimePanel) {
@@ -7701,7 +7695,7 @@
           }
           const keys = [
             null,
-            "Use online banking or ATM transfer",
+            "Only send via online banking",
             null,
           ];
           if (keys[index]) el.textContent = tr(keys[index]);
@@ -7761,7 +7755,7 @@
         "[data-twd-deposit-instructions-limit-label]",
       );
       if (limitLabel) {
-        limitLabel.textContent = tr("Remaining limit : ");
+        limitLabel.textContent = tr("Remaining deposit limit ");
       }
       if (instructionsEls.trustBank) {
         instructionsEls.trustBank.textContent = trust.bank;
@@ -7776,7 +7770,7 @@
         instructionsEls.trustAccountName.textContent = trust.accountName;
       }
       if (instructionsEls.trustNote) {
-        instructionsEls.trustNote.innerHTML = tr(trust.note);
+        instructionsEls.trustNote.textContent = tr(trust.note);
       }
       if (instructionsPanel) {
         instructionsPanel.setAttribute("aria-label", tr("How to deposit TWD"));
@@ -7792,17 +7786,23 @@
         ?.querySelectorAll(".twd-deposit-instructions__step-title")
         .forEach((el, index) => {
           const keys = [
-            "Send from your linked bank account",
+            "Send TWD from your linked bank account via online banking",
             "Send to this XREX bank account",
             "When it arrives",
           ];
           if (keys[index]) el.textContent = tr(keys[index]);
         });
+      const linkedEyebrow = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-linked-eyebrow]",
+      );
+      if (linkedEyebrow) {
+        linkedEyebrow.textContent = tr("Linked bank account");
+      }
       const linkedSubtitle = instructionsPanel?.querySelector(
         "[data-twd-deposit-instructions-linked-subtitle]",
       );
       if (linkedSubtitle) {
-        linkedSubtitle.textContent = tr("Via online banking or ATM transfer");
+        linkedSubtitle.textContent = tr("Use online banking only");
       }
       const verifiedTag = instructionsPanel?.querySelector(
         ".twd-deposit-instructions__verified-tag",
