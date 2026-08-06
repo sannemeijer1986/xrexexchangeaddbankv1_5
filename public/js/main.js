@@ -13346,8 +13346,8 @@
       if (titleEl) {
         if (isZh) {
           const titleTemplate = isTwd
-            ? "Your TWD is held in trust by {bankName} (custodian)"
-            : "Your USD is held in trust by {bankName} (custodian)";
+            ? "Your TWD will be held in trust by {bankName} (custodian)"
+            : "Your USD will be held in trust by {bankName} (custodian)";
           const bankMarker = "{{BANK_NAME}}";
           const titleText = tr(titleTemplate, { bankName: bankMarker });
           titleEl.innerHTML = titleText.replace(
@@ -13355,7 +13355,7 @@
             `<span class="custodian-apply-sheet__title-accent">${localizedBankName}</span>`,
           );
         } else {
-          titleEl.innerHTML = `${tr("Your {currencyLabel} is held in trust at", { currencyLabel })}<br /><span class="custodian-apply-sheet__title-accent">${localizedBankName}</span> ${tr("(custodian)")}`;
+          titleEl.innerHTML = `${tr("Your {currencyLabel} will be held in trust at", { currencyLabel })}<br /><span class="custodian-apply-sheet__title-accent">${localizedBankName}</span> ${tr("(custodian)")}`;
         }
       }
       if (depositColEl) {
