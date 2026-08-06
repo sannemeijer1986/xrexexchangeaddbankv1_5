@@ -6598,7 +6598,8 @@
           !isFiatFlowPanelOpen("[data-twd-deposit-setup]") &&
           !isFiatFlowPanelOpen("[data-twd-deposit-select]") &&
           !isFiatFlowPanelOpen("[data-twd-first-time-deposit]") &&
-          !isFiatFlowPanelOpen("[data-twd-deposit-instructions]")
+          !isFiatFlowPanelOpen("[data-twd-deposit-instructions]") &&
+          !isFiatFlowPanelOpen("[data-twd-deposit-sent-panel]")
         ) {
           twdDepositApi?.clearEntrySource?.();
         }
@@ -7466,6 +7467,7 @@
     const instructionsPanel = document.querySelector(
       "[data-twd-deposit-instructions]",
     );
+    const sentPanel = document.querySelector("[data-twd-deposit-sent-panel]");
     if (!setupPanel && !selectPanel && !firstTimePanel && !instructionsPanel) {
       return {
         openFromAddSend: () => {},
@@ -7551,6 +7553,12 @@
       pageTitle: instructionsPanel?.querySelector(".twd-deposit-instructions__title"),
     };
 
+    const sentEls = {
+      title: sentPanel?.querySelector("[data-twd-deposit-sent-title]"),
+      sub: sentPanel?.querySelector("[data-twd-deposit-sent-sub]"),
+      understoodBtn: sentPanel?.querySelector("[data-twd-deposit-sent-understood]"),
+    };
+
     const TWD_FIAT_SELECT_COPY = {
       add: {
         title: "Deposit TWD",
@@ -7565,6 +7573,7 @@
     };
 
     let entrySource = null;
+    let entryTab = null;
     let instructionsBackTarget = "select";
     let firstTimeConsentChecked = false;
     const hasTwdBank = () => (states.twdBankAccount ?? 1) >= 2;
@@ -7640,7 +7649,7 @@
       if (firstTimeEls.consentCopy) {
         const marker = "{{DESTINATION}}";
         const consentTemplate = tr(
-          "I'll only send TWD from my {destination} via {onlineBanking}",
+          "I will only send TWD from my {destination} via {onlineBanking}",
           {
             destination: marker,
             onlineBanking: "{{ONLINE}}",
@@ -7674,7 +7683,7 @@
         .forEach((el, index) => {
           const keys = [
             "Money from any other account is returned, sometimes with a fee.",
-            "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, ATM, they can't reach us and will be returned.",
+            "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, ATM. They can't reach us and will be returned.",
             null,
           ];
           if (index === 2) {
@@ -7859,10 +7868,30 @@
         "[data-twd-deposit-instructions-back-footer]",
       );
       if (backFooter) backFooter.textContent = tr("Back");
-      const doneBtn = instructionsPanel?.querySelector(
-        "[data-twd-deposit-instructions-done]",
+      const sentBtn = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-sent]",
       );
-      if (doneBtn) doneBtn.textContent = tr("Done");
+      if (sentBtn) sentBtn.textContent = tr("I have sent TWD");
+      if (sentEls.title) {
+        sentEls.title.textContent = tr("We'll notify you when your deposit arrives");
+      }
+      if (sentEls.sub) {
+        const bankData = getLinkedBankAccountSheetData("twd");
+        const destination = formatWithdrawDestinationLabel(bankData.bankName);
+        sentEls.sub.textContent = tr(
+          "After you transfer TWD from {destination} to XREX, your deposit usually arrives within 1 hour.",
+          { destination },
+        );
+      }
+      if (sentEls.understoodBtn) {
+        sentEls.understoodBtn.textContent = tr("Understood");
+      }
+      if (sentPanel) {
+        sentPanel.setAttribute(
+          "aria-label",
+          tr("We'll notify you when your deposit arrives"),
+        );
+      }
     };
 
     let instructionsTitleObserver = null;
@@ -7932,8 +7961,29 @@
       setPanelOpen(instructionsPanel, false, opts);
     };
 
+    const closeSentPanel = (opts = {}) => {
+      if (!sentPanel) return;
+      setPanelOpen(sentPanel, false, opts);
+    };
+
+    const openSentPanel = () => {
+      syncDepositInstructionsUi();
+      setPanelOpen(sentPanel, true);
+    };
+
+    const dismissDepositFlowToEntry = () => {
+      const tab = entryTab;
+      closeSentPanel({ instant: true });
+      closeAll({ instant: true });
+      clearEntrySource();
+      entryTab = null;
+      addSendPanelApi?.close?.({ instant: true });
+      if (tab) restoreActiveTab(tab);
+    };
+
     const closeAll = (opts = {}) => {
       openFiatFlowPlaceholder?.close?.({ instant: Boolean(opts.instant) });
+      closeSentPanel(opts);
       closeDepositPanels(opts);
       setPanelOpen(setupPanel, false, opts);
       setPanelOpen(selectPanel, false, opts);
@@ -7977,6 +8027,7 @@
 
     const openFromAddSend = (mode = "add") => {
       if (getPrototypeRegion() === "cayman") return;
+      captureEntryTab();
       entrySource = mode === "send" ? "send" : "add";
       if (
         tryOpenTaiwanAddSendFiatDirect({
@@ -8000,6 +8051,11 @@
 
     const clearEntrySource = () => {
       entrySource = null;
+      entryTab = null;
+    };
+
+    const captureEntryTab = () => {
+      entryTab = document.documentElement.dataset.activeTab || "home";
     };
 
     const handleInstructionsBack = () => {
@@ -8265,10 +8321,16 @@
       ?.querySelector("[data-twd-deposit-instructions-back-footer]")
       ?.addEventListener("click", handleInstructionsBack);
     instructionsPanel
-      ?.querySelector("[data-twd-deposit-instructions-done]")
+      ?.querySelector("[data-twd-deposit-instructions-sent]")
       ?.addEventListener("click", () => {
-        closeAll();
-        clearEntrySource();
+        openSentPanel();
+      });
+    sentPanel
+      ?.querySelectorAll(
+        "[data-twd-deposit-sent-close], [data-twd-deposit-sent-understood]",
+      )
+      .forEach((btn) => {
+        btn.addEventListener("click", dismissDepositFlowToEntry);
       });
     const showTrustFieldCopiedSnackbar = (row) => {
       const label =
@@ -10983,6 +11045,7 @@
     open: () => {},
     close: () => {},
   };
+  let restoreActiveTab = (_tabId) => {};
   let bankAccountDetailsApi = {
     open: () => {},
     close: () => {},
@@ -14620,7 +14683,7 @@
   const hideBankLinkStackInstant = () => {
     document
       .querySelectorAll(
-        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-twd-first-time-deposit], [data-twd-deposit-instructions], [data-usd-deposit-setup], [data-usd-deposit-select], [data-fiat-flow-placeholder]",
+        "[data-ba-wizard-intro], [data-ba-wizard-currency], [data-ba-wizard-how], [data-ba-wizard-flow], [data-twd-bank-details-panel], [data-usd-bank-details-panel], [data-link-twd-panel], [data-link-usd-panel], [data-twd-deposit-setup], [data-twd-deposit-select], [data-twd-first-time-deposit], [data-twd-deposit-instructions], [data-twd-deposit-sent-panel], [data-usd-deposit-setup], [data-usd-deposit-select], [data-fiat-flow-placeholder]",
       )
       .forEach(hidePanelInstant);
   };
@@ -18409,6 +18472,9 @@
   initAuthSignup();
   initBadgeControls();
   const tabNavApi = initTabs();
+  restoreActiveTab = (tabId) => {
+    if (tabId) tabNavApi.setActiveTab(tabId);
+  };
   const financeHeaderApi = initFinanceHeaderTabs();
   const tradeHeaderApi = initTradeHeaderTabs();
   const marketsPageApi = initMarketsPage();

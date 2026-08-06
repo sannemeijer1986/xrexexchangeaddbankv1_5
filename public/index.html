@@ -4409,9 +4409,28 @@
                 </section>
                 <footer class="twd-deposit-instructions__footer">
                     <button class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary" type="button" data-twd-deposit-instructions-back-footer>Back</button>
-                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-twd-deposit-instructions-done>Done</button>
+                    <button class="schedule-time-sheet__btn schedule-time-sheet__btn--primary" type="button" data-twd-deposit-instructions-sent>I have sent TWD</button>
                 </footer>
             </div>
+        </section>
+
+        <section class="twd-deposit-sent-panel" data-twd-deposit-sent-panel hidden aria-label="Deposit sent">
+            <header class="twd-deposit-sent-panel__header">
+                <button class="twd-deposit-sent-panel__icon-btn" type="button" data-twd-deposit-sent-close aria-label="Close">
+                    <img src="assets/icon_close.svg" alt="" width="24" height="24" />
+                </button>
+                <div class="twd-deposit-sent-panel__header-spacer" aria-hidden="true"></div>
+            </header>
+            <div class="twd-deposit-sent-panel__body">
+                <div class="twd-deposit-sent-panel__hero">
+                    <img class="twd-deposit-sent-panel__icon" src="assets/icon_info_circle_blue.svg" alt="" width="70" height="70" aria-hidden="true" />
+                    <h2 class="twd-deposit-sent-panel__title" data-twd-deposit-sent-title>We&rsquo;ll notify you when your deposit arrives</h2>
+                    <p class="twd-deposit-sent-panel__sub" data-twd-deposit-sent-sub>After you transfer TWD from KGI Bank &bull;&bull;&bull;&bull; 8999 to XREX, your deposit usually arrives within 1 hour.</p>
+                </div>
+            </div>
+            <footer class="twd-deposit-sent-panel__footer">
+                <button class="twd-deposit-sent-panel__done" type="button" data-twd-deposit-sent-understood>Understood</button>
+            </footer>
         </section>
 
         <section class="twd-deposit-guide-panel" data-twd-deposit-guide-panel hidden aria-label="TWD deposit guide">

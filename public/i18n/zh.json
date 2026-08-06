@@ -682,8 +682,8 @@
 
   "_comment_bank_flow": "── Bank flow strings (Figma EN-AI/ZH-AI migration) ──────────────",
   "Set up": "設定",
-  "Link bank account": "連結銀行帳戶",
-  "Link your bank account to deposit and withdraw {CurList} on XREX": "連結您的銀行帳戶，即可在 XREX 存入與提領 {CurList}",
+  "Link bank account": "綁定銀行帳戶",
+  "Link your bank account to deposit and withdraw {CurList} on XREX": "綁定您的銀行帳戶，即可在 XREX 存入與提領 {CurList}",
   "TWD and USD": "TWD 與 USD",
   "Resubmission": "重新提交",
   "Some of your bank details couldn't be verified: {ResubmitReason}. Please review and resubmit.": "部分銀行資料無法通過驗證：{ResubmitReason}。請檢查後重新提交。",
@@ -920,9 +920,9 @@
   "No deposit fee.": "免入金手續費。",
   "We'll notify you when it lands.": "到帳後我們會通知您。",
   "Money from any other account is returned, sometimes with a fee.": "若從其他帳戶匯款將被退回，有時可能產生手續費。",
-  "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, ATM, they can't reach us and will be returned.": "請勿使用臨櫃匯款、Taiwan Pay、LINE Pay、JKoPay，這些方式無法匯入且將被退回。",
+  "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, ATM. They can't reach us and will be returned.": "請勿使用臨櫃匯款、Taiwan Pay、LINE Pay、JKoPay，這些方式無法匯入且將被退回。",
   "See step-by-step guide": "查看逐步指南",
-  "I'll only send TWD from my {destination} via {onlineBanking}": "我將僅從我的 {destination} 以 {onlineBanking} 匯款 TWD",
+  "I will only send TWD from my {destination} via {onlineBanking}": "我將僅從我的 {destination} 以 {onlineBanking} 匯款 TWD",
   "online banking": "網路銀行",
   "ATM": "ATM",
   "Check the box above to continue": "請勾選上方方框以繼續",
@@ -964,5 +964,8 @@
   "We are happy to help you": "我們很樂意為您提供協助",
   "Use online banking or ATM transfer from the bank account you linked to XREX.": "請使用您已綁定至 XREX 的銀行帳戶，透過網路銀行或 ATM 匯款。",
   "Copy the trust account details and paste them into your bank's transfer form.": "複製信託專戶資訊，並貼至您銀行的匯款表單中。",
-  "Usually arrives within 1 hour after sending. No deposit fee. We'll notify you when it lands.": "通常即時到帳，匯款後 1 小時內到帳。免入金手續費。到帳後我們會通知您。"
+  "Usually arrives within 1 hour after sending. No deposit fee. We'll notify you when it lands.": "通常即時到帳，匯款後 1 小時內到帳。免入金手續費。到帳後我們會通知您。",
+  "I have sent TWD": "我已匯款 TWD",
+  "We'll notify you when your deposit arrives": "到帳後我們會通知您",
+  "After you transfer TWD from {destination} to XREX, your deposit usually arrives within 1 hour.": "從 {destination} 匯款 TWD 至 XREX 後，通常於 1 小時內到帳。"
 }

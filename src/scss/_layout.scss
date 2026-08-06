@@ -3186,7 +3186,7 @@ html[data-active-tab="wallet"] {
 
 .twd-first-time-deposit__card-desc-highlight {
   font-weight: 600;
-  color: #3FAE64;
+  color: #5AC47D;
 }
 
 .twd-first-time-deposit__guide-link {
@@ -3571,7 +3571,7 @@ html[data-active-tab="wallet"] {
 }
 
 .twd-deposit-instructions__step-limit-amount {
-  color: #3FAE64;
+  color: #5AC47D;
 }
 
 .twd-deposit-instructions__step-limit-link {
@@ -3820,7 +3820,7 @@ html[data-active-tab="wallet"] {
 
 .twd-deposit-instructions__arrival-subtitle-highlight {
   font-weight: 600;
-  color: #3FAE64;
+  color: #5AC47D;
 }
 
 .twd-deposit-instructions__arrival-icon {
@@ -3927,6 +3927,141 @@ html[data-active-tab="wallet"] {
     flex: 1;
     height: 48px;
   }
+}
+
+// Figma 8292:42058 — TWD deposit sent confirmation
+.twd-deposit-sent-panel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: #0d0e0f;
+  z-index: 2195;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+  pointer-events: none;
+}
+
+.twd-deposit-sent-panel.is-open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.twd-deposit-sent-panel.is-instant {
+  transition: none !important;
+}
+
+.twd-deposit-sent-panel__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 56px 16px 16px;
+}
+
+.twd-deposit-sent-panel__icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+
+  img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+.twd-deposit-sent-panel__header-spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+.twd-deposit-sent-panel__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.twd-deposit-sent-panel__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 328px;
+}
+
+.twd-deposit-sent-panel__icon {
+  width: 70px;
+  height: 70px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.twd-deposit-sent-panel__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+  text-align: center;
+}
+
+.twd-deposit-sent-panel__sub {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #9b9c9c;
+  text-align: center;
+}
+
+.twd-deposit-sent-panel__footer {
+  flex-shrink: 0;
+  padding: 16px;
+}
+
+.twd-deposit-sent-panel__done {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: #2d2f2f;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.phone-container h2.twd-deposit-sent-panel__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
+}
+
+.phone-container p.twd-deposit-sent-panel__sub {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #9b9c9c;
 }
 
 .phone-container h1.twd-first-time-deposit__title {
