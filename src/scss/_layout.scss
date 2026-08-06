@@ -4320,7 +4320,7 @@ html[data-active-tab="wallet"] {
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
   padding: 24px 16px 16px;
 
   &::-webkit-scrollbar {
@@ -4445,6 +4445,7 @@ html[data-active-tab="wallet"] {
     margin-right: 0;
     margin-left: auto;
     flex-shrink: 0;
+    display: none;
   }
 }
 

@@ -6760,6 +6760,12 @@
   const getWithdrawMaxAmount = (config) =>
     Math.max(0, Math.min(config.avail - config.fee, config.maxPerTx));
 
+  const getWithdrawPctAmount = (config, pct) => {
+    if (!Number.isFinite(pct) || pct <= 0) return 0;
+    const fromBalance = Math.round((config.avail * pct) / 100);
+    return Math.min(fromBalance, getWithdrawMaxAmount(config));
+  };
+
   const getWithdrawMinAmount = (config) => config.fee + 1;
 
   const formatWithdrawRequestedAt = (date = new Date()) => {
@@ -6880,6 +6886,22 @@
     let withdrawConfig = WITHDRAW_PROTOTYPE.twd;
     let withdrawBankData = getLinkedBankAccountSheetData("twd");
     let withdrawConfirmAmount = 0;
+
+    const focusWithdrawAmountInput = () => {
+      if (withdrawView?.hidden) return;
+      const input = withdrawEls.amount;
+      if (!(input instanceof HTMLInputElement)) return;
+      input.focus();
+      const endPos = input.value.length;
+      input.setSelectionRange(endPos, endPos);
+      document.dispatchEvent(new CustomEvent("fake-keyboard-withdraw-show"));
+    };
+
+    const scheduleFocusWithdrawAmountInput = () => {
+      const focus = () => focusWithdrawAmountInput();
+      panel.addEventListener("transitionend", focus, { once: true });
+      window.setTimeout(focus, 360);
+    };
 
     const setSlidePanelOpen = (slidePanel, nextOpen, opts = {}) => {
       if (!slidePanel) return;
@@ -7015,7 +7037,7 @@
       const toLabel = formatWithdrawDestinationLabel(bankData.bankName);
 
       if (successEls.title) {
-        successEls.title.textContent = tr("Withdrawal requested!");
+        successEls.title.textContent = tr("Withdrawal requested");
       }
       if (successEls.sub) {
         successEls.sub.textContent = tr("We'll notify you when it's sent.");
@@ -7145,7 +7167,9 @@
       }
       setSuccessOpen(false, { instant: true });
       setTwoFaOpen(false, { instant: true });
-      setSlidePanelOpen(confirmPanel, false);
+      setSlidePanelOpen(confirmPanel, false, {
+        onClosed: () => focusWithdrawAmountInput(),
+      });
     };
 
     const populateDeposit = ({ currency, mode }) => {
@@ -7312,7 +7336,10 @@
     const setOpen = (nextOpen, opts = {}) => {
       if (nextOpen) {
         panel.hidden = false;
-        requestAnimationFrame(() => panel.classList.add("is-open"));
+        requestAnimationFrame(() => {
+          panel.classList.add("is-open");
+          if (!withdrawView?.hidden) scheduleFocusWithdrawAmountInput();
+        });
         return;
       }
       hideWithdrawKeyboard();
@@ -33210,7 +33237,7 @@
       const pctOptions = [25, 50, 75, 100];
       const matched =
         pctOptions.find((pct) => {
-          const target = Math.round((ctx.config.avail * pct) / 100);
+          const target = getWithdrawPctAmount(ctx.config, pct);
           return Math.abs(typed - target) < 1e-9;
         }) ?? null;
       setPctActiveState(matched ?? 0);
@@ -33277,7 +33304,7 @@
           const pct = Number(btn.getAttribute("data-fake-keyboard-withdraw-pct"));
           if (!ctx?.amountInput || !Number.isFinite(pct) || pct <= 0) return;
           setPctActiveState(pct);
-          const next = Math.round((ctx.config.avail * pct) / 100);
+          const next = getWithdrawPctAmount(ctx.config, pct);
           ctx.amountInput.value = next > 0 ? String(next) : "";
           ctx.amountInput.dispatchEvent(new Event("input", { bubbles: true }));
           ctx.amountInput.focus();

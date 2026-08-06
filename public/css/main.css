@@ -4260,7 +4260,7 @@ html[data-active-tab=wallet] .app-header__top {
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
   padding: 24px 16px 16px;
 }
 .fiat-withdraw-page__scroll::-webkit-scrollbar {
@@ -4376,6 +4376,7 @@ html[data-active-tab=wallet] .app-header__top {
   margin-right: 0;
   margin-left: auto;
   flex-shrink: 0;
+  display: none;
 }
 
 .fiat-withdraw-page__limit-info {
