@@ -4254,7 +4254,7 @@
                     <article class="twd-first-time-deposit__card">
                         <img class="twd-first-time-deposit__card-icon" src="assets/gfx_firstdepo_methods.svg" alt="" width="48" height="48" aria-hidden="true" />
                         <div class="twd-first-time-deposit__card-copy">
-                            <p class="twd-first-time-deposit__card-title">Use online banking or an ATM</p>
+                            <p class="twd-first-time-deposit__card-title">Use online banking or ATM transfer</p>
                             <p class="twd-first-time-deposit__card-desc">Don&rsquo;t use counter transfers, Taiwan Pay, LINE Pay, JKoPay, they can&rsquo;t reach us and will be returned.</p>
                         </div>
                     </article>
@@ -4262,7 +4262,7 @@
                     <article class="twd-first-time-deposit__card">
                         <img class="twd-first-time-deposit__card-icon" src="assets/gfx_firstdepo_clock.svg" alt="" width="48" height="48" aria-hidden="true" />
                         <div class="twd-first-time-deposit__card-copy">
-                            <p class="twd-first-time-deposit__card-title">Usually arrives instant ~<br />within 1 hour after sending</p>
+                            <p class="twd-first-time-deposit__card-title">Usually arrives within 1 hour after sending</p>
                             <p class="twd-first-time-deposit__card-desc"><span class="twd-first-time-deposit__card-desc-highlight">No deposit fee.</span> We&rsquo;ll notify you when it lands.</p>
                         </div>
                     </article>
@@ -4302,14 +4302,16 @@
                 <section class="twd-deposit-instructions__step">
                     <div class="twd-deposit-instructions__step-head">
                         <span class="twd-deposit-instructions__step-badge" aria-hidden="true">1</span>
-                        <h2 class="twd-deposit-instructions__step-title">Send from your linked bank account</h2>
+                        <div class="twd-deposit-instructions__step-head-copy">
+                            <h2 class="twd-deposit-instructions__step-title">Send from your linked bank account</h2>
+                            <p class="twd-deposit-instructions__step-subtitle" data-twd-deposit-instructions-linked-subtitle>Via online banking or ATM transfer</p>
+                        </div>
                     </div>
                     <div class="twd-deposit-instructions__linked-card">
                         <img class="twd-deposit-instructions__linked-icon" src="assets/gfx_firstdepo_yourbank_twd.svg" alt="" width="40" height="40" aria-hidden="true" />
                         <div class="twd-deposit-instructions__linked-copy">
                             <p class="twd-deposit-instructions__linked-bank" data-twd-deposit-instructions-bank-name>KGI Bank</p>
                             <p class="twd-deposit-instructions__linked-account" data-twd-deposit-instructions-bank-account>••••8999</p>
-                            <p class="twd-deposit-instructions__linked-method">Use online banking or ATM</p>
                         </div>
                         <span class="twd-deposit-instructions__verified-tag">Verified</span>
                     </div>
@@ -4317,9 +4319,14 @@
                 <section class="twd-deposit-instructions__step">
                     <div class="twd-deposit-instructions__step-head">
                         <span class="twd-deposit-instructions__step-badge" aria-hidden="true">2</span>
-                        <h2 class="twd-deposit-instructions__step-title">Send to this XREX bank account</h2>
+                        <div class="twd-deposit-instructions__step-head-copy twd-deposit-instructions__step-head-copy--limits">
+                            <h2 class="twd-deposit-instructions__step-title">Send to this XREX bank account</h2>
+                            <p class="twd-deposit-instructions__step-limit">
+                                <span class="twd-deposit-instructions__step-limit-label" data-twd-deposit-instructions-limit-label>Remaining limit : </span><span class="twd-deposit-instructions__step-limit-amount" data-twd-deposit-instructions-remaining-limit>2,000,000.00 TWD</span>
+                            </p>
+                            <button class="twd-deposit-instructions__step-limit-link" type="button" data-twd-deposit-instructions-see-limits>View your limits</button>
+                        </div>
                     </div>
-                    <div class="twd-deposit-instructions__step-cards">
                     <div class="twd-deposit-instructions__trust-card">
                         <div class="twd-deposit-instructions__trust-rows">
                             <button class="twd-deposit-instructions__trust-row" type="button" data-twd-deposit-copy="bank" aria-label="Copy bank">
@@ -4363,16 +4370,6 @@
                             <span>Copy all details</span>
                         </button>
                     </div>
-                    <div class="twd-deposit-instructions__limit-card">
-                        <div class="twd-deposit-instructions__limit-card-row">
-                            <div class="twd-deposit-instructions__limit-copy">
-                                <span class="twd-deposit-instructions__limit-label" data-twd-deposit-instructions-limit-label>Remaining deposit limit</span>
-                                <span class="twd-deposit-instructions__limit-amount" data-twd-deposit-instructions-remaining-limit>2,000,000.00 TWD</span>
-                            </div>
-                            <button class="twd-deposit-instructions__limit-link" type="button" data-twd-deposit-instructions-see-limits>View limits</button>
-                        </div>
-                    </div>
-                    </div>
                 </section>
                 <section class="twd-deposit-instructions__step">
                     <div class="twd-deposit-instructions__step-head">
@@ -4381,7 +4378,7 @@
                     </div>
                     <div class="twd-deposit-instructions__arrival-card">
                         <div class="twd-deposit-instructions__arrival-copy">
-                            <p class="twd-deposit-instructions__arrival-title">Usually arrives instant ~<br />within 1 hour after sending</p>
+                            <p class="twd-deposit-instructions__arrival-title">Usually arrives within 1 hour after sending</p>
                             <p class="twd-deposit-instructions__arrival-subtitle"><span class="twd-deposit-instructions__arrival-subtitle-highlight">No deposit fee.</span> We&rsquo;ll notify you when it lands.</p>
                         </div>
                         <img class="twd-deposit-instructions__arrival-icon" src="assets/gfx_firstdepo_clock.svg" alt="" width="48" height="48" aria-hidden="true" />
@@ -4447,6 +4444,23 @@
                     type="button" data-twd-deposit-guide-next>Next</button>
             </div>
         </section>
+
+        <div class="currency-sheet twd-deposit-copy-reminder-sheet" data-twd-deposit-copy-reminder-sheet hidden aria-modal="true" role="dialog" aria-label="Reminder">
+            <button class="currency-sheet__backdrop" type="button" data-twd-deposit-copy-reminder-close aria-label="Close"></button>
+            <div class="currency-sheet__panel twd-deposit-copy-reminder-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body twd-deposit-copy-reminder-sheet__body">
+                    <p class="twd-deposit-copy-reminder-sheet__kicker" data-twd-deposit-copy-reminder-kicker>Reminder</p>
+                    <h2 class="twd-deposit-copy-reminder-sheet__headline" data-twd-deposit-copy-reminder-headline>Send only from<br />KGI Bank •••• 8999</h2>
+                    <p class="twd-deposit-copy-reminder-sheet__desc" data-twd-deposit-copy-reminder-desc>Money from any other account is sent back, and your bank may charge a fee.<br /><span class="twd-deposit-copy-reminder-sheet__desc-highlight">Keep these details to yourself</span></p>
+                </div>
+                <div class="currency-sheet__footer twd-deposit-copy-reminder-sheet__footer">
+                    <button class="twd-deposit-copy-reminder-sheet__btn" type="button" data-twd-deposit-copy-reminder-dismiss>Understood</button>
+                </div>
+            </div>
+        </div>
 
         <section class="ba-wizard-intro twd-deposit-setup usd-deposit-setup" data-usd-deposit-setup hidden aria-label="Link USD bank account">
             <div class="ba-wizard-intro__hero" aria-hidden="true">

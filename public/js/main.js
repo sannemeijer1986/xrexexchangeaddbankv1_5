@@ -7485,7 +7485,7 @@
         account: "1234 5678 9012 3456",
         branch: "營業部 (0012)",
         accountName: "凱基受託鏈科信託財產專戶",
-        note: "This is XREX's trust account at<br />KGI Bank.",
+        note: "This is XREX's trust account at<br />KGI Bank",
         remainingLimit: "2,000,000.00",
       },
       fareastern: {
@@ -7493,7 +7493,7 @@
         account: "1032 1695 1918 2206",
         branch: "營業部 (0012)",
         accountName: "遠銀受託鏈科信託財產專戶",
-        note: "This is XREX's trust account at<br />Far Eastern Bank.",
+        note: "This is XREX's trust account at<br />Far Eastern Bank",
         remainingLimit: "2,000,000.00",
       },
     };
@@ -7695,13 +7695,13 @@
           if (index === 0) return;
           if (index === 2) {
             el.innerHTML = tr(
-              "Usually arrives instant ~<br />within 1 hour after sending",
+              "Usually arrives within 1 hour after sending",
             );
             return;
           }
           const keys = [
             null,
-            "Use online banking or an ATM",
+            "Use online banking or ATM transfer",
             null,
           ];
           if (keys[index]) el.textContent = tr(keys[index]);
@@ -7761,7 +7761,7 @@
         "[data-twd-deposit-instructions-limit-label]",
       );
       if (limitLabel) {
-        limitLabel.textContent = tr("Remaining deposit limit");
+        limitLabel.textContent = tr("Remaining limit : ");
       }
       if (instructionsEls.trustBank) {
         instructionsEls.trustBank.textContent = trust.bank;
@@ -7798,11 +7798,11 @@
           ];
           if (keys[index]) el.textContent = tr(keys[index]);
         });
-      const linkedMethod = instructionsPanel?.querySelector(
-        ".twd-deposit-instructions__linked-method",
+      const linkedSubtitle = instructionsPanel?.querySelector(
+        "[data-twd-deposit-instructions-linked-subtitle]",
       );
-      if (linkedMethod) {
-        linkedMethod.textContent = tr("Use online banking or ATM");
+      if (linkedSubtitle) {
+        linkedSubtitle.textContent = tr("Via online banking or ATM transfer");
       }
       const verifiedTag = instructionsPanel?.querySelector(
         ".twd-deposit-instructions__verified-tag",
@@ -7811,7 +7811,7 @@
       const seeLimits = instructionsPanel?.querySelector(
         "[data-twd-deposit-instructions-see-limits]",
       );
-      if (seeLimits) seeLimits.textContent = tr("View limits");
+      if (seeLimits) seeLimits.textContent = tr("View your limits");
       instructionsPanel
         ?.querySelectorAll(".twd-deposit-instructions__trust-label")
         .forEach((el, index) => {
@@ -7826,8 +7826,8 @@
         ".twd-deposit-instructions__arrival-title",
       );
       if (arrivalTitle) {
-        arrivalTitle.innerHTML = tr(
-          "Usually arrives instant ~<br />within 1 hour after sending",
+        arrivalTitle.textContent = tr(
+          "Usually arrives within 1 hour after sending",
         );
       }
       const arrivalSubtitle = instructionsPanel?.querySelector(
@@ -8033,7 +8033,7 @@
       const slides = [
         {
           title: "Send from your linked bank account",
-          desc: "Use online banking or an ATM from the bank account you linked to XREX.",
+          desc: "Use online banking or ATM transfer from the bank account you linked to XREX.",
           visual: "assets/gfx_firstdepo_yourbank_twd.svg",
         },
         {
@@ -8043,7 +8043,7 @@
         },
         {
           title: "When it arrives",
-          desc: "Usually arrives instant within 1 hour after sending. No deposit fee. We'll notify you when it lands.",
+          desc: "Usually arrives within 1 hour after sending. No deposit fee. We'll notify you when it lands.",
           visual: "assets/gfx_firstdepo_clock.svg",
         },
       ];
@@ -8126,6 +8126,66 @@
     };
 
     const twdDepositGuidePanel = initTwdDepositGuidePanel();
+
+    const initTwdDepositCopyReminderSheet = () => {
+      const sheet = document.querySelector("[data-twd-deposit-copy-reminder-sheet]");
+      if (!sheet) return { open: () => {}, close: () => {} };
+
+      const kickerEl = sheet.querySelector("[data-twd-deposit-copy-reminder-kicker]");
+      const headlineEl = sheet.querySelector(
+        "[data-twd-deposit-copy-reminder-headline]",
+      );
+      const descEl = sheet.querySelector("[data-twd-deposit-copy-reminder-desc]");
+      const dismissBtn = sheet.querySelector(
+        "[data-twd-deposit-copy-reminder-dismiss]",
+      );
+      const closeTriggers = sheet.querySelectorAll(
+        "[data-twd-deposit-copy-reminder-close], [data-twd-deposit-copy-reminder-dismiss]",
+      );
+      const panelEl = sheet.querySelector(".currency-sheet__panel");
+
+      const populate = () => {
+        const bankData = getLinkedBankAccountSheetData("twd");
+        const destination = formatWithdrawDestinationLabel(bankData.bankName);
+        if (kickerEl) kickerEl.textContent = tr("Reminder");
+        if (headlineEl) {
+          headlineEl.innerHTML = `${tr("Send only from")}<br />${destination}`;
+        }
+        if (descEl) {
+          descEl.innerHTML = `${tr("Money from any other account is sent back, and your bank may charge a fee.")}<br /><span class="twd-deposit-copy-reminder-sheet__desc-highlight">${tr("Keep these details to yourself")}</span>`;
+        }
+        if (dismissBtn) dismissBtn.textContent = tr("Understood");
+        sheet.setAttribute("aria-label", tr("Reminder"));
+      };
+
+      const close = () => {
+        sheet.classList.remove("is-open");
+        const onEnd = () => {
+          if (!sheet.classList.contains("is-open")) sheet.hidden = true;
+          panelEl?.removeEventListener("transitionend", onEnd);
+        };
+        panelEl?.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 300);
+      };
+
+      const open = () => {
+        populate();
+        sheet.hidden = false;
+        requestAnimationFrame(() => sheet.classList.add("is-open"));
+      };
+
+      closeTriggers.forEach((btn) => btn.addEventListener("click", close));
+
+      document.addEventListener("prototype-locale-changed", () => {
+        if (sheet.classList.contains("is-open") && !sheet.hidden) {
+          populate();
+        }
+      });
+
+      return { open, close };
+    };
+
+    const twdDepositCopyReminderSheet = initTwdDepositCopyReminderSheet();
 
     setupPanel
       ?.querySelector("[data-twd-deposit-setup-close]")
@@ -8220,15 +8280,25 @@
       });
     };
 
+    const maybeOpenCopyReminderSheet = (row) => {
+      if (row?.getAttribute("data-twd-deposit-copy") === "account") {
+        twdDepositCopyReminderSheet.open();
+      }
+    };
+
     instructionsPanel
       ?.querySelectorAll("[data-twd-deposit-copy]")
       .forEach((row) => {
-        row.addEventListener("click", () => showTrustFieldCopiedSnackbar(row));
+        row.addEventListener("click", () => {
+          showTrustFieldCopiedSnackbar(row);
+          maybeOpenCopyReminderSheet(row);
+        });
       });
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-share-all]")
       ?.addEventListener("click", () => {
         showSnackbar(tr("All details copied to clipboard"), { variant: "copy" });
+        twdDepositCopyReminderSheet.open();
       });
     instructionsPanel
       ?.querySelector("[data-twd-deposit-instructions-see-limits]")
