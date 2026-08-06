@@ -7674,7 +7674,7 @@
         .forEach((el, index) => {
           const keys = [
             "Money from any other account is returned, sometimes with a fee.",
-            "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, they can't reach us and will be returned.",
+            "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, ATM, they can't reach us and will be returned.",
             null,
           ];
           if (index === 2) {

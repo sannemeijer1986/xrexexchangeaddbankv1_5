@@ -920,7 +920,7 @@
   "No deposit fee.": "免入金手續費。",
   "We'll notify you when it lands.": "到帳後我們會通知您。",
   "Money from any other account is returned, sometimes with a fee.": "若從其他帳戶匯款將被退回，有時可能產生手續費。",
-  "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, they can't reach us and will be returned.": "請勿使用臨櫃匯款、Taiwan Pay、LINE Pay、JKoPay，這些方式無法匯入且將被退回。",
+  "Don't use counter transfers, Taiwan Pay, LINE Pay, JKoPay, ATM, they can't reach us and will be returned.": "請勿使用臨櫃匯款、Taiwan Pay、LINE Pay、JKoPay，這些方式無法匯入且將被退回。",
   "See step-by-step guide": "查看逐步指南",
   "I'll only send TWD from my {destination} via {onlineBanking}": "我將僅從我的 {destination} 以 {onlineBanking} 匯款 TWD",
   "online banking": "網路銀行",

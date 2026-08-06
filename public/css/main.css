@@ -3146,7 +3146,7 @@ html[data-active-tab=wallet] .app-header__top {
 
 .twd-first-time-deposit__card-desc-highlight {
   font-weight: 600;
-  color: #5ac47d;
+  color: #8ADCA5;
 }
 
 .twd-first-time-deposit__guide-link {
@@ -3523,7 +3523,7 @@ html[data-active-tab=wallet] .app-header__top {
 }
 
 .twd-deposit-instructions__step-limit-amount {
-  color: #fcd536;
+  color: #8ADCA5;
 }
 
 .twd-deposit-instructions__step-limit-link {
@@ -3768,7 +3768,7 @@ html[data-active-tab=wallet] .app-header__top {
 
 .twd-deposit-instructions__arrival-subtitle-highlight {
   font-weight: 600;
-  color: #5ac47d;
+  color: #8ADCA5;
 }
 
 .twd-deposit-instructions__arrival-icon {
