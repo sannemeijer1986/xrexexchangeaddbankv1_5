@@ -7060,7 +7060,7 @@
       }
       if (successEls.status) successEls.status.textContent = tr("Processing");
       if (successEls.custodian) {
-        successEls.custodian.textContent = tr("Via custodian: {name}", {
+        successEls.custodian.textContent = tr("Processed via custodian: {name}", {
           name: getWithdrawCustodianName(withdrawCurrency),
         });
       }
